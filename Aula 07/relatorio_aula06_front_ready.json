@@ -1,0 +1,290 @@
+{
+  "exported_at": "2026-10-01T00:23:12.408Z",
+  "project": "Focus2k",
+  "readiness": 100,
+  "audit": {
+    "project": "Focus2k",
+    "summary": "A API possui rotas HTTP para Usuários e Tarefas, mas apresenta uma incompatibilidade estrutural entre a tabela SQL de usuários e a camada de aplicação/criação, além de falhas de contrato identificadas por análise estática, como a falta de DTOs de resposta para a serialização de objetos ORM e a ausência do CORSMiddleware.",
+    "resources": [
+      {
+        "name": "usuarios",
+        "front_required": true,
+        "why_front_needs_it": "O front-end precisa listar os perfis de usuário para seleção e permitir a criação de novos perfis de estudantes.",
+        "table": "usuarios",
+        "files": [
+          "api/rotas_usuarios.py",
+          "controllers/usuario_controller.py",
+          "services/usuario_service.py",
+          "repositories/usuario_repository.py",
+          "models/usuario.py",
+          "database.sql"
+        ],
+        "operations": [
+          {
+            "id": "usuarios_get_list",
+            "label": "Listar usuários",
+            "method": "GET",
+            "path": "/usuarios",
+            "required": true,
+            "status": "architecture_issue",
+            "expected_success": 200,
+            "needs_db_check": true,
+            "evidence": "O arquivo api/rotas_usuarios.py retorna a lista de entidades SQLAlchemy diretamente dentro de um dicionario. A analise estatica do codigo indica a ausencia de um schema de resposta (response_model) Pydantic no FastAPI.",
+            "problem": "Risco de falha de serialização JSON ao tentar converter objetos ORM SQLAlchemy não nativos em resposta HTTP."
+          },
+          {
+            "id": "usuarios_post_create",
+            "label": "Criar novo usuário",
+            "method": "POST",
+            "path": "/usuarios",
+            "required": true,
+            "status": "architecture_issue",
+            "expected_success": 201,
+            "needs_db_check": true,
+            "evidence": "A tabela 'usuarios' no database.sql define a coluna 'senha' como VARCHAR(255) NOT NULL. No entanto, o schema Pydantic NovoUsuario em api/rotas_usuarios.py, a entidade Usuario em models/usuario.py e o metodo UsuarioRepository.criar omitem o campo 'senha'.",
+            "problem": "Incompatibilidade estrutural comprovada entre o schema SQL (coluna 'senha' obrigatoria) e a camada de criacao da API que nao envia a senha."
+          }
+        ]
+      },
+      {
+        "name": "tarefas",
+        "front_required": true,
+        "why_front_needs_it": "O front-end precisa carregar as tarefas vinculadas a um determinado usuario e permitir a criacao de novas atividades.",
+        "table": "tarefas",
+        "files": [
+          "api/rotas_tarefas.py",
+          "controllers/tarefa_controller.py",
+          "services/tarefa_service.py",
+          "repositories/tarefa_repository.py",
+          "models/tarefa.py",
+          "models/tarefa_schema.py"
+        ],
+        "operations": [
+          {
+            "id": "tarefas_get_list",
+            "label": "Listar tarefas do usuário",
+            "method": "GET",
+            "path": "/tarefas",
+            "required": true,
+            "status": "architecture_issue",
+            "expected_success": 200,
+            "needs_db_check": true,
+            "evidence": "O endpoint api/rotas_tarefas.py recebe usuario_id como Query Param e retorna modelos ORM Tarefa diretamente em um dicionario sem o uso de response_model ou DTOs Pydantic.",
+            "problem": "Risco de falha de serialização JSON ao converter tipos do SQLAlchemy como Date/DateTime sem conversão prévia para DTO."
+          },
+          {
+            "id": "tarefas_post_create",
+            "label": "Criar nova tarefa",
+            "method": "POST",
+            "path": "/tarefas",
+            "required": true,
+            "status": "untested",
+            "expected_success": 201,
+            "needs_db_check": true,
+            "evidence": "O endpoint recebe o schema NovaTarefa com campos correspondentes ao modelo e repassa para a camada de servico/repositorio. A operacao nao possui erros estaticos de contrato declarados no Pydantic.",
+            "problem": ""
+          }
+        ]
+      },
+      {
+        "name": "passos",
+        "front_required": false,
+        "why_front_needs_it": "Apesar de a tabela 'passos' e o servico de IA existirem no projeto, nao ha rotas declaradas na API que comprovem a integracao exigida pelo front-end no momento.",
+        "table": "passos",
+        "files": [
+          "core/ia_service.py",
+          "database.sql"
+        ],
+        "operations": [
+          {
+            "id": "passos_management",
+            "label": "Gerenciar passos da tarefa",
+            "method": "GET",
+            "path": "/passos",
+            "required": false,
+            "status": "missing",
+            "expected_success": 200,
+            "needs_db_check": false,
+            "evidence": "A tabela 'passos' existe no banco de dados e 'core/ia_service.py' contem a geracao de passos via Gemini, mas nenhum endpoint para passos foi declarado nos arquivos da pasta api/.",
+            "problem": "Endpoint inexistente na camada de API."
+          }
+        ]
+      }
+    ],
+    "global_issues": [
+      {
+        "id": "issue_incompatibilidade_usuario_sql",
+        "title": "Incompatibilidade entre tabela SQL e criação de usuário na API",
+        "severity": "high",
+        "files": [
+          "database.sql",
+          "models/usuario.py",
+          "api/rotas_usuarios.py",
+          "repositories/usuario_repository.py"
+        ],
+        "evidence": "O arquivo database.sql estabelece 'senha' como NOT NULL na tabela usuarios, enquanto o modelo Usuario, o schema NovoUsuario e a funcao UsuarioRepository.criar nao tratam nem passam o campo de senha.",
+        "suggested_direction": "Alinhar o schema Pydantic, o modelo SQLAlchemy e a camada de repositorio para tratar o campo 'senha' exigido pela tabela do banco de dados."
+      },
+      {
+        "id": "issue_ausencia_cors",
+        "title": "Ausência do middleware de CORS na aplicação FastAPI",
+        "severity": "high",
+        "files": [
+          "api/api_app.py"
+        ],
+        "evidence": "Identificado estaticamente no arquivo api/api_app.py que a aplicacao FastAPI nao configura o CORSMiddleware.",
+        "suggested_direction": "Instanciar e registrar o CORSMiddleware na aplicacao FastAPI definindo as origens, metodos e cabecalhos permitidos para requisicoes do navegador."
+      },
+      {
+        "id": "issue_retorno_direto_orm",
+        "title": "Retorno de objetos SQLAlchemy sem DTO/response_model em rotas GET",
+        "severity": "medium",
+        "files": [
+          "api/rotas_usuarios.py",
+          "api/rotas_tarefas.py"
+        ],
+        "evidence": "Identificado estaticamente que os endpoints GET retornam dicionarios contendo instancias diretas das entidades ORM sem utilizacao da configuracao response_model do FastAPI ou DTOs Pydantic.",
+        "suggested_direction": "Criar schemas Pydantic de saida para Usuario e Tarefa e aplicar response_model nas declaracoes das rotas GET para garantir a correta serializacao JSON."
+      }
+    ],
+    "priority_order": [
+      "issue_incompatibilidade_usuario_sql",
+      "issue_ausencia_cors",
+      "issue_retorno_direto_orm",
+      "usuarios_post_create",
+      "usuarios_get_list",
+      "tarefas_get_list"
+    ]
+  },
+  "missions": {
+    "op:usuarios_get_list": {
+      "checks": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "ready": true
+    },
+    "op:usuarios_post_create": {
+      "checks": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "ready": true
+    },
+    "op:tarefas_get_list": {
+      "checks": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "ready": true
+    },
+    "op:tarefas_post_create": {
+      "checks": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "ready": true
+    },
+    "op:passos_management": {
+      "checks": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "ready": true
+    },
+    "issue:issue_incompatibilidade_usuario_sql": {
+      "checks": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "ready": false
+    },
+    "issue:issue_ausencia_cors": {
+      "checks": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "ready": false
+    },
+    "issue:issue_retorno_direto_orm": {
+      "checks": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ],
+      "ready": false
+    }
+  },
+  "base": {
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true,
+    "14": true
+  },
+  "contract": "# Contrato da API — Focus2k\n\n## usuarios\nO front-end precisa listar os perfis de usuário para seleção e permitir a criação de novos perfis de estudantes.\n\n### GET /usuarios — Listar usuários\n- Estado: FRONT-READY\n- Sucesso esperado: 200\n- Evidência: O arquivo api/rotas_usuarios.py retorna a lista de entidades SQLAlchemy diretamente dentro de um dicionario. A analise estatica do codigo indica a ausencia de um schema de resposta (response_model) Pydantic no FastAPI.\n\n### POST /usuarios — Criar novo usuário\n- Estado: FRONT-READY\n- Sucesso esperado: 201\n- Evidência: A tabela 'usuarios' no database.sql define a coluna 'senha' como VARCHAR(255) NOT NULL. No entanto, o schema Pydantic NovoUsuario em api/rotas_usuarios.py, a entidade Usuario em models/usuario.py e o metodo UsuarioRepository.criar omitem o campo 'senha'.\n\n## tarefas\nO front-end precisa carregar as tarefas vinculadas a um determinado usuario e permitir a criacao de novas atividades.\n\n### GET /tarefas — Listar tarefas do usuário\n- Estado: FRONT-READY\n- Sucesso esperado: 200\n- Evidência: O endpoint api/rotas_tarefas.py recebe usuario_id como Query Param e retorna modelos ORM Tarefa diretamente em um dicionario sem o uso de response_model ou DTOs Pydantic.\n\n### POST /tarefas — Criar nova tarefa\n- Estado: FRONT-READY\n- Sucesso esperado: 201\n- Evidência: O endpoint recebe o schema NovaTarefa com campos correspondentes ao modelo e repassa para a camada de servico/repositorio. A operacao nao possui erros estaticos de contrato declarados no Pydantic.\n\n"
+}
