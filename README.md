@@ -1,16 +1,13 @@
-    # Sistema TPAC com MySQL
+# Sistema TPAC com MySQL e JWT
 
-Este projeto foi ajustado para usar banco de dados MySQL no lugar do arquivo JSON.
+Este projeto foi atualizado para utilizar banco de dados MySQL e possui uma camada de autenticação e autorização via JWT (JSON Web Tokens).
 
-## 1. Criar o banco no MySQL Workbench
+## 1. Configurar o Banco de Dados
 
-1. Abra o MySQL Workbench.
-2. Conecte no seu servidor local.
-3. Abra o arquivo `database.sql`.
-4. Execute o script completo clicando no raio.
-5. Confirme se apareceu o banco `tpac_db`.
+1. Abra o `database.sql` e execute o script no seu MySQL.
+2. Certifique-se de que o banco `tpac_db` foi criado conforme o script.
 
-## 2. Instalar as dependências do Python
+## 2. Instalar dependências
 
 No terminal, dentro da pasta do projeto, execute:
 
@@ -18,11 +15,13 @@ No terminal, dentro da pasta do projeto, execute:
 pip install -r requirements.txt
 ```
 
-## 3. Configurar a conexão
+## 3. Configurar variáveis de ambiente
 
-Abra o arquivo `.env` e ajuste:
+Edite o arquivo `.env` com as configurações do seu banco e a chave secreta para tokens:
 
 ```env
+GEMINI_API_KEY=sua_chave_gemini
+SECRET_KEY=uma_chave_secreta_muito_segura_e_longa_123456789
 DB_HOST=localhost
 DB_PORT=3306
 DB_USER=root
@@ -30,17 +29,17 @@ DB_PASSWORD=sua_senha_do_mysql
 DB_NAME=tpac_db
 ```
 
-## 4. Executar o sistema
+## 4. Executar a API
 
-No terminal, dentro da pasta do projeto, execute:
+A aplicação usa FastAPI. Para rodar:
 
 ```bash
-python main.py
+uvicorn api.api_app:app --reload
 ```
 
-## Arquivos principais
+Acesse a documentação interativa em: `http://localhost:8000/docs`
 
-- `database.sql`: cria o banco, tabelas e dados de exemplo.
-- `.env`: guarda as configurações de conexão.
-- `data/data_manager.py`: faz a conexão entre Python e MySQL.
-- `main.py`: inicia o sistema.
+## Autenticação
+
+- O sistema utiliza JWT.
+- Após logar via `POST /usuarios/login`, utilize o token recebido no cabeçalho `Authorization: Bearer <token>` para acessar rotas protegidas (como `GET /usuarios/me` ou `GET /tarefas`).
