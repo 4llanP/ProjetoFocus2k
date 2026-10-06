@@ -9,8 +9,7 @@ class TipoTarefaEnum(str, Enum):
 
 
 class NovaTarefa(BaseModel):
-    usuario_id: int
-    tipo: TipoTarefaEnum 
+    tipo: TipoTarefaEnum
     titulo: str
     descricao: Optional[str] = None
     prioridade: str = "media"

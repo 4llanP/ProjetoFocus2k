@@ -21,6 +21,7 @@ DROP TABLE IF EXISTS usuarios;
 CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
     estilo_instrucao ENUM('direto', 'detalhado') NOT NULL DEFAULT 'direto',
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -62,13 +63,3 @@ CREATE TABLE passos (
         REFERENCES tarefas(id)
         ON DELETE CASCADE
 );
-
--- ============================================================
--- Popular dados
--- ============================================================
-INSERT INTO usuarios (nome,senha, estilo_instrucao)
-VALUES ('Aluno Exemplo', '1234', 'direto');
-INSERT INTO tarefas (usuario_id, tipo, titulo, descricao, prioridade, prazo, concluida)
-VALUES (1, 'tarefas_diarias', 'Organizar mochila', 'Separar material por disciplina antes da aula.', 'media', '2026-06-10', FALSE),
-(1, 'tarefas_educacionais', 'Revisar lógica de programação', 'Rever variáveis, condições e repetição.', 'alta', '2026-06-12', FALSE);
-

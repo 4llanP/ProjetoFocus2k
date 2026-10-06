@@ -9,5 +9,5 @@ class TarefaController:
     def listar_tarefas(self, usuario_id):
         return self.service.listar_por_usuario(usuario_id)
 
-    def criar_tarefa(self, dados):
-        return self.service.criar_tarefa(dados)
+    def criar_tarefa(self, dados, usuario_id):
+        return self.service.criar_tarefa(dados, usuario_id)

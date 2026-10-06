@@ -1,13 +1,12 @@
-"""Funções auxiliares relacionadas aos usuários."""
-
+from passlib.context import CryptContext
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def autenticar_usuario(dados: dict, nome: str, senha: str) -> bool:
-    """
-    Verifica se a senha informada pertence ao usuário.
-    """
     if nome not in dados:
         return False
 
-    senha_correta = dados[nome].get("senha", "")
+      # A senha que está no banco (ou memória) agora é um hash
+    senha_hash_armazenado = dados[nome].get("senha", "")
 
-    return senha == senha_correta
+      # VERIFICAÇÃO DO HASH
+    return pwd_context.verify(senha, senha_hash_armazenado)
