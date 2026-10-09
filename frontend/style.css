@@ -1,0 +1,109 @@
+/* Evreghen Command Center - CSS Tokens & Base */
+:root {
+    /* Colors */
+    --background: #fcfaf7;
+    --on-background: #423d38;
+    --surface: #f3f4f6;
+    --on-surface: #423d38;
+    --on-surface-muted: #797067;
+
+    --primary: #fe6e00;
+    --primary-strong: #ff6b00;
+    --on-primary: #ffffff;
+
+    --shell-bg: rgba(0, 0, 0, 0.70);
+    --on-shell: #ffffff;
+    --shell-border: rgba(255, 255, 255, 0.10);
+
+    /* Spacing & Radii */
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-pill: 9999px;
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
+}
+
+body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    background-color: var(--background);
+    color: var(--on-background);
+}
+
+.hidden { display: none; }
+
+/* --- Shell Components (Dark Frosted) --- */
+.app-shell {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: grid;
+    grid-template-areas:
+        "header header"
+        "sidebar content";
+    grid-template-columns: 256px 1fr;
+    grid-template-rows: 64px 1fr;
+}
+
+.shell-header {
+    grid-area: header;
+    background: var(--shell-bg);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--shell-border);
+    color: var(--on-shell);
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+}
+
+.shell-sidebar {
+    grid-area: sidebar;
+    background: var(--shell-bg);
+    backdrop-filter: blur(12px);
+    border-right: 1px solid var(--shell-border);
+    color: var(--on-shell);
+    padding: var(--spacing-lg);
+}
+
+.shell-workspace {
+    grid-area: content;
+    overflow-y: auto;
+    padding: var(--spacing-lg) var(--spacing-xl);
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* --- Workspace Content --- */
+.card-panel {
+    background: transparent;
+    border: 1px solid var(--outline-strong, #d1d5dc);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-xl);
+}
+
+/* --- UI Elements --- */
+button {
+    background: var(--primary);
+    color: var(--on-primary);
+    padding: 10px 16px;
+    border-radius: var(--radius-sm);
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+button:hover { background: var(--primary-strong); }
+
+.input-field {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--outline-strong, #d1d5dc);
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    width: 100%;
+}

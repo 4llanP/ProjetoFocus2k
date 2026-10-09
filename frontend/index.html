@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Evreghen Command Center</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="shell-header">
+            <span style="font-weight: 700;">Evreghen Command Center</span>
+            <div id="user-nav" class="hidden" style="margin-left: auto;">
+                <button onclick="logout()" style="background: transparent; color: white;">Sair</button>
+            </div>
+        </header>
+
+        <aside class="shell-sidebar hidden" id="sidebar">
+            <nav style="display: flex; flex-direction: column; gap: 8px;">
+                <button onclick="loadTarefas()" style="width: 100%; text-align: left; background: transparent; border: 1px solid var(--shell-border);">Tarefas</button>
+            </nav>
+        </aside>
+
+        <main class="shell-workspace">
+            <!-- Login View -->
+            <div id="login-view" style="max-width: 400px; margin: 4rem auto;">
+                <h2 id="auth-title">Login</h2>
+                <input type="text" id="nome" class="input-field hidden" placeholder="Seu Nome"><br><br id="nome-br" class="hidden">
+                <input type="email" id="email" class="input-field" placeholder="Email"><br><br>
+                <input type="password" id="senha" class="input-field" placeholder="Senha"><br><br>
+                <input type="text" id="estilo" class="input-field hidden" placeholder="Estilo (Ex: direto)"><br><br id="estilo-br" class="hidden">
+                <button onclick="authAction()" id="auth-btn" style="width: 100%;">Entrar</button>
+                <p style="text-align: center; font-size: 0.8rem; margin-top: 1rem;">
+                    <a href="#" onclick="toggleAuth()" id="auth-toggle" style="color: var(--primary);">Não tem conta? Cadastrar</a>
+                </p>
+            </div>
+
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="hidden">
+                <h2>Tarefas Operacionais</h2>
+                <div id="tarefas-lista" style="display: grid; gap: 16px;"></div>
+
+                <div id="admin-area" class="hidden" style="margin-top: 2rem; padding: 1rem; border: 1px solid var(--primary);">
+                    <h3 style="color: var(--primary);">Zona Administrativa</h3>
+                    <button onclick="listarUsuarios()">Listar Todos Usuários</button>
+                    <div id="admin-results" style="margin-top: 1rem;"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:8000";
+        let isLoginMode = true;
+
+        function toggleAuth() {
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-title').innerText = isLoginMode ? 'Login' : 'Cadastro';
+            document.getElementById('auth-btn').innerText = isLoginMode ? 'Entrar' : 'Cadastrar';
+            document.getElementById('auth-toggle').innerText = isLoginMode ? 'Não tem conta? Cadastrar' : 'Já tem conta? Login';
+            document.getElementById('nome').classList.toggle('hidden', isLoginMode);
+            document.getElementById('nome-br').classList.toggle('hidden', isLoginMode);
+            document.getElementById('estilo').classList.toggle('hidden', isLoginMode);
+            document.getElementById('estilo-br').classList.toggle('hidden', isLoginMode);
+        }
+
+        async function authAction() {
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+            if (isLoginMode) {
+                const res = await fetch(`${API_URL}/usuarios/login`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email, senha})
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('role', data.role);
+                    loadDashboard();
+                } else alert("Erro no login");
+            } else {
+                const nome = document.getElementById('nome').value;
+                const estilo = document.getElementById('estilo').value;
+                const res = await fetch(`${API_URL}/usuarios`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({nome, email, senha, estilo_instrucao: estilo})
+                });
+                if (res.ok) { alert("Cadastrado!"); toggleAuth(); }
+                else alert("Erro ao cadastrar");
+            }
+        }
+
+        async function loadDashboard() {
+            document.getElementById('login-view').classList.add('hidden');
+            document.getElementById('dashboard-view').classList.remove('hidden');
+            document.getElementById('sidebar').classList.remove('hidden');
+            document.getElementById('user-nav').classList.remove('hidden');
+            if (localStorage.getItem('role') === 'admin') document.getElementById('admin-area').classList.remove('hidden');
+            loadTarefas();
+        }
+
+        async function loadTarefas() {
+            const res = await fetch(`${API_URL}/tarefas`, {
+                headers: {'Authorization': `Bearer ${localStorage.getItem('token')}`}
+            });
+            const data = await res.json();
+            document.getElementById('tarefas-lista').innerHTML = data.dados.map(t =>
+                `<div class="card-panel"><h3>${t.titulo}</h3><p style="color:var(--on-surface-muted);">${t.descricao}</p></div>`
+            ).join('');
+        }
+
+        function logout() { localStorage.clear(); location.reload(); }
+
+        async function listarUsuarios() {
+            const token = localStorage.getItem('token');
+
+            // Debug: Ajuda a ver no console se o token está vazio ou inválido
+            console.log("Token enviado para o servidor:", token);
+
+            if (!token || token === "undefined" || token === "null") {
+                alert("Você não está logado validamente.");
+                return;
+            }
+
+            const res = await fetch(`${API_URL}/usuarios`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await res.json();
+            const resultsDiv = document.getElementById('admin-results');
+
+            // Debug da resposta
+            console.log("Resposta do servidor:", { status: res.status, data });
+
+            if (res.ok) {
+                // Ajuste para ler a estrutura de resposta que o back-end enviou
+                const usuarios = data.dados || data;
+                resultsDiv.innerHTML = usuarios.map(u =>
+                    `<div class="card-panel" style="padding: 0.5rem; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                        ${u.nome} - <span style="color: var(--primary);">${u.email}</span>
+                    </div>`
+                ).join('');
+            } else {
+                resultsDiv.innerHTML = `<p style="color: var(--alert-magenta);">Erro ${res.status}: ${data.detail || 'Acesso negado.'}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
