@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Focus 2k — Painel de Produtividade & IA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-canvas: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-hover: #263548;
+            --border-color: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-primary: #6366f1;
+            --accent-hover: #4f46e5;
+            --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --radius-sm: 6px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-canvas);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 960px;
+        }
+
+        header {
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            letter-spacing: -0.025em;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+            margin-bottom: 24px;
+            transition: var(--transition);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .auth-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        @media (max-width: 768px) {
+            .auth-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px 20px;
+            background: var(--accent-gradient);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            box-shadow: none;
+        }
+
+        button.secondary:hover {
+            background-color: var(--bg-card-hover);
+            color: var(--text-main);
+            border-color: var(--text-muted);
+        }
+
+        button.danger {
+            background: var(--danger);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .task-grid-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 640px) {
+            .task-grid-form {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .task-item {
+            background-color: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            transition: var(--transition);
+        }
+
+        .task-item:hover {
+            border-color: #475569;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .task-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-alta { background-color: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .badge-media { background-color: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-baixa { background-color: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-tipo { background-color: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); }
+
+        .steps-container {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px dashed var(--border-color);
+        }
+
+        .steps-container h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .steps-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--bg-card);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .step-text {
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-text.concluido {
+            text-decoration: line-through;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        .step-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .step-actions button {
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            width: auto;
+            box-shadow: none;
+        }
+
+        .add-step-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .add-step-row input {
+            padding: 8px 12px;
+            font-size: 0.9rem;
+        }
+
+        .add-step-row button {
+            width: 120px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Focus 2k</h1>
+            <p>Gerenciador de Tarefas Inteligente com Apoio de IA</p>
+        </header>
+
+        <!-- AUTENTICAÇÃO -->
+        <div id="auth-section" class="card">
+            <div class="auth-grid">
+                <div>
+                    <h2>Entrar na Conta</h2>
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" placeholder="seu@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-senha">Senha</label>
+                        <input type="password" id="login-senha" placeholder="Insira sua senha.">
+                    </div>
+                    <button onclick="fazerLogin()">Entrar</button>
+                </div>
+
+                <div>
+                    <h2>Criar Novo Perfil</h2>
+                    <div class="form-group">
+                        <label for="reg-nome">Nome</label>
+                        <input type="text" id="reg-nome" placeholder="Seu nome completo">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">Email</label>
+                        <input type="email" id="reg-email" placeholder="seu@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-senha">Senha</label>
+                        <input type="password" id="reg-senha" placeholder="••••••••">
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-estilo">Estilo de Instrução</label>
+                        <select id="reg-estilo">
+                            <option value="direto">Estilo Direto</option>
+                            <option value="detalhado">Estilo Detalhado</option>
+                        </select>
+                    </div>
+                    <button onclick="criarUsuario()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">Cadastrar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAINEL PRINCIPAL -->
+        <div id="app-section" class="card hidden">
+            <div class="dashboard-header">
+                <h2>Painel de Tarefas</h2>
+                <button onclick="fazerLogout()" class="danger" style="width: auto; padding: 8px 16px;">Sair</button>
+            </div>
+
+            <div style="background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: var(--radius-md); padding: 24px; margin-bottom: 32px;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 16px; color: var(--text-main);">Nova Tarefa com Divisão IA</h3>
+                <div class="task-grid-form" style="margin-bottom: 16px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="task-tipo">Categoria / Tipo</label>
+                        <select id="task-tipo">
+                            <option value="tarefas_diarias">Rotina Diária</option>
+                            <option value="tarefas_educacionais">Estudos e Atividades</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="task-prioridade">Prioridade</label>
+                        <select id="task-prioridade">
+                            <option value="baixa">Baixa</option>
+                            <option value="media" selected>Média</option>
+                            <option value="alta">Alta</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="task-titulo">Título da Tarefa</label>
+                    <input type="text" id="task-titulo" placeholder="Ex: Estudar Arquitetura Limpa em FastAPI">
+                </div>
+                <div class="form-group">
+                    <label for="task-descricao">Descrição (Opcional)</label>
+                    <textarea id="task-descricao" placeholder="Detalhes ou objetivos da tarefa..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="task-prazo">Prazo de Conclusão</label>
+                    <input type="date" id="task-prazo">
+                </div>
+                <button onclick="criarTarefa()">Criar Tarefa & Gerar Passos via IA</button>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: 1.1rem;">Suas Tarefas e Passos</h3>
+                <button onclick="carregarTarefas()" class="secondary" style="width: auto; padding: 8px 16px;">Atualizar Lista</button>
+            </div>
+
+            <div id="tarefas-list" class="task-list">
+                <!-- Renderizado dinamicamente -->
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">
+        <span id="toast-message">Mensagem de feedback</span>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:8000";
+        let token = localStorage.getItem("token") || "";
+
+        function showToast(message, type = "success") {
+            const toast = document.getElementById("toast");
+            const toastMsg = document.getElementById("toast-message");
+            toastMsg.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => {
+                toast.className = "toast";
+            }, 3500);
+        }
+
+        function verificarSessao() {
+            if (token) {
+                document.getElementById("auth-section").classList.add("hidden");
+                document.getElementById("app-section").classList.remove("hidden");
+                carregarTarefas();
+            } else {
+                document.getElementById("auth-section").classList.remove("hidden");
+                document.getElementById("app-section").classList.add("hidden");
+            }
+        }
+
+        async function fazerLogin() {
+            const email = document.getElementById("login-email").value;
+            const senha = document.getElementById("login-senha").value;
+
+            try {
+                const res = await fetch(`${API_URL}/usuarios/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, senha })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    token = data.access_token || data.token;
+                    localStorage.setItem("token", token);
+                    showToast("Login realizado com sucesso!", "success");
+                    verificarSessao();
+                } else {
+                    showToast(data.detail || data.mensagem || "Falha no login", "error");
+                }
+            } catch (err) {
+                showToast("Erro de conexão com a API.", "error");
+            }
+        }
+
+        async function criarUsuario() {
+            const nome = document.getElementById("reg-nome").value;
+            const email = document.getElementById("reg-email").value;
+            const senha = document.getElementById("reg-senha").value;
+            const estilo_instrucao = document.getElementById("reg-estilo").value;
+
+            if (!nome || !email || !senha) {
+                showToast("Preencha todos os campos para cadastrar.", "error");
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/usuarios`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ nome, email, senha, estilo_instrucao })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast("Usuário criado com sucesso! Faça login.", "success");
+                    document.getElementById("reg-nome").value = "";
+                    document.getElementById("reg-email").value = "";
+                    document.getElementById("reg-senha").value = "";
+                } else {
+                    showToast(data.detail || data.mensagem || "Erro ao cadastrar", "error");
+                }
+            } catch (err) {
+                showToast("Erro de conexão com a API.", "error");
+            }
+        }
+
+        function fazerLogout() {
+            token = "";
+            localStorage.removeItem("token");
+            verificarSessao();
+            showToast("Sessão encerrada.", "success");
+        }
+
+        async function carregarTarefas() {
+            try {
+                const res = await fetch(`${API_URL}/tarefas`, {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    renderizarTarefas(data.dados);
+                } else {
+                    if (res.status === 401) fazerLogout();
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function renderizarTarefas(tarefas) {
+            const container = document.getElementById("tarefas-list");
+            container.innerHTML = "";
+
+            if (!tarefas || tarefas.length === 0) {
+                container.innerHTML = `<div style="text-align: center; padding: 40px; color: var(--text-muted);">Nenhuma tarefa cadastrada. Crie sua primeira tarefa acima!</div>`;
+                return;
+            }
+
+            for (let t of tarefas) {
+                const badgeClass = `badge badge-${t.prioridade || 'media'}`;
+                const div = document.createElement("div");
+                div.className = "task-item";
+
+                div.innerHTML = `
+                    <div class="task-header">
+                        <div>
+                            <div class="task-title">${t.titulo}</div>
+                            <p style="margin-top: 6px; font-size: 0.9rem; color: var(--text-muted);">${t.descricao || 'Sem descrição.'}</p>
+                        </div>
+                        <span class="badge badge-tipo">${t.tipo.replace('_', ' ')}</span>
+                    </div>
+                    <div class="task-meta">
+                        <span class="${badgeClass}">${t.prioridade || 'média'}</span>
+                        <span>•</span>
+                        <span><b>Prazo:</b> ${t.prazo || 'Sem prazo'}</span>
+                    </div>
+
+                    <div class="steps-container">
+                        <h4>Passos para Conclusão</h4>
+                        <div id="passos-${t.id}">Carregando passos...</div>
+                        <div class="add-step-row" style="margin-top: 12px;">
+                            <input type="text" id="novo-passo-${t.id}" placeholder="Adicionar novo passo...">
+                            <button onclick="adicionarPasso(${t.id})" class="secondary">Adicionar</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+                carregarPassos(t.id);
+            }
+        }
+
+        async function carregarPassos(tarefaId) {
+            try {
+                const res = await fetch(`${API_URL}/tarefas/${tarefaId}/passos`, {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                const passos = await res.json();
+                const container = document.getElementById(`passos-${tarefaId}`);
+
+                if (!passos || passos.length === 0) {
+                    container.innerHTML = "<small style='color: var(--text-muted);'>Nenhum passo cadastrado.</small>";
+                    return;
+                }
+
+                let html = "<ul class='steps-list'>";
+                passos.forEach(p => {
+                    html += `
+                        <li class="step-item">
+                            <span class="step-text ${p.concluido ? 'concluido' : ''}">
+                                <input type="checkbox" ${p.concluido ? 'checked' : ''} onclick="togglePasso(${p.id})" style="width: auto; cursor: pointer;">
+                                ${p.texto}
+                            </span>
+                            <div class="step-actions">
+                                <button onclick="deletarPasso(${p.id})" class="danger" style="padding: 4px 8px; font-size: 0.75rem;">Excluir</button>
+                            </div>
+                        </li>
+                    `;
+                });
+                html += "</ul>";
+                container.innerHTML = html;
+            } catch (err) {
+                document.getElementById(`passos-${tarefaId}`).innerHTML = "<small style='color: var(--danger);'>Erro ao carregar passos.</small>";
+            }
+        }
+
+        async function criarTarefa() {
+            const tipo = document.getElementById("task-tipo").value;
+            const titulo = document.getElementById("task-titulo").value;
+            const descricao = document.getElementById("task-descricao").value;
+            const prioridade = document.getElementById("task-prioridade").value;
+            const prazo = document.getElementById("task-prazo").value || null;
+
+            if (!titulo) {
+                showToast("O título da tarefa é obrigatório!", "error");
+                return;
+            }
+
+            const res = await fetch(`${API_URL}/tarefas`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ tipo, titulo, descricao, prioridade, prazo })
+            });
+
+            if (res.ok) {
+                document.getElementById("task-titulo").value = "";
+                document.getElementById("task-descricao").value = "";
+                document.getElementById("task-prazo").value = "";
+                showToast("Tarefa criada e passos gerados por IA com sucesso!", "success");
+                carregarTarefas();
+            } else {
+                showToast("Erro ao criar tarefa", "error");
+            }
+        }
+
+        async function adicionarPasso(tarefaId) {
+            const input = document.getElementById(`novo-passo-${tarefaId}`);
+            const texto = input.value;
+            if (!texto) return;
+
+            const res = await fetch(`${API_URL}/tarefas/${tarefaId}/passos`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ texto, ordem: 1 })
+            });
+
+            if (res.ok) {
+                input.value = "";
+                showToast("Passo adicionado!", "success");
+                carregarPassos(tarefaId);
+            } else {
+                showToast("Erro ao adicionar passo", "error");
+            }
+        }
+
+        async function togglePasso(passoId) {
+            const res = await fetch(`${API_URL}/tarefas/passos/${passoId}/toggle`, {
+                method: "PATCH",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (res.ok) {
+                carregarPassos();
+            }
+        }
+
+        async function deletarPasso(passoId) {
+            const res = await fetch(`${API_URL}/tarefas/passos/${passoId}`, {
+                method: "DELETE",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            if (res.ok) {
+                showToast("Passo excluído.", "success");
+                carregarTarefas();
+            } else {
+                showToast("Erro ao excluir passo", "error");
+            }
+        }
+
+        verificarSessao();
+    </script>
+</body>
+</html>

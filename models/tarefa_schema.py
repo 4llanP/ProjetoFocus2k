@@ -1,6 +1,6 @@
 from datetime import date, datetime
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, ConfigDict
 
 class TipoTarefaEnum(str, Enum):
@@ -14,6 +14,27 @@ class NovaTarefa(BaseModel):
     descricao: Optional[str] = None
     prioridade: str = "media"
     prazo: Optional[date] = None
+
+
+class NovoPasso(BaseModel):
+    texto: str
+    ordem: Optional[int] = 1
+
+
+class AtualizarPasso(BaseModel):
+    texto: Optional[str] = None
+    concluido: Optional[bool] = None
+    ordem: Optional[int] = None
+
+
+class PassoResposta(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    tarefa_id: int
+    texto: str
+    concluido: bool
+    ordem: int
 
 
 class UsuarioResposta(BaseModel):

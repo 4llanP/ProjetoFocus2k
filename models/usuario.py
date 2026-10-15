@@ -8,9 +8,9 @@ class Usuario(Base):
     __tablename__ = "usuarios"
 
     id = Column(Integer, primary_key=True)
-    nome = Column(String(100), nullable=False)
+    nome = Column(String(100), nullable=False, unique=True)
     email = Column(String(100), nullable=False, unique=True, index=True)
-    senha = Column(String(100), nullable=False)
+    senha = Column(String(255), nullable=False)
     estilo_instrucao = Column(String(20), nullable=False, default="direto")
     role = Column(String(20), nullable=False, default="estudante")
     criado_em = Column(DateTime, server_default=func.now())

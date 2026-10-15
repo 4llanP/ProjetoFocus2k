@@ -41,7 +41,7 @@ class UsuarioRepository:
             session.commit()
             return True
 
-    def criar(self, nome, email, senha, estilo_instrucao, role='estudante'):
+    def criar(self, nome, email, senha, estilo_instrucao, role='user'):
         with SessionLocal() as session:
             usuario = Usuario(nome=nome, email=email, senha=senha, estilo_instrucao=estilo_instrucao, role=role)
             session.add(usuario)
