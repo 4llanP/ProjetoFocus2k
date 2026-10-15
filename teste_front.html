@@ -667,7 +667,7 @@
             const taskId = document.getElementById("task-id-edit").value;
             const tipo = document.getElementById("task-tipo").value;
             const titulo = document.getElementById("task-titulo").value;
-            const descricao = document.getElementById("task-descricao").value;
+            const descricao = document.getElementById("task-descricao").value || null;
             const prioridade = document.getElementById("task-prioridade").value;
             const prazo = document.getElementById("task-prazo").value || null;
 
@@ -693,7 +693,17 @@
                 showToast(taskId ? "Tarefa atualizada com sucesso!" : "Tarefa criada e passos gerados por IA com sucesso!", "success");
                 carregarTarefas();
             } else {
-                showToast("Erro ao salvar tarefa", "error");
+                const data = await res.json().catch(() => ({}));
+                console.error("Erro ao salvar tarefa:", data);
+                let msg = "Erro ao salvar tarefa";
+                if (data.detail) {
+                    if (typeof data.detail === 'string') {
+                        msg = data.detail;
+                    } else if (Array.isArray(data.detail)) {
+                        msg = data.detail.map(e => `${e.loc ? e.loc.join('.') : ''}: ${e.msg}`).join(', ');
+                    }
+                }
+                showToast(msg, "error");
             }
         }
 
