@@ -44,7 +44,7 @@ class UsuarioService:
     def deletar_usuario(self, usuario_id):
         return self.repository.deletar(usuario_id)
 
-    def criar_usuario(self, nome, email, senha, estilo_instrucao):
+    def criar_usuario(self, nome, email, senha, estilo_instrucao, role='user'):
         nome = nome.strip()
         email = email.strip().lower()
 
@@ -60,6 +60,8 @@ class UsuarioService:
             raise ValueError("O nome precisa ter pelo menos 3 caracteres.")
         if estilo_instrucao not in {"direto", "detalhado"}:
             raise ValueError("O estilo deve ser 'direto' ou 'detalhado'.")
+        if role not in {"user", "admin"}:
+            raise ValueError("O papel deve ser 'user' ou 'admin'.")
 
         existente = self.repository.buscar_por_email(email)
         if existente is not None:
@@ -67,7 +69,7 @@ class UsuarioService:
 
         senha_hash = self._hash_senha(senha)
 
-        return self.repository.criar(nome, email, senha_hash, estilo_instrucao, role='user')
+        return self.repository.criar(nome, email, senha_hash, estilo_instrucao, role=role)
 
     def autenticar_usuario(self, email, senha):
         email = email.lower().strip()
