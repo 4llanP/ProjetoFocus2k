@@ -31,7 +31,7 @@ def listar_tarefas(usuario_logado: dict = Depends(verificar_token)):
 def criar_tarefa(dados: NovaTarefa, usuario_logado: dict = Depends(verificar_token)):
     usuario_id = int(usuario_logado['sub'])
     tarefa = controller.criar_tarefa(dados, usuario_id)
-    return {"dados": tarefa}
+    return {"dados": tarefa.to_dict() if hasattr(tarefa, "to_dict") else tarefa}
 
 
 # --- CRUD DE PASSOS ---
