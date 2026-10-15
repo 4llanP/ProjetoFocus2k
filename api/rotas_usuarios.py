@@ -136,7 +136,7 @@ def login(dados: Login):
 
 
 @router.get("/passos")
-def obter_passos_via_query(tarefa_id: int):
+def obter_passos_via_query(tarefa_id: int, payload: dict = Depends(verificar_token)):
     with SessionLocal() as db:
         repo = TarefaRepository(db)
         tarefa = repo.buscar_por_id(tarefa_id)
@@ -146,6 +146,8 @@ def obter_passos_via_query(tarefa_id: int):
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Tarefa não encontrada.",
             )
+
+        verificar_dono_ou_admin(tarefa.usuario_id, payload)
 
         try:
             passos = gerar_passos_tarefa(tarefa.titulo)
