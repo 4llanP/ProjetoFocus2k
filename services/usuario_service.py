@@ -65,10 +65,6 @@ class UsuarioService:
         if existente is not None:
             raise ValueError("Já existe um perfil com esse email.")
 
-        existente_nome = self.repository.buscar_por_nome(nome)
-        if existente_nome is not None:
-            raise ValueError("Já existe um perfil com esse nome.")
-
         senha_hash = self._hash_senha(senha)
 
         return self.repository.criar(nome, email, senha_hash, estilo_instrucao, role='user')
