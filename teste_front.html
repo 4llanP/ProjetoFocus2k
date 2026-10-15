@@ -423,12 +423,13 @@
         <!-- PAINEL PRINCIPAL -->
         <div id="app-section" class="card hidden">
             <div class="dashboard-header">
-                <h2>Painel de Tarefas</h2>
+                <h2>Painel de Tarefas (CRUD Completo)</h2>
                 <button onclick="fazerLogout()" class="danger" style="width: auto; padding: 8px 16px;">Sair</button>
             </div>
 
             <div style="background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: var(--radius-md); padding: 24px; margin-bottom: 32px;">
-                <h3 style="font-size: 1.1rem; margin-bottom: 16px; color: var(--text-main);">Nova Tarefa com Divisão IA</h3>
+                <h3 id="form-task-title" style="font-size: 1.1rem; margin-bottom: 16px; color: var(--text-main);">Nova Tarefa com Divisão IA</h3>
+                <input type="hidden" id="task-id-edit" value="">
                 <div class="task-grid-form" style="margin-bottom: 16px;">
                     <div class="form-group" style="margin-bottom: 0;">
                         <label for="task-tipo">Categoria / Tipo</label>
@@ -458,7 +459,10 @@
                     <label for="task-prazo">Prazo de Conclusão</label>
                     <input type="date" id="task-prazo">
                 </div>
-                <button onclick="criarTarefa()">Criar Tarefa & Gerar Passos via IA</button>
+                <div style="display: flex; gap: 12px;">
+                    <button id="btn-salvar-tarefa" onclick="salvarTarefa()">Criar Tarefa & Gerar Passos via IA</button>
+                    <button id="btn-cancelar-edicao" onclick="cancelarEdicao()" class="secondary hidden" style="width: auto;">Cancelar</button>
+                </div>
             </div>
 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
@@ -599,7 +603,11 @@
                             <div class="task-title">${t.titulo}</div>
                             <p style="margin-top: 6px; font-size: 0.9rem; color: var(--text-muted);">${t.descricao || 'Sem descrição.'}</p>
                         </div>
-                        <span class="badge badge-tipo">${t.tipo.replace('_', ' ')}</span>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <span class="badge badge-tipo">${t.tipo.replace('_', ' ')}</span>
+                            <button onclick='prepararEdicao(${JSON.stringify(t)})' class="secondary" style="width: auto; padding: 6px 12px; font-size: 0.8rem;">Editar</button>
+                            <button onclick="deletarTarefa(${t.id})" class="danger" style="width: auto; padding: 6px 12px; font-size: 0.8rem;">Excluir</button>
+                        </div>
                     </div>
                     <div class="task-meta">
                         <span class="${badgeClass}">${t.prioridade || 'média'}</span>
@@ -639,11 +647,11 @@
                     html += `
                         <li class="step-item">
                             <span class="step-text ${p.concluido ? 'concluido' : ''}">
-                                <input type="checkbox" ${p.concluido ? 'checked' : ''} onclick="togglePasso(${p.id})" style="width: auto; cursor: pointer;">
+                                <input type="checkbox" ${p.concluido ? 'checked' : ''} onclick="togglePasso(${p.id}, ${tarefaId})" style="width: auto; cursor: pointer;">
                                 ${p.texto}
                             </span>
                             <div class="step-actions">
-                                <button onclick="deletarPasso(${p.id})" class="danger" style="padding: 4px 8px; font-size: 0.75rem;">Excluir</button>
+                                <button onclick="deletarPasso(${p.id}, ${tarefaId})" class="danger" style="padding: 4px 8px; font-size: 0.75rem;">Excluir</button>
                             </div>
                         </li>
                     `;
@@ -655,7 +663,8 @@
             }
         }
 
-        async function criarTarefa() {
+        async function salvarTarefa() {
+            const taskId = document.getElementById("task-id-edit").value;
             const tipo = document.getElementById("task-tipo").value;
             const titulo = document.getElementById("task-titulo").value;
             const descricao = document.getElementById("task-descricao").value;
@@ -667,8 +676,11 @@
                 return;
             }
 
-            const res = await fetch(`${API_URL}/tarefas`, {
-                method: "POST",
+            const url = taskId ? `${API_URL}/tarefas/${taskId}` : `${API_URL}/tarefas`;
+            const method = taskId ? "PUT" : "POST";
+
+            const res = await fetch(url, {
+                method: method,
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
@@ -677,13 +689,54 @@
             });
 
             if (res.ok) {
-                document.getElementById("task-titulo").value = "";
-                document.getElementById("task-descricao").value = "";
-                document.getElementById("task-prazo").value = "";
-                showToast("Tarefa criada e passos gerados por IA com sucesso!", "success");
+                cancelarEdicao();
+                showToast(taskId ? "Tarefa atualizada com sucesso!" : "Tarefa criada e passos gerados por IA com sucesso!", "success");
                 carregarTarefas();
             } else {
-                showToast("Erro ao criar tarefa", "error");
+                showToast("Erro ao salvar tarefa", "error");
+            }
+        }
+
+        function prepararEdicao(t) {
+            document.getElementById("task-id-edit").value = t.id;
+            document.getElementById("task-tipo").value = t.tipo;
+            document.getElementById("task-titulo").value = t.titulo;
+            document.getElementById("task-descricao").value = t.descricao || "";
+            document.getElementById("task-prioridade").value = t.prioridade || "media";
+            document.getElementById("task-prazo").value = t.prazo || "";
+
+            document.getElementById("form-task-title").textContent = "Editar Tarefa #" + t.id;
+            document.getElementById("btn-salvar-tarefa").textContent = "Salvar Alterações";
+            document.getElementById("btn-cancelar-edicao").classList.remove("hidden");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelarEdicao() {
+            document.getElementById("task-id-edit").value = "";
+            document.getElementById("task-tipo").value = "tarefas_diarias";
+            document.getElementById("task-titulo").value = "";
+            document.getElementById("task-descricao").value = "";
+            document.getElementById("task-prioridade").value = "media";
+            document.getElementById("task-prazo").value = "";
+
+            document.getElementById("form-task-title").textContent = "Nova Tarefa com Divisão IA";
+            document.getElementById("btn-salvar-tarefa").textContent = "Criar Tarefa & Gerar Passos via IA";
+            document.getElementById("btn-cancelar-edicao").classList.add("hidden");
+        }
+
+        async function deletarTarefa(tarefaId) {
+            if (!confirm("Tem certeza que deseja excluir esta tarefa e todos os seus passos?")) return;
+
+            const res = await fetch(`${API_URL}/tarefas/${tarefaId}`, {
+                method: "DELETE",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+
+            if (res.ok) {
+                showToast("Tarefa excluída com sucesso.", "success");
+                carregarTarefas();
+            } else {
+                showToast("Erro ao excluir tarefa", "error");
             }
         }
 
@@ -710,24 +763,24 @@
             }
         }
 
-        async function togglePasso(passoId) {
+        async function togglePasso(passoId, tarefaId) {
             const res = await fetch(`${API_URL}/tarefas/passos/${passoId}/toggle`, {
                 method: "PATCH",
                 headers: { "Authorization": `Bearer ${token}` }
             });
             if (res.ok) {
-                carregarPassos();
+                carregarPassos(tarefaId);
             }
         }
 
-        async function deletarPasso(passoId) {
+        async function deletarPasso(passoId, tarefaId) {
             const res = await fetch(`${API_URL}/tarefas/passos/${passoId}`, {
                 method: "DELETE",
                 headers: { "Authorization": `Bearer ${token}` }
             });
             if (res.ok) {
                 showToast("Passo excluído.", "success");
-                carregarTarefas();
+                carregarPassos(tarefaId);
             } else {
                 showToast("Erro ao excluir passo", "error");
             }

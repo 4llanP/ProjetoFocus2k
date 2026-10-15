@@ -143,3 +143,36 @@ def deletar_passo(passo_id: int, usuario_logado: dict = Depends(verificar_token)
 
         passo_repo.deletar(passo)
         return {"mensagem": "Passo excluído com sucesso."}
+
+
+@router.put("/{tarefa_id}")
+def atualizar_tarefa(tarefa_id: int, dados: NovaTarefa, usuario_logado: dict = Depends(verificar_token)):
+    with SessionLocal() as db:
+        repo = TarefaRepository(db)
+        tarefa = repo.buscar_por_id(tarefa_id)
+        if not tarefa:
+            raise HTTPException(status_code=404, detail="Tarefa não encontrada.")
+        if tarefa.usuario_id != int(usuario_logado['sub']):
+            raise HTTPException(status_code=403, detail="Acesso negado.")
+
+        tarefa.titulo = dados.titulo
+        tarefa.descricao = dados.descricao
+        tarefa.prioridade = dados.prioridade
+        tarefa.prazo = dados.prazo
+        tarefa.tipo = dados.tipo
+        repo.salvar(tarefa)
+        return {"mensagem": "Tarefa atualizada com sucesso.", "dados": tarefa.to_dict() if hasattr(tarefa, "to_dict") else tarefa}
+
+
+@router.delete("/{tarefa_id}")
+def deletar_tarefa(tarefa_id: int, usuario_logado: dict = Depends(verificar_token)):
+    with SessionLocal() as db:
+        repo = TarefaRepository(db)
+        tarefa = repo.buscar_por_id(tarefa_id)
+        if not tarefa:
+            raise HTTPException(status_code=404, detail="Tarefa não encontrada.")
+        if tarefa.usuario_id != int(usuario_logado['sub']):
+            raise HTTPException(status_code=403, detail="Acesso negado.")
+
+        repo.deletar(tarefa)
+        return {"mensagem": "Tarefa excluída com sucesso."}
