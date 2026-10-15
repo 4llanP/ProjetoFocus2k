@@ -23,6 +23,12 @@ class UsuarioRepositoryFake:
     def buscar_por_email(self, email):
         return self.usuarios.get(email)
 
+    def buscar_por_nome(self, nome):
+        for u in self.usuarios.values():
+            if u.nome == nome:
+                return u
+        return None
+
     def criar(self, nome, email, senha, estilo_instrucao, role='user'):
         usuario = UsuarioFake(nome, email, senha, estilo_instrucao, role)
         self.usuarios[email] = usuario

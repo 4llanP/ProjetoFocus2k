@@ -40,7 +40,10 @@ class UsuarioController:
             }
         except ValueError as erro:
             return {"sucesso": False, "tipo": "REGRA_NEGOCIO", "mensagem": str(erro)}
-        except Exception:
+        except Exception as erro:
+            from sqlalchemy.exc import IntegrityError
+            if isinstance(erro, IntegrityError):
+                return {"sucesso": False, "tipo": "REGRA_NEGOCIO", "mensagem": "Já existe um perfil com esse nome ou e-mail."}
             return {
                 "sucesso": False,
                 "tipo": "FALHA_TECNICA",
