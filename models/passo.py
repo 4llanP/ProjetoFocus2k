@@ -1,6 +1,7 @@
 from sqlalchemy import Integer, String, Text, Boolean, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from config.database import Base
+import models.tarefa  # Garante que a tabela tarefas seja registrada no metadata
 
 class Passo(Base):
     __tablename__ = "passos"

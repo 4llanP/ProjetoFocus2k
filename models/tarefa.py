@@ -3,6 +3,7 @@ from typing import Optional
 from sqlalchemy import Integer, String, Text, Enum, Date, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from config.database import Base  # Importando a Base que seu projeto já usa
+import models.usuario  # Garante que a tabela usuarios seja registrada no metadata
 
 
 class Tarefa(Base):
