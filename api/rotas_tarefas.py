@@ -175,5 +175,10 @@ def deletar_tarefa(tarefa_id: int, usuario_logado: dict = Depends(verificar_toke
         if tarefa.usuario_id != int(usuario_logado['sub']):
             raise HTTPException(status_code=403, detail="Acesso negado.")
 
+        passo_repo = PassoRepository(db)
+        passos = passo_repo.listar_por_tarefa(tarefa_id)
+        for p in passos:
+            passo_repo.deletar(p)
+
         repo.deletar(tarefa)
         return {"mensagem": "Tarefa excluída com sucesso."}
