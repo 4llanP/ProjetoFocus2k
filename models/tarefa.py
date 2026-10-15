@@ -25,3 +25,16 @@ class Tarefa(Base):
     criado_em: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.utcnow, nullable=False
     )
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "usuario_id": self.usuario_id,
+            "tipo": self.tipo,
+            "titulo": self.titulo,
+            "descricao": self.descricao,
+            "prioridade": self.prioridade,
+            "prazo": self.prazo.isoformat() if self.prazo else None,
+            "concluida": self.concluida,
+            "criado_em": self.criado_em.isoformat() if self.criado_em else None
+        }

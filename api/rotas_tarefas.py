@@ -7,6 +7,7 @@ from core.auth import verificar_token
 from core.ia_service import gerar_passos_tarefa
 from models.tarefa_schema import NovaTarefa, NovoPasso, AtualizarPasso, PassoResposta
 from models.passo import Passo
+import models.usuario
 from repositories.tarefa_repository import TarefaRepository
 from repositories.passo_repository import PassoRepository
 

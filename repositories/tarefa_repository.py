@@ -2,6 +2,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 from models.tarefa import Tarefa
+import models.usuario
 
 
 class TarefaRepository:
