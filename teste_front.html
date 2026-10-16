@@ -576,10 +576,15 @@
                 if (res.ok) {
                     renderizarTarefas(data.dados);
                 } else {
-                    if (res.status === 401) fazerLogout();
+                    if (res.status === 401) {
+                        fazerLogout();
+                    } else {
+                        showToast(data.detail || "Erro ao carregar tarefas", "error");
+                    }
                 }
             } catch (err) {
                 console.error(err);
+                showToast("Erro de conexão com a API. O servidor Uvicorn está rodando em http://localhost:8000?", "error");
             }
         }
 
