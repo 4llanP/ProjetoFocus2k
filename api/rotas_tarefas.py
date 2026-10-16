@@ -18,20 +18,26 @@ controller = TarefaController()
 
 @router.get("")
 def listar_tarefas(usuario_logado: dict = Depends(verificar_token)):
-    usuario_id = int(usuario_logado['sub'])
-    tarefas = controller.listar_tarefas(usuario_id)
-    dados = [
-        t.to_dict() if hasattr(t, "to_dict") else t
-        for t in tarefas
-    ] if isinstance(tarefas, list) else tarefas
-    return {"dados": dados}
+    try:
+        usuario_id = int(usuario_logado['sub'])
+        tarefas = controller.listar_tarefas(usuario_id)
+        dados = [
+            t.to_dict() if hasattr(t, "to_dict") else t
+            for t in tarefas
+        ] if isinstance(tarefas, list) else tarefas
+        return {"dados": dados}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao listar tarefas: {str(e)}")
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 def criar_tarefa(dados: NovaTarefa, usuario_logado: dict = Depends(verificar_token)):
-    usuario_id = int(usuario_logado['sub'])
-    tarefa = controller.criar_tarefa(dados, usuario_id)
-    return {"dados": tarefa.to_dict() if hasattr(tarefa, "to_dict") else tarefa}
+    try:
+        usuario_id = int(usuario_logado['sub'])
+        tarefa = controller.criar_tarefa(dados, usuario_id)
+        return {"dados": tarefa.to_dict() if hasattr(tarefa, "to_dict") else tarefa}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Erro ao criar tarefa: {str(e)}")
 
 
 # --- CRUD DE PASSOS ---
