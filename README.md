@@ -1,11 +1,11 @@
-# Sistema TPAC com MySQL e JWT
+# Sistema Focus com MySQL e JWT
 
 Este projeto foi atualizado para utilizar banco de dados MySQL e possui uma camada de autenticação e autorização via JWT (JSON Web Tokens).
 
 ## 1. Configurar o Banco de Dados
 
 1. Abra o `database.sql` e execute o script no seu MySQL.
-2. Certifique-se de que o banco `tpac_db` foi criado conforme o script.
+2. Certifique-se de que o banco `focus_db` foi criado conforme o script.
 
 ## 2. Instalar dependências
 
@@ -26,7 +26,7 @@ DB_HOST=localhost
 DB_PORT=3306
 DB_USER=root
 DB_PASSWORD=sua_senha_do_mysql
-DB_NAME=tpac_db
+DB_NAME=focus_db
 ```
 
 ## 4. Executar a API

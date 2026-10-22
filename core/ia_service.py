@@ -13,11 +13,10 @@ client = genai.Client() if API_KEY else None
 MODELO_GEMINI = "gemini-2.5-flash"
 
 
-def _obter_instrucao_tpac(estilo_usuario: str) -> str:
-    """Retorna a persona e as diretrizes de formatação da IA para o contexto de TPAC."""
+def _obter_instrucao_ia(estilo_usuario: str) -> str:
+    """Retorna a persona e as diretrizes de formatação da IA."""
     base_prompt = (
-        "Você é um assistente especializado em acessibilidade para pessoas com TPAC "
-        "(Transtorno do Processamento Auditivo Central).\n"
+        "Você é um assistente especializado em produtividade, acessibilidade e foco nos estudos.\n"
         "Seu papel é reduzir a carga cognitiva, cansaço mental e ambiguidade.\n"
         "Diretrizes obrigatórias:\n"
         "- Nunca use parágrafos longos, blocos densos de texto ou jargões complexos.\n"
@@ -41,7 +40,7 @@ def obter_resposta_ia(pergunta: str, estilo_usuario: str) -> list:
             "Erro: Variável de ambiente GEMINI_API_KEY não configurada.",
             "Por favor, configure sua chave de API.",
         ]
-    system_instruction = _obter_instrucao_tpac(estilo_usuario)
+    system_instruction = _obter_instrucao_ia(estilo_usuario)
     try:
         response = client.models.generate_content(
             model=MODELO_GEMINI,

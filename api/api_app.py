@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from api.rotas_usuarios import router as usuarios_router
 from api.rotas_tarefas import router as tarefas_router
 
-app = FastAPI(title="TPaC API", description="API criada na Aula 04", version="1.0.0")
+app = FastAPI(title="Focus API", description="API do Sistema Focus", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -23,4 +23,4 @@ app.mount("/ui", StaticFiles(directory="ui"), name="ui")
 
 @app.get("/")
 def inicio():
-    return {"sistema": "TPaC", "api": "funcionando", "ui": "/ui/tela_login.html"}
+    return {"sistema": "Focus", "api": "funcionando", "ui": "/ui/tela_login.html"}

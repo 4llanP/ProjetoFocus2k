@@ -3,11 +3,11 @@
 -- Execute este arquivo no MySQL Workbench antes de rodar o Python.
 -- ============================================================
 
-CREATE DATABASE IF NOT EXISTS tpac_db
+CREATE DATABASE IF NOT EXISTS focus_db
 CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 
-USE tpac_db;
+USE focus_db;
 
 -- Remove as tabelas antigas, caso você esteja recriando o banco.
 DROP TABLE IF EXISTS passos;

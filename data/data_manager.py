@@ -25,7 +25,7 @@ def conectar():
 def carregar_dados() -> Dict[str, Any]:
     """
     Busca os usuários, tarefas e passos no MySQL e monta a mesma estrutura
-    que antes era lida do arquivo tpac_users.json.
+    que antes era lida de arquivo JSON.
 
     Estrutura retornada:
     {

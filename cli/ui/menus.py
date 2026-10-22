@@ -152,7 +152,7 @@ def gerenciar_tarefas_menu(dados: dict, usuario: str, chave: str, titulo: str):
 
 def painel_ia_menu(dados: dict, usuario: str):
     """Abre o painel de interação com a IA."""
-    exibir_cabecalho("ASSISTENTE DE IA PARA TPAC")
+    exibir_cabecalho("ASSISTENTE DE IA")
     print("Peça ajuda para simplificar enunciados, organizar rotinas ou tirar dúvidas.")
     print("Digite 'sair' para retornar.\n")
     estilo = dados[usuario]["preferencias"]["estilo_instrucao"]
