@@ -1426,9 +1426,11 @@
         }
       }
 
-      // Regra de status automático: por padrão 'pendente' (A Fazer).
-      // Se a data/prazo já passou (menor que hoje), vai para 'em_andamento' (Em progresso).
+      // Regra de status e prioridade automáticos:
+      // Padrão: 'pendente' (A Fazer) e prioridade escolhida pelo usuário.
+      // Caso a data/prazo já tenha passado (menor que hoje): status vai para 'em_andamento' (Em progresso) e prioridade vai para 'alta'.
       let statusAutomatico = 'pendente';
+      let prioridadeFinal = modalPrioridadeSelecionada;
       if (prazoISO) {
         const agora = new Date();
         const ano = agora.getFullYear();
@@ -1437,6 +1439,7 @@
         const hojeStr = `${ano}-${mes}-${dia}`;
         if (prazoISO < hojeStr) {
           statusAutomatico = 'em_andamento';
+          prioridadeFinal = 'alta';
         }
       }
 
@@ -1448,7 +1451,7 @@
             tipo: modalTipoEstudoSelecionado,
             titulo: titulo,
             descricao: descricao || null,
-            prioridade: modalPrioridadeSelecionada,
+            prioridade: prioridadeFinal,
             prazo: prazoISO
           })
         });
