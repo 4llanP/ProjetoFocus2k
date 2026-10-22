@@ -59,6 +59,21 @@ def listar_passos_tarefa(tarefa_id: int, usuario_logado: dict = Depends(verifica
         return passos
 
 
+@router.post("/{tarefa_id}/decompor")
+def decompor_tarefa_ia(tarefa_id: int, usuario_logado: dict = Depends(verificar_token)):
+    with SessionLocal() as db:
+        tarefa_repo = TarefaRepository(db)
+        tarefa = tarefa_repo.buscar_por_id(tarefa_id)
+
+        if not tarefa:
+            raise HTTPException(status_code=404, detail="Tarefa não encontrada.")
+        if tarefa.usuario_id != int(usuario_logado['sub']):
+            raise HTTPException(status_code=403, detail="Acesso negado.")
+
+        textos_passos = gerar_passos_tarefa(tarefa.titulo, tarefa.descricao or "")
+        return {"passos": textos_passos}
+
+
 @router.post("/{tarefa_id}/passos", response_model=PassoResposta, status_code=status.HTTP_201_CREATED)
 def criar_passo(tarefa_id: int, dados: NovoPasso, usuario_logado: dict = Depends(verificar_token)):
     with SessionLocal() as db:

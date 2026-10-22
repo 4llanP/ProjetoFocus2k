@@ -620,7 +620,7 @@
     }
 
     // --- DESESTRUTURAR TAREFA COM IA ---
-    function desestruturarTarefaComIA(taskId) {
+    async function desestruturarTarefaComIA(taskId) {
       const tarefa = tarefasDB.find(t => t.id === taskId);
       if (!tarefa) return;
 
@@ -646,14 +646,36 @@
 
       mostrarToastFeedback("Gerando decomposição cognitiva...");
 
-      setTimeout(() => {
-        typingIndicator.classList.add('hidden');
-        const novasEtapas = gerarPassosDecompostos(tarefa);
-        const proposalId = 'proposal_' + Date.now();
-        renderizarPropostaDecomposicaoIA(proposalId, tarefa, novasEtapas);
-        rolarChatParaFinal();
-        mostrarToastFeedback("Decomposição gerada! Clique em 'Injetar Subtarefas'.");
-      }, 1400);
+      let etapas = [];
+      try {
+        if (tarefa.realId) {
+          const res = await apiFetch(`${API_URL}/tarefas/${tarefa.realId}/decompor`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          const data = await res.json();
+          if (res.ok && data.passos) {
+            etapas = data.passos.map((texto, idx) => ({
+              texto: texto,
+              tempo: `${(idx + 1) * 10} min`,
+              prioridade: idx === 0 ? 'alta' : 'media',
+              marcado: true
+            }));
+          }
+        }
+      } catch (e) {
+        console.error("Erro ao chamar API de decomposição:", e);
+      }
+
+      if (etapas.length === 0) {
+        etapas = gerarPassosDecompostos(tarefa);
+      }
+
+      if (typingIndicator) typingIndicator.classList.add('hidden');
+      const proposalId = 'proposal_' + Date.now();
+      renderizarPropostaDecomposicaoIA(proposalId, tarefa, etapas);
+      rolarChatParaFinal();
+      mostrarToastFeedback("Decomposição gerada! Clique em 'Injetar Subtarefas'.");
     }
 
     function gerarPassosDecompostos(tarefa) {

@@ -57,13 +57,18 @@ def obter_resposta_ia(pergunta: str, estilo_usuario: str) -> list:
         return [f"Erro ao nos comunicarmos com a IA: {str(e)}"]
 
 
-def gerar_passos_tarefa(titulo_tarefa: str) -> list:
+def gerar_passos_tarefa(titulo_tarefa: str, descricao_tarefa: str = "") -> list:
     """Usa a IA para quebrar uma tarefa macro em micro-ações sequenciais."""
     if not client:
-        return ["Configure a GEMINI_API_KEY para habilitar esta função."]
+        return ["Configure a chave de API para habilitar esta função."]
+
+    detalhes = f" Tarefa: '{titulo_tarefa}'."
+    if descricao_tarefa:
+        detalhes += f" Contexto/Descrição: '{descricao_tarefa}'."
+
     prompt = (
         f"Quebre a seguinte tarefa em exatamente 3 ou 4 passos sequenciais, "
-        f"curtos e fáceis de focar: '{titulo_tarefa}'. "
+        f"curtos e fáceis de focar:{detalhes} "
         f"Escreva apenas os passos, um por linha, sem introduções ou numeração manual."
     )
 
