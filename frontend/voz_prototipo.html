@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Focus 2k — Protótipo Entrada por Voz</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 { margin-bottom: 8px; font-size: 1.5rem; }
+  .subtitle { color: #94a3b8; margin-bottom: 30px; font-size: 0.95rem; }
+  .card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 16px;
+    padding: 32px;
+    width: 100%;
+    max-width: 560px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  }
+  #saida {
+    min-height: 160px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 18px;
+    font-size: 1.3rem;
+    line-height: 1.7;
+    color: #cbd5e1;
+    white-space: pre-wrap;
+    margin-bottom: 24px;
+    outline: none;
+    resize: vertical;
+  }
+  #saida:empty::before { content: "Nada capturado ainda..."; color: #64748b; }
+  .btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px; }
+  button {
+    padding: 14px 24px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.1s, opacity 0.2s;
+  }
+  button:active { transform: scale(0.98); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  #btnOuvir {
+    background: #3b82f6;
+    color: white;
+    min-width: 150px;
+  }
+  #btnOuvir.ouvindo {
+    background: #ef4444;
+    animation: pulsar 1.5s infinite;
+  }
+  #btnLimpar {
+    background: #475569;
+    color: white;
+    min-width: 120px;
+  }
+  @keyframes pulsar {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+    70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  }
+  #status { margin-bottom: 16px; font-size: 0.9rem; color: #94a3b8; min-height: 1.2em; }
+  #status.ativa { color: #34d399; font-weight: 600; }
+  #status.erro { color: #f87171; font-weight: 600; }
+  .aviso { font-size: 0.85rem; color: #94a3b8; border-top: 1px solid #334155; padding-top: 16px; line-height: 1.5; }
+  .dica { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; margin-top: 12px; font-size: 0.85rem; color: #94a3b8; }
+</style>
+</head>
+<body>
+
+<h1>Focus 2k — Voz</h1>
+<div class="subtitle">Protótipo: o que você falar aparece aqui embaixo.</div>
+
+<div class="card">
+  <div id="status">Pronto para ouvir.</div>
+
+  <textarea id="saida" readonly placeholder="Clique em Ouvir e fale..."></textarea>
+
+  <div class="btn-group">
+    <button id="btnOuvir">Ouvir</button>
+    <button id="btnLimpar">Limpar</button>
+  </div>
+
+  <div class="aviso">
+    <strong>IMPORTANTE:</strong> abra pelo <code>http://localhost</code>, não direto pelo arquivo.<br>
+    Rode no terminal na pasta <code>frontend</code>:<br>
+    <code>python3 -m http.server 8000</code><br>
+    Depois acesse: <code>http://localhost:8000/voz_prototipo.html</code>
+  </div>
+
+  <div class="dica">
+    Idioma: português do Brasil (pt-BR). Navegador: Chrome ou Edge. Clique em Ouvir, aceite o microfone e fale.
+  </div>
+</div>
+
+<script>
+const saida = document.getElementById('saida');
+const btnOuvir = document.getElementById('btnOuvir');
+const btnLimpar = document.getElementById('btnLimpar');
+const status = document.getElementById('status');
+
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+let recognition = null;
+let ouvindo = false;
+let transcricaoFinal = '';
+let suporte = true;
+
+function atualizarStatus(msg, tipo) {
+  status.textContent = msg;
+  status.className = tipo || '';
+}
+
+if (!SpeechRecognition) {
+  suporte = false;
+  btnOuvir.disabled = true;
+  btnOuvir.textContent = 'Navegador não suporta';
+  atualizarStatus('Use Chrome ou Edge.', 'erro');
+} else {
+  recognition = new SpeechRecognition();
+  recognition.lang = 'pt-BR';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+
+  recognition.onstart = () => {
+    ouvindo = true;
+    btnOuvir.classList.add('ouvindo');
+    btnOuvir.textContent = 'Ouvindo... (clique para parar)';
+    atualizarStatus('Microfone aberto. Fale agora.', 'ativa');
+  };
+
+  recognition.onend = () => {
+    ouvindo = false;
+    btnOuvir.classList.remove('ouvindo');
+    btnOuvir.textContent = 'Ouvir';
+    // Não muda o status para 'Parado' aqui se foi erro, o onerror cuida disso
+    if (!status.classList.contains('erro')) {
+      atualizarStatus('Parado.', '');
+    }
+  };
+
+  recognition.onresult = (event) => {
+    let interino = '';
+    let final = '';
+
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const resultado = event.results[i];
+      const texto = resultado[0].transcript;
+      if (resultado.isFinal) {
+        final += texto + ' ';
+      } else {
+        interino += texto;
+      }
+    }
+
+    if (final) {
+      transcricaoFinal += final.trim() + ' ';
+    }
+    saida.value = (transcricaoFinal.trim() + (interino ? ' ' + interino : '')).trim();
+    saida.scrollTop = saida.scrollHeight;
+  };
+
+  recognition.onerror = (event) => {
+    console.error('Erro de reconhecimento:', event.error);
+    ouvindo = false;
+    btnOuvir.classList.remove('ouvindo');
+    btnOuvir.textContent = 'Ouvir';
+
+    let msg = 'Erro: ' + event.error;
+    if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+      msg = 'Permissão do microfone negada ou bloqueada. Verifique se está em http://localhost.';
+    } else if (event.error === 'no-speech') {
+      msg = 'Nenhum fala detectada. Tente novamente.';
+    } else if (event.error === 'audio-capture') {
+      msg = 'Microfone não disponível. Verifique o hardware.';
+    } else if (event.error === 'not-allowed') {
+      msg = 'Permissão bloqueada pelo navegador.';
+    }
+    atualizarStatus(msg, 'erro');
+  };
+
+  btnOuvir.addEventListener('click', () => {
+    if (!ouvindo) {
+      transcricaoFinal = '';
+      saida.value = '';
+      atualizarStatus('Iniciando microfone...', '');
+      try {
+        recognition.start();
+      } catch (e) {
+        atualizarStatus('Não foi possível iniciar o reconhecimento.', 'erro');
+        console.error(e);
+      }
+    } else {
+      try {
+        recognition.stop();
+      } catch (e) {}
+    }
+  });
+}
+
+btnLimpar.addEventListener('click', () => {
+  saida.value = '';
+  transcricaoFinal = '';
+  atualizarStatus('Limpo. Pronto para ouvir.', '');
+  if (ouvindo && recognition) {
+    try { recognition.stop(); } catch (e) {}
+  }
+});
+</script>
+
+</body>
+</html>
