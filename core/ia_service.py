@@ -5,12 +5,15 @@
 import os
 from google import genai
 from google.genai import types
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Inicializa o cliente se a chave de API estiver presente
 API_KEY = os.environ.get("GEMINI_API_KEY")
 client = genai.Client() if API_KEY else None
 # Modelo ideal para tarefas rápidas de texto e resumos no terminal
-MODELO_GEMINI = "gemini-2.0-flash"
+MODELO_GEMINI = "gemini-3.8-flash"
 
 
 def _obter_instrucao_ia(estilo_usuario: str) -> str:
