@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="pt-BR" style=""><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>Focus 2k (TPAC) - Gestão de Estudos Inteligente</title>
+<title>Focus 2k - Gestão de Estudos Inteligente</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script>
     tailwind.config = {
@@ -99,7 +99,7 @@
 <div>
 <div class="flex items-center gap-2">
 <span class="font-bold text-base tracking-tight text-[#fffff2]">Focus <span class="text-[#9d9da6]">2k</span></span>
-<span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-[#1f1f24] text-[#fffff2] border border-[#26262b] font-semibold">TPAC</span>
+<span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-[#1f1f24] text-[#fffff2] border border-[#26262b] font-semibold">FOCO</span>
 </div>
 
 </div>
@@ -136,21 +136,21 @@
 <span class="w-1.5 h-1.5 rounded-full bg-[#fffff2]"></span>
               Todas as Tarefas
             </span>
-<span class="text-[10px] bg-[#080808] text-[#fffff2] px-1.5 py-0.5 rounded font-mono border border-[#26262b]" id="count-todas">5</span>
+<span class="text-[10px] bg-[#080808] text-[#fffff2] px-1.5 py-0.5 rounded font-mono border border-[#26262b]" id="count-todas">0</span>
 </button>
 <button class="filter-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs text-left text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] border border-transparent transition" data-filter="tarefas_educacionais" onclick="filtrarCategoria('tarefas_educacionais')">
 <span class="flex items-center gap-2">
 <span class="w-1.5 h-1.5 rounded-full bg-[#9d9da6]"></span>
-              Educacionais (TPAC)
+              Educacionais
             </span>
-<span class="text-[10px] bg-[#080808] text-[#9d9da6] px-1.5 py-0.5 rounded font-mono border border-[#26262b]" id="count-edu">3</span>
+<span class="text-[10px] bg-[#080808] text-[#9d9da6] px-1.5 py-0.5 rounded font-mono border border-[#26262b]" id="count-edu">0</span>
 </button>
 <button class="filter-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs text-left text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] border border-transparent transition" data-filter="tarefas_diarias" onclick="filtrarCategoria('tarefas_diarias')">
 <span class="flex items-center gap-2">
 <span class="w-1.5 h-1.5 rounded-full bg-[#9d9da6]"></span>
               Rotina &amp; Diárias
             </span>
-<span class="text-[10px] bg-[#080808] text-[#9d9da6] px-1.5 py-0.5 rounded font-mono border border-[#26262b]" id="count-dia">2</span>
+<span class="text-[10px] bg-[#080808] text-[#9d9da6] px-1.5 py-0.5 rounded font-mono border border-[#26262b]" id="count-dia">0</span>
 </button>
 </div>
 </div>
@@ -176,7 +176,7 @@
 <div class="flex items-center gap-2.5">
 <h1 class="text-base font-bold text-[#fffff2] tracking-tight flex items-center gap-2">
             Focus2k
-            <span class="text-[10px] px-1.5 py-0.5 rounded bg-[#1f1f24] text-[#fffff2] border border-[#26262b] font-mono font-medium">Quadro TPAC</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-[#1f1f24] text-[#fffff2] border border-[#26262b] font-mono font-medium">Quadro Principal</span>
 </h1>
 
 </div>
@@ -217,7 +217,7 @@
 <span class="text-[10px] px-2 py-0.2 rounded bg-[#080808] text-[#fffff2] font-mono border border-[#26262b]" id="badge-count-pendente">1</span>
 </div>
 <!-- BOTÃO ADICIONAR TAREFA DESTACADO (EXATAMENTE COMO REQUISITADO NA ANOTAÇÃO VERMELHA) -->
-<button class="px-2.5 py-1 bg-[#fffff2] hover:bg-white active:scale-95 text-[#080808] font-bold rounded-lg text-xs flex items-center gap-1.5 shadow transition focus-ring cursor-pointer" onclick="criarNovaTarefa()" title="Criar nova tarefa com decomposição inteligente IA">
+<button class="px-2.5 py-1 bg-[#fffff2] hover:bg-white active:scale-95 text-[#080808] font-bold rounded-lg text-xs flex items-center gap-1.5 shadow transition focus-ring cursor-pointer" onclick="abrirModalCriarTarefa()" title="Criar nova tarefa">
 <span class="material-symbols-outlined text-[16px] font-bold">add</span>
 <span class="">Adicionar Tarefa</span>
 </button>
@@ -266,7 +266,7 @@
 </div>
 <div>
 <div class="flex items-center gap-1.5">
-<h3 class="font-bold text-xs text-[#fffff2] tracking-wide">Assistente TPAC IA</h3>
+<h3 class="font-bold text-xs text-[#fffff2] tracking-wide">Assistente IA</h3>
 <span class="text-[9px] px-1 py-0.2 rounded bg-[#1f1f24] text-emerald-300 border border-[#26262b] font-mono font-semibold flex items-center gap-1">
 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
               Gemini
@@ -298,7 +298,7 @@
 </div>
 <div class="bg-[#161619] border border-[#26262b] p-3 rounded-xl rounded-tl-none text-[#fffff2] max-w-[85%] space-y-1.5">
 <p class="leading-relaxed">
-            Olá! Sou o seu <b>Assistente de Decomposição TPAC</b> baseado no modelo Gemini.
+            Olá! Sou o seu <b>Assistente de Decomposição</b> baseado no modelo Gemini.
           </p>
 <p class="text-[#9d9da6] text-[11px] leading-relaxed">
             Clique no botão <span class="px-1 py-0.2 rounded bg-[#1f1f24] text-[#fffff2] border border-[#3a3a42] font-semibold font-mono">Desestruturar com IA</span> em qualquer card do Kanban ou digite sua dúvida abaixo!
@@ -325,7 +325,7 @@
 </form>
 <div class="mt-1.5 flex items-center justify-between text-[9px] text-[#9d9da6] px-1 font-mono">
 <span class="">Enter para enviar</span>
-<span class="">TPAC Engine v2.1</span>
+<span class="">Focus Engine v2.1</span>
 </div>
 </div>
 </aside>
@@ -367,7 +367,7 @@
 <input class="w-full bg-[#080808] border border-[#26262b] rounded-lg px-3 py-2 text-xs text-[#fffff2] focus:outline-none focus:border-[#fffff2]" id="cadSenha" placeholder="Crie sua senha" type="password">
 </div>
 <div>
-<label class="block text-xs font-semibold text-[#fffff2] mb-1">Estilo de Instrução da IA (TPAC)</label>
+<label class="block text-xs font-semibold text-[#fffff2] mb-1">Estilo de Instrução da IA</label>
 <select class="w-full bg-[#080808] border border-[#26262b] rounded-lg px-3 py-2 text-xs text-[#fffff2] focus:outline-none focus:border-[#fffff2]" id="cadEstilo">
 <option value="detalhado">Detalhado (Passo a passo minucioso e contextual)</option>
 <option value="direto">Direto (Sintético, objetivo e sem rodeios)</option>
@@ -381,10 +381,94 @@
 </form>
 </div>
 </div>
+
+<!-- ================= MODAL DE CRIAR TAREFA ================= -->
+<div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden" id="modalCriarTarefa" onclick="fecharModalCriarTarefa()">
+  <div class="bg-[#111113] border border-[#28282e] rounded-2xl w-full max-w-[620px] p-6 shadow-2xl relative text-[#fffff2] space-y-5 animate-in fade-in zoom-in-95 duration-150" onclick="event.stopPropagation()">
+    <!-- Header da Janela estilo App / OS -->
+    <div class="flex items-center justify-between border-b border-[#26262b] pb-3 -mt-1">
+      <div class="flex items-center gap-2.5 font-mono text-[11px] tracking-wider text-sky-400 font-semibold">
+        <span class="w-2 h-2 rounded-full bg-[#fffff2] inline-block"></span>
+        <span class="">FOCUS 2K • GESTOR DE TAREFA</span>
+      </div>
+      <div class="flex items-center gap-3 text-[#9d9da6] text-xs font-mono select-none">
+        <button class="hover:text-[#fffff2] transition cursor-pointer p-0.5" onclick="fecharModalCriarTarefa()" title="Minimizar" type="button">—</button>
+        <button class="hover:text-[#fffff2] transition cursor-pointer p-0.5" title="Maximizar" type="button">▢</button>
+        <button class="hover:text-[#fffff2] transition cursor-pointer p-0.5 text-sm leading-none" onclick="fecharModalCriarTarefa()" title="Fechar" type="button">✕</button>
+      </div>
+    </div>
+    <!-- Título Principal -->
+    <div>
+      <h2 class="text-[22px] font-bold text-[#fffff2] tracking-tight leading-none">Criar nova tarefa</h2>
+    </div>
+    <!-- Campo 1: Nome da tarefa -->
+    <div>
+      <input class="w-full bg-[#0c0c0e] border border-[#26262b] focus:border-[#fffff2] rounded-xl px-4 py-3 text-sm text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none transition" id="inputNomeTarefaModal" placeholder="Nome da tarefa" type="text">
+    </div>
+    <!-- Linha Dupla: Data & Status -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+      <!-- Coluna Data -->
+      <div>
+        <label class="block text-xs font-bold text-[#fffff2] mb-1.5 font-mono">Data</label>
+        <div class="relative flex items-center">
+          <input class="w-full bg-[#0c0c0e] border border-[#26262b] focus:border-[#fffff2] rounded-xl px-3.5 py-2.5 text-xs font-mono text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none transition pr-10" id="inputDataModal" type="text" value="21/10/2026">
+          <span class="material-symbols-outlined text-[#9d9da6] text-[18px] absolute right-3 pointer-events-none">calendar_today</span>
+        </div>
+      </div>
+      <!-- Coluna Status com seletores circulares -->
+      <div>
+        <label class="block text-xs font-bold text-[#fffff2] mb-1.5 font-mono">Status</label>
+        <div class="flex items-center gap-4 pt-1">
+          <!-- A Fazer -->
+          <label class="flex flex-col items-center gap-1.5 cursor-pointer group" onclick="selecionarStatusModal('pendente')">
+            <div id="statusDotPendente" class="w-6 h-6 rounded-full border-2 border-emerald-400 flex items-center justify-center transition group-hover:scale-105">
+              <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
+            </div>
+            <span class="text-[11px] font-bold text-[#fffff2]">A Fazer</span>
+          </label>
+          <!-- Em Progresso -->
+          <label class="flex flex-col items-center gap-1.5 cursor-pointer group" onclick="selecionarStatusModal('em_andamento')">
+            <div id="statusDotEmAndamento" class="w-6 h-6 rounded-full border border-[#3a3a42] flex items-center justify-center transition group-hover:border-[#fffff2]">
+            </div>
+            <span class="text-[11px] font-medium text-[#9d9da6] group-hover:text-[#fffff2]">Em Progresso</span>
+          </label>
+          <!-- Concluído -->
+          <label class="flex flex-col items-center gap-1.5 cursor-pointer group" onclick="selecionarStatusModal('concluido')">
+            <div id="statusDotConcluido" class="w-6 h-6 rounded-full border border-[#3a3a42] flex items-center justify-center transition group-hover:border-[#fffff2]">
+            </div>
+            <span class="text-[11px] font-medium text-[#9d9da6] group-hover:text-[#fffff2]">Concluído</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <!-- Campo Descrição -->
+    <div>
+      <textarea class="w-full bg-[#0c0c0e] border border-[#26262b] focus:border-[#fffff2] rounded-xl p-3.5 text-xs text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none transition resize-none custom-scroll" id="inputDescricaoModal" placeholder="Descreva sua tarefa" rows="4"></textarea>
+    </div>
+    <!-- Linha Tipo de Estudo (Segmented Control) -->
+    <div class="flex items-center justify-between pt-1">
+      <span class="text-xs font-mono text-[#9d9da6]">Tipo de Estudo:</span>
+      <div class="inline-flex items-center p-1 rounded-xl bg-[#0c0c0e] border border-[#26262b] gap-1">
+        <button class="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#fffff2] text-[#080808] shadow-sm transition" id="btnTipoEdu" onclick="selecionarTipoEstudo('educacional')" type="button">Educacional</button>
+        <button class="px-3 py-1.5 rounded-lg text-xs font-medium text-[#9d9da6] hover:text-[#fffff2] transition" id="btnTipoRotina" onclick="selecionarTipoEstudo('rotina')" type="button">Rotina Diária</button>
+      </div>
+    </div>
+    <!-- Rodapé: Cancelar e + Criar Tarefa -->
+    <div class="flex items-center justify-end gap-3 pt-3 border-t border-[#26262b]">
+      <button class="px-5 py-2.5 rounded-xl border border-[#26262b] hover:border-[#3a3a42] hover:bg-[#161619] text-[#fffff2] font-semibold text-xs transition cursor-pointer active:scale-95" onclick="fecharModalCriarTarefa()" type="button">
+        Cancelar
+      </button>
+      <button class="px-5 py-2.5 rounded-xl bg-[#fffff2] hover:bg-white text-[#080808] font-bold text-xs flex items-center gap-1.5 transition shadow active:scale-95 cursor-pointer" onclick="confirmarCriarTarefaModal()" type="button">
+        <span class="material-symbols-outlined text-[16px] font-bold">add</span>
+        <span class="">Criar Tarefa</span>
+      </button>
+    </div>
+  </div>
+</div>
 <!-- ================= SCRIPTS JAVASCRIPT ================= -->
 <script>
     /**
-     * FOCUS 2K (TPAC) - FRONT-END LOGIC & AI DECOMPOSITION MODULE
+     * FOCUS 2K - FRONT-END LOGIC & AI DECOMPOSITION MODULE
      * Paleta Minimalista de Alto Contraste (#080808 & #fffff2)
      */
 
@@ -484,6 +568,18 @@
               }
             } catch (e) {}
 
+            let dbStatus = (t.status || '').toLowerCase().trim();
+            let statusMapeado = 'pendente';
+            if (dbStatus === 'em_andamento' || dbStatus === 'andamento' || dbStatus === 'fazendo') {
+              statusMapeado = 'em_andamento';
+            } else if (dbStatus === 'concluido' || dbStatus === 'concluida' || t.concluida) {
+              statusMapeado = 'concluido';
+            } else if (dbStatus === 'pendente' || dbStatus === 'a_fazer') {
+              statusMapeado = 'pendente';
+            } else {
+              statusMapeado = (subtarefas.length > 0 && subtarefas.every(s => s.feita)) ? 'concluido' : ((subtarefas.some(s => s.feita)) ? 'em_andamento' : 'pendente');
+            }
+
             return {
               id: "task_" + t.id,
               realId: t.id,
@@ -491,7 +587,7 @@
               descricao: t.descricao || '',
               prioridade: t.prioridade || 'media',
               categoria: t.tipo || 'tarefas_educacionais',
-              status: t.status || (subtarefas.length > 0 && subtarefas.every(s => s.feita) ? 'concluido' : (subtarefas.some(s => s.feita) ? 'em_andamento' : 'pendente')),
+              status: statusMapeado,
               subtarefas: subtarefas
             };
           }));
@@ -583,7 +679,7 @@
           { texto: "Formular esquemático com convenção de sinais", tempo: "15 min", prioridade: "alta", marcado: true },
           { texto: "Montar equações das malhas independentes", tempo: "25 min", prioridade: "alta", marcado: true },
           { texto: "Verificar balanço de potência e conferir gabarito", tempo: "20 min", prioridade: "media", marcado: true },
-          { texto: "Resumir erros típicos no caderno de erros TPAC", tempo: "10 min", prioridade: "baixa", marcado: true }
+          { texto: "Resumir erros típicos no caderno de estudos", tempo: "10 min", prioridade: "baixa", marcado: true }
         ];
       } else if (t.includes('algoritmo') || t.includes('dijkstra') || t.includes('python')) {
         return [
@@ -636,7 +732,7 @@
                 <span class="w-1.5 h-1.5 rounded-full bg-[#fffff2]"></span>
                 <h4 class="font-bold text-xs text-[#fffff2]">Subtarefas Propostas</h4>
               </div>
-              <span class="text-[9px] font-mono px-1 py-0.2 rounded bg-[#1f1f24] text-[#fffff2] border border-[#26262b]">TPAC</span>
+              <span class="text-[9px] font-mono px-1 py-0.2 rounded bg-[#1f1f24] text-[#fffff2] border border-[#26262b]">IA</span>
             </div>
 
             <p class="text-[11px] text-[#9d9da6] leading-relaxed">
@@ -720,7 +816,7 @@
       const typingIndicator = document.getElementById('chatTypingIndicator');
       const typingText = document.getElementById('chatTypingText');
       typingIndicator.classList.remove('hidden');
-      typingText.textContent = 'Processando diretriz TPAC via Gemini core...';
+      typingText.textContent = 'Processando diretriz via Gemini core...';
       rolarChatParaFinal();
 
       setTimeout(() => {
@@ -739,7 +835,7 @@
       } else if (t.includes('prova') || t.includes('exame') || t.includes('estudo')) {
         resposta = `Para provas densas, aplique <b>Interleaving</b> (estudo intercalado) com resolução ativa de exercícios passados antes de reler anotações passivas. Use o botão 'Desestruturar com IA' em um card para ver o plano!`;
       } else {
-        resposta = `Compreendido: <i>"${texto}"</i>. Com base na metodologia TPAC, sugiro quebrar essa meta em três frentes: fundamentação conceitual, exercício prático e verificação metacognitiva.`;
+        resposta = `Compreendido: <i>"${texto}"</i>. Com base na metodologia de foco, sugiro quebrar essa meta em três frentes: fundamentação conceitual, exercício prático e verificação metacognitiva.`;
       }
 
       adicionarMensagemIA(resposta);
@@ -921,7 +1017,7 @@
           <div class="flex items-center gap-2.5">
             <div class="w-4 h-4 border-2 border-[#fffff2] border-t-transparent rounded-full animate-spin"></div>
             <div>
-              <span class="text-[10px] font-bold text-[#fffff2] uppercase tracking-wider font-mono">Gemini TPAC Engine</span>
+              <span class="text-[10px] font-bold text-[#fffff2] uppercase tracking-wider font-mono">Gemini Focus Engine</span>
               <p class="text-xs text-[#fffff2] font-medium">Decompondo passos pedagógicos...</p>
             </div>
           </div>
@@ -1001,7 +1097,7 @@
 
       const isEdu = t.categoria === 'tarefas_educacionais';
       const catBadge = isEdu 
-        ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-[#080808] text-[#fffff2] border border-[#26262b] font-mono">TPAC Edu</span>'
+        ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-[#080808] text-[#fffff2] border border-[#26262b] font-mono">Edu</span>'
         : '<span class="text-[9px] px-1.5 py-0.5 rounded bg-[#080808] text-[#9d9da6] border border-[#26262b] font-mono">Rotina</span>';
 
       let subtarefasHTML = '';
@@ -1246,13 +1342,155 @@
       }, 3000);
     }
 
+    let modalStatusSelecionado = 'pendente';
+    let modalTipoEstudoSelecionado = 'tarefas_educacionais';
+
+    function abrirModalCriarTarefa() {
+      console.log("Abrindo modal criar tarefa...");
+      const modal = document.getElementById('modalCriarTarefa');
+      if (modal) {
+        const inputNome = document.getElementById('inputNomeTarefaModal');
+        const inputDesc = document.getElementById('inputDescricaoModal');
+        const inputData = document.getElementById('inputDataModal');
+
+        if (inputNome) inputNome.value = '';
+        if (inputDesc) inputDesc.value = '';
+
+        const hoje = new Date();
+        const dia = String(hoje.getDate()).padStart(2, '0');
+        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+        const ano = hoje.getFullYear();
+        if (inputData) inputData.value = `${dia}/${mes}/${ano}`;
+
+        selecionarStatusModal('pendente');
+        selecionarTipoEstudo('educacional');
+
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+      } else {
+        console.error("Modal #modalCriarTarefa não encontrado no DOM!");
+      }
+    }
+
+    function fecharModalCriarTarefa() {
+      const modal = document.getElementById('modalCriarTarefa');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+    }
+
+    function selecionarStatusModal(status) {
+      modalStatusSelecionado = status;
+      const indPend = document.getElementById('statusDotPendente');
+      const indAnd = document.getElementById('statusDotEmAndamento');
+      const indConc = document.getElementById('statusDotConcluido');
+
+      [indPend, indAnd, indConc].forEach(el => {
+        if (el) {
+          el.className = "w-6 h-6 rounded-full border border-[#3a3a42] flex items-center justify-center transition group-hover:border-[#fffff2]";
+          el.innerHTML = '';
+        }
+      });
+
+      if (status === 'pendente' && indPend) {
+        indPend.className = "w-6 h-6 rounded-full border-2 border-emerald-400 flex items-center justify-center transition group-hover:scale-105";
+        indPend.innerHTML = '<div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>';
+      } else if (status === 'em_andamento' && indAnd) {
+        indAnd.className = "w-6 h-6 rounded-full border-2 border-sky-400 flex items-center justify-center transition group-hover:scale-105";
+        indAnd.innerHTML = '<div class="w-2.5 h-2.5 rounded-full bg-sky-400"></div>';
+      } else if (status === 'concluido' && indConc) {
+        indConc.className = "w-6 h-6 rounded-full border-2 border-emerald-400 flex items-center justify-center transition group-hover:scale-105";
+        indConc.innerHTML = '<div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>';
+      }
+    }
+
+    function selecionarTipoEstudo(tipo) {
+      const btnEdu = document.getElementById('btnTipoEdu');
+      const btnRotina = document.getElementById('btnTipoRotina');
+
+      if (tipo === 'educacional') {
+        modalTipoEstudoSelecionado = 'tarefas_educacionais';
+        if (btnEdu) {
+          btnEdu.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-[#fffff2] text-[#080808] shadow-sm transition";
+        }
+        if (btnRotina) {
+          btnRotina.className = "px-3 py-1.5 rounded-lg text-xs font-medium text-[#9d9da6] hover:text-[#fffff2] transition";
+        }
+      } else {
+        modalTipoEstudoSelecionado = 'tarefas_diarias';
+        if (btnRotina) {
+          btnRotina.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-[#fffff2] text-[#080808] shadow-sm transition";
+        }
+        if (btnEdu) {
+          btnEdu.className = "px-3 py-1.5 rounded-lg text-xs font-medium text-[#9d9da6] hover:text-[#fffff2] transition";
+        }
+      }
+    }
+
+    async function confirmarCriarTarefaModal() {
+      const titulo = document.getElementById('inputNomeTarefaModal').value.trim();
+      const descricao = document.getElementById('inputDescricaoModal').value.trim();
+      const dataStr = document.getElementById('inputDataModal').value.trim();
+
+      if (!titulo || titulo.length < 3) {
+        mostrarToastFeedback('O título da tarefa deve ter pelo menos 3 caracteres.');
+        return;
+      }
+
+      let prazoISO = null;
+      if (dataStr) {
+        const partes = dataStr.split('/');
+        if (partes.length === 3) {
+          prazoISO = `${partes[2]}-${partes[1]}-${partes[0]}`;
+        }
+      }
+
+      try {
+        const res = await apiFetch(`${API_URL}/tarefas`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            tipo: modalTipoEstudoSelecionado,
+            titulo: titulo,
+            descricao: descricao || null,
+            prioridade: 'media',
+            prazo: prazoISO
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          const novaTarefaCriada = data.dados || data;
+          const novaId = novaTarefaCriada.id;
+
+          if (modalStatusSelecionado !== 'pendente' && novaId) {
+            await apiFetch(`${API_URL}/tarefas/${novaId}/status`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status: modalStatusSelecionado })
+            });
+          }
+
+          fecharModalCriarTarefa();
+          await carregarTarefasDaAPI();
+          mostrarToastFeedback('✨ Tarefa criada com sucesso!');
+        } else {
+          mostrarToastFeedback(`Erro: ${data.detail || 'Não foi possível criar a tarefa'}`);
+        }
+      } catch (err) {
+        console.error("Erro ao criar tarefa:", err);
+        mostrarToastFeedback('Erro de conexão ao criar tarefa.');
+      }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       verificarSessaoECarregar();
     });
   </script>
 
 
-<div class="fixed bottom-6 right-6 z-50"><button id="fabToggleChat" onclick="alternarDrawerChat()" class="px-4 py-2.5 bg-[#161619] hover:bg-[#1f1f24] active:scale-95 text-[#fffff2] rounded-full border border-[#3a3a42] hover:border-[#fffff2] shadow-2xl flex items-center gap-2.5 transition duration-150 focus-ring cursor-pointer group"><span class="w-2 h-2 rounded-full bg-emerald-400 group-hover:scale-125 transition-transform"></span><span class="material-symbols-outlined text-[18px] text-[#fffff2]">smart_toy</span><span class="text-xs font-semibold tracking-wide">Assistente IA</span><span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#080808] text-[#9d9da6] group-hover:text-[#fffff2] border border-[#26262b]">TPAC</span></button></div>
+<div class="fixed bottom-6 right-6 z-50"><button id="fabToggleChat" onclick="alternarDrawerChat()" class="px-4 py-2.5 bg-[#161619] hover:bg-[#1f1f24] active:scale-95 text-[#fffff2] rounded-full border border-[#3a3a42] hover:border-[#fffff2] shadow-2xl flex items-center gap-2.5 transition duration-150 focus-ring cursor-pointer group"><span class="w-2 h-2 rounded-full bg-emerald-400 group-hover:scale-125 transition-transform"></span><span class="material-symbols-outlined text-[18px] text-[#fffff2]">smart_toy</span><span class="text-xs font-semibold tracking-wide">Assistente IA</span><span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#080808] text-[#9d9da6] group-hover:text-[#fffff2] border border-[#26262b]">FOCO</span></button></div>
 
 <!-- Elementos de suporte de sessão ocultos para evitar null reference -->
 <div id="userStatusBadge" class="hidden"></div>
