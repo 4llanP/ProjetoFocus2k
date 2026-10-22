@@ -1420,9 +1420,18 @@
 
       let prazoISO = null;
       if (dataStr) {
-        const partes = dataStr.split('/');
+        let partes = [];
+        if (dataStr.includes('/')) {
+          partes = dataStr.split('/');
+        } else if (dataStr.includes('-')) {
+          partes = dataStr.split('-');
+        }
         if (partes.length === 3) {
-          prazoISO = `${partes[2]}-${partes[1]}-${partes[0]}`;
+          if (partes[0].length === 4) {
+            prazoISO = `${partes[0]}-${partes[1]}-${partes[2]}`;
+          } else {
+            prazoISO = `${partes[2]}-${partes[1]}-${partes[0]}`;
+          }
         }
       }
 
@@ -1437,6 +1446,7 @@
         const mes = String(agora.getMonth() + 1).padStart(2, '0');
         const dia = String(agora.getDate()).padStart(2, '0');
         const hojeStr = `${ano}-${mes}-${dia}`;
+        console.log("Verificando prazo:", { prazoISO, hojeStr, modalPrioridadeSelecionada });
         if (prazoISO < hojeStr) {
           statusAutomatico = 'em_andamento';
           prioridadeFinal = 'alta';
