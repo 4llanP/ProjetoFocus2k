@@ -668,7 +668,9 @@
       }
 
       if (etapas.length === 0) {
-        etapas = gerarPassosDecompostos(tarefa);
+        etapas = [
+          { texto: "Não foi possível gerar os passos pela IA. Verifique a configuração da chave de API no servidor.", tempo: "0 min", prioridade: "alta", marcado: false }
+        ];
       }
 
       if (typingIndicator) typingIndicator.classList.add('hidden');
@@ -676,32 +678,6 @@
       renderizarPropostaDecomposicaoIA(proposalId, tarefa, etapas);
       rolarChatParaFinal();
       mostrarToastFeedback("Decomposição gerada! Clique em 'Injetar Subtarefas'.");
-    }
-
-    function gerarPassosDecompostos(tarefa) {
-      const t = tarefa.titulo.toLowerCase();
-      if (t.includes('circuito') || t.includes('física') || t.includes('matemática')) {
-        return [
-          { texto: "Formular esquemático com convenção de sinais", tempo: "15 min", prioridade: "alta", marcado: true },
-          { texto: "Montar equações das malhas independentes", tempo: "25 min", prioridade: "alta", marcado: true },
-          { texto: "Verificar balanço de potência e conferir gabarito", tempo: "20 min", prioridade: "media", marcado: true },
-          { texto: "Resumir erros típicos no caderno de estudos", tempo: "10 min", prioridade: "baixa", marcado: true }
-        ];
-      } else if (t.includes('algoritmo') || t.includes('dijkstra') || t.includes('python')) {
-        return [
-          { texto: "Estruturar grafo ponderado como dicionário de adjacências", tempo: "20 min", prioridade: "alta", marcado: true },
-          { texto: "Implementar fila de prioridade com módulo heapq", tempo: "30 min", prioridade: "alta", marcado: true },
-          { texto: "Validar casos de borda com ciclos e vértices desconexos", tempo: "25 min", prioridade: "media", marcado: true },
-          { texto: "Documentar invariant de laço e complexidade teórica", tempo: "15 min", prioridade: "baixa", marcado: true }
-        ];
-      } else {
-        return [
-          { texto: `Fase 1: Leitura analítica e fichamento de "${tarefa.titulo.slice(0, 25)}"`, tempo: "20 min", prioridade: "alta", marcado: true },
-          { texto: "Fase 2: Elaboração de esquema visual / mapa conceitual", tempo: "30 min", prioridade: "alta", marcado: true },
-          { texto: "Fase 3: Exercício prático de validação pedagógica", tempo: "25 min", prioridade: "media", marcado: true },
-          { texto: "Fase 4: Check de consolidação e revisão rápida de 5 min", tempo: "10 min", prioridade: "baixa", marcado: true }
-        ];
-      }
     }
 
     function renderizarPropostaDecomposicaoIA(proposalId, tarefa, etapas) {
