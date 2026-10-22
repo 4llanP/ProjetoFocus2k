@@ -405,12 +405,24 @@
     <div>
       <input class="w-full bg-[#0c0c0e] border border-[#26262b] focus:border-[#fffff2] rounded-xl px-4 py-3 text-sm text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none transition" id="inputNomeTarefaModal" placeholder="Nome da tarefa" type="text">
     </div>
-    <!-- Campo Data / Prazo -->
-    <div>
-      <label class="block text-xs font-bold text-[#fffff2] mb-1.5 font-mono">Data / Prazo</label>
-      <div class="relative flex items-center">
-        <input class="w-full bg-[#0c0c0e] border border-[#26262b] focus:border-[#fffff2] rounded-xl px-3.5 py-2.5 text-xs font-mono text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none transition pr-10" id="inputDataModal" type="text" placeholder="DD/MM/AAAA">
-        <span class="material-symbols-outlined text-[#9d9da6] text-[18px] absolute right-3 pointer-events-none">calendar_today</span>
+    <!-- Linha Dupla: Data & Prioridade -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+      <!-- Coluna Data -->
+      <div>
+        <label class="block text-xs font-bold text-[#fffff2] mb-1.5 font-mono">Data / Prazo</label>
+        <div class="relative flex items-center">
+          <input class="w-full bg-[#0c0c0e] border border-[#26262b] focus:border-[#fffff2] rounded-xl px-3.5 py-2.5 text-xs font-mono text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none transition pr-10" id="inputDataModal" type="text" placeholder="DD/MM/AAAA">
+          <span class="material-symbols-outlined text-[#9d9da6] text-[18px] absolute right-3 pointer-events-none">calendar_today</span>
+        </div>
+      </div>
+      <!-- Coluna Prioridade -->
+      <div>
+        <label class="block text-xs font-bold text-[#fffff2] mb-1.5 font-mono">Prioridade</label>
+        <div class="inline-flex w-full items-center p-1 rounded-xl bg-[#0c0c0e] border border-[#26262b] gap-1">
+          <button type="button" id="btnPrioridadeBaixa" onclick="selecionarPrioridadeModal('baixa')" class="flex-1 py-2 rounded-lg text-xs font-medium text-[#9d9da6] hover:text-[#fffff2] transition">Baixa</button>
+          <button type="button" id="btnPrioridadeMedia" onclick="selecionarPrioridadeModal('media')" class="flex-1 py-2 rounded-lg text-xs font-bold bg-[#fffff2] text-[#080808] shadow-sm transition">Média</button>
+          <button type="button" id="btnPrioridadeAlta" onclick="selecionarPrioridadeModal('alta')" class="flex-1 py-2 rounded-lg text-xs font-medium text-[#9d9da6] hover:text-[#fffff2] transition">Alta</button>
+        </div>
       </div>
     </div>
     <!-- Campo Descrição -->
@@ -1315,6 +1327,28 @@
     }
 
     let modalTipoEstudoSelecionado = 'tarefas_educacionais';
+    let modalPrioridadeSelecionada = 'media';
+
+    function selecionarPrioridadeModal(prioridade) {
+      modalPrioridadeSelecionada = prioridade;
+      const btnBaixa = document.getElementById('btnPrioridadeBaixa');
+      const btnMedia = document.getElementById('btnPrioridadeMedia');
+      const btnAlta = document.getElementById('btnPrioridadeAlta');
+
+      [btnBaixa, btnMedia, btnAlta].forEach(btn => {
+        if (btn) {
+          btn.className = "flex-1 py-2 rounded-lg text-xs font-medium text-[#9d9da6] hover:text-[#fffff2] transition";
+        }
+      });
+
+      if (prioridade === 'baixa' && btnBaixa) {
+        btnBaixa.className = "flex-1 py-2 rounded-lg text-xs font-bold bg-[#fffff2] text-[#080808] shadow-sm transition";
+      } else if (prioridade === 'media' && btnMedia) {
+        btnMedia.className = "flex-1 py-2 rounded-lg text-xs font-bold bg-[#fffff2] text-[#080808] shadow-sm transition";
+      } else if (prioridade === 'alta' && btnAlta) {
+        btnAlta.className = "flex-1 py-2 rounded-lg text-xs font-bold bg-[#fffff2] text-[#080808] shadow-sm transition";
+      }
+    }
 
     function abrirModalCriarTarefa() {
       console.log("Abrindo modal criar tarefa...");
@@ -1334,6 +1368,7 @@
         if (inputData) inputData.value = `${dia}/${mes}/${ano}`;
 
         selecionarTipoEstudo('educacional');
+        selecionarPrioridadeModal('media');
 
         modal.classList.remove('hidden');
         modal.style.display = 'flex';
@@ -1413,7 +1448,7 @@
             tipo: modalTipoEstudoSelecionado,
             titulo: titulo,
             descricao: descricao || null,
-            prioridade: 'media',
+            prioridade: modalPrioridadeSelecionada,
             prazo: prazoISO
           })
         });
