@@ -4,7 +4,8 @@ from typing import List
 from config.database import SessionLocal
 from controllers.tarefa_controller import TarefaController
 from core.auth import verificar_token
-from core.ia_service import gerar_passos_tarefa
+from core.ia_service import gerar_passos_tarefa, obter_resposta_ia
+from pydantic import BaseModel
 from models.tarefa_schema import NovaTarefa, NovoPasso, AtualizarPasso, PassoResposta, AtualizarStatusTarefa
 from models.passo import Passo
 import models.usuario
@@ -214,3 +215,51 @@ def atualizar_status_tarefa(tarefa_id: int, dados: AtualizarStatusTarefa, usuari
 
         repo.salvar(tarefa)
         return {"mensagem": "Status atualizado com sucesso.", "dados": tarefa.to_dict()}
+
+
+class MensagemChat(BaseModel):
+    pergunta: str
+
+
+@router.post("/{tarefa_id}/chat")
+def chat_tarefa_ia(tarefa_id: int, dados: MensagemChat, usuario_logado: dict = Depends(verificar_token)):
+    with SessionLocal() as db:
+        tarefa_repo = TarefaRepository(db)
+        tarefa = tarefa_repo.buscar_por_id(tarefa_id)
+
+        if not tarefa:
+            raise HTTPException(status_code=404, detail="Tarefa não encontrada.")
+        if tarefa.usuario_id != int(usuario_logado['sub']):
+            raise HTTPException(status_code=403, detail="Acesso negado.")
+
+        contexto = f"Título: {tarefa.titulo} | Descrição: {tarefa.descricao or 'N/A'} | Prioridade: {tarefa.prioridade} | Status: {tarefa.status}"
+
+        estilo = "direto"
+        try:
+            from repositories.usuario_repository import UsuarioRepository
+            user_repo = UsuarioRepository(db)
+            user = user_repo.buscar_por_id(tarefa.usuario_id)
+            if user and hasattr(user, 'estilo_instrucao'):
+                estilo = user.estilo_instrucao
+        except Exception:
+            pass
+
+        respostas = obter_resposta_ia(dados.pergunta, estilo, contexto)
+        return {"resposta": "<br>".join(respostas)}
+
+
+@router.post("/chat/geral")
+def chat_geral_ia(dados: MensagemChat, usuario_logado: dict = Depends(verificar_token)):
+    estilo = "direto"
+    try:
+        with SessionLocal() as db:
+            from repositories.usuario_repository import UsuarioRepository
+            user_repo = UsuarioRepository(db)
+            user = user_repo.buscar_por_id(int(usuario_logado['sub']))
+            if user and hasattr(user, 'estilo_instrucao'):
+                estilo = user.estilo_instrucao
+    except Exception:
+        pass
+
+    respostas = obter_resposta_ia(dados.pergunta, estilo)
+    return {"resposta": "<br>".join(respostas)}

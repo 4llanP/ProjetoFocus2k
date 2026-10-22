@@ -811,7 +811,7 @@
       mostrarToastFeedback(`🎉 ${injetadasCount} subtarefas injetadas em "${tarefa.titulo.slice(0, 18)}..."`);
     }
 
-    function enviarMensagemChat() {
+    async function enviarMensagemChat() {
       const input = document.getElementById('chatInputText');
       const texto = (input.value || '').trim();
       if (!texto) return;
@@ -825,11 +825,33 @@
       typingText.textContent = 'Processando diretriz...';
       rolarChatParaFinal();
 
-      setTimeout(() => {
-        typingIndicator.classList.add('hidden');
+      try {
+        let endpoint = `${API_URL}/tarefas/chat/geral`;
+        let payload = { pergunta: texto };
+
+        if (cardSendoDesestruturado && cardSendoDesestruturado.realId) {
+          endpoint = `${API_URL}/tarefas/${cardSendoDesestruturado.realId}/chat`;
+        }
+
+        const res = await apiFetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (typingIndicator) typingIndicator.classList.add('hidden');
+
+        if (res.ok && data.resposta) {
+          adicionarMensagemIA(data.resposta);
+        } else {
+          responderMensagemLivre(texto);
+        }
+      } catch (err) {
+        if (typingIndicator) typingIndicator.classList.add('hidden');
         responderMensagemLivre(texto);
-        rolarChatParaFinal();
-      }, 1100);
+      }
+      rolarChatParaFinal();
     }
 
     function responderMensagemLivre(texto) {
@@ -878,6 +900,7 @@
     }
 
     function limparHistoricoChat() {
+      cardSendoDesestruturado = null;
       const container = document.getElementById('chatMessagesContainer');
       container.innerHTML = `
         <div class="flex items-start gap-2.5">

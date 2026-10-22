@@ -33,28 +33,33 @@ def _obter_instrucao_ia(estilo_usuario: str) -> str:
     return base_prompt
 
 
-def obter_resposta_ia(pergunta: str, estilo_usuario: str) -> list:
+def obter_resposta_ia(pergunta: str, estilo_usuario: str, contexto_tarefa: str = "") -> list:
     """Conecta ao serviço de IA para responder dúvidas gerais de estudos ou organização."""
     if not client:
         return [
-            "Erro: Variável de ambiente GEMINI_API_KEY não configurada.",
+            "Erro: Chave de API não configurada.",
             "Por favor, configure sua chave de API.",
         ]
     system_instruction = _obter_instrucao_ia(estilo_usuario)
+
+    contents = pergunta
+    if contexto_tarefa:
+        contents = f"[Contexto da Tarefa Ativa: {contexto_tarefa}]\n\nPergunta do usuário: {pergunta}"
+
     try:
         response = client.models.generate_content(
             model=MODELO_GEMINI,
-            contents=pergunta,
+            contents=contents,
             config=types.GenerateContentConfig(
                 system_instruction=system_instruction,
-                temperature=0.3,  # Baixa temperatura para manter a resposta factual e focada
+                temperature=0.3,
             ),
         )
 
         # Divide a resposta por linhas para bater com a estrutura de exibição da UI do terminal
         return [linha.strip() for linha in response.text.split("\n") if linha.strip()]
     except (ConnectionError, TimeoutError) as e:
-        return [f"Erro ao nos comunicarmos com a IA: {str(e)}"]
+        return [f"Não foi possível nos comunicarmos com a IA: {str(e)}"]
 
 
 def gerar_passos_tarefa(titulo_tarefa: str, descricao_tarefa: str = "") -> list:
