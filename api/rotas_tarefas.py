@@ -221,6 +221,17 @@ class MensagemChat(BaseModel):
     pergunta: str
 
 
+class DecomporRequest(BaseModel):
+    titulo: str
+    descricao: Optional[str] = None
+
+
+@router.post("/ia/decompor")
+def decompor_geral_ia(dados: DecomporRequest, usuario_logado: dict = Depends(verificar_token)):
+    textos_passos = gerar_passos_tarefa(dados.titulo, dados.descricao or "")
+    return {"passos": textos_passos}
+
+
 @router.post("/{tarefa_id}/chat")
 def chat_tarefa_ia(tarefa_id: int, dados: MensagemChat, usuario_logado: dict = Depends(verificar_token)):
     with SessionLocal() as db:

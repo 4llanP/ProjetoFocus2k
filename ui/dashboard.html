@@ -648,20 +648,22 @@
 
       let etapas = [];
       try {
-        if (tarefa.realId) {
-          const res = await apiFetch(`${API_URL}/tarefas/${tarefa.realId}/decompor`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-          });
-          const data = await res.json();
-          if (res.ok && data.passos) {
-            etapas = data.passos.map((texto, idx) => ({
-              texto: texto,
-              tempo: `${(idx + 1) * 10} min`,
-              prioridade: idx === 0 ? 'alta' : 'media',
-              marcado: true
-            }));
-          }
+        const res = await apiFetch(`${API_URL}/tarefas/ia/decompor`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            titulo: tarefa.titulo,
+            descricao: tarefa.descricao || ""
+          })
+        });
+        const data = await res.json();
+        if (res.ok && data.passos) {
+          etapas = data.passos.map((texto, idx) => ({
+            texto: texto,
+            tempo: `${(idx + 1) * 10} min`,
+            prioridade: idx === 0 ? 'alta' : 'media',
+            marcado: true
+          }));
         }
       } catch (e) {
         console.error("Erro ao chamar API de decomposição:", e);
