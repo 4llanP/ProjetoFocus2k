@@ -1024,11 +1024,7 @@
           prioridade: "alta",
           categoria: "tarefas_educacionais",
           status: "pendente",
-          subtarefas: [
-            { id: novaId + "_s1", texto: "Compreender teorema da subestrutura ótima", feita: false },
-            { id: novaId + "_s2", texto: "Construir árvore de Huffman manualmente para um texto exemplo", feita: false },
-            { id: novaId + "_s3", texto: "Implementar fila de prioridade para a geração de prefixos", feita: false }
-          ]
+          subtarefas: []
         };
 
         tarefasDB.unshift(novaTarefa);
@@ -1102,9 +1098,9 @@
       });
 
       return `
-        <div 
+        <div
           id="${t.id}"
-          draggable="true" 
+          draggable="true"
           ondragstart="iniciarArrasto(event, '${t.id}')"
           class="group rounded-xl bg-[#161619] border border-[#26262b] hover:border-[#3a3a42] p-3.5 cursor-grab active:cursor-grabbing transition duration-150"
         >
@@ -1114,9 +1110,11 @@
               ${prioridadeBadge}
               ${catBadge}
             </div>
+            ${totalSubs > 0 ? `
             <div id="progresso-${t.id}" class="text-[10px] font-mono px-2 py-0.2 rounded ${todasFeitas ? 'bg-[#fffff2] text-[#080808] font-bold' : 'bg-[#080808] text-[#fffff2]'} border border-[#26262b]">
               ${subsFeitas}/${totalSubs}
             </div>
+            ` : ''}
           </div>
 
           <!-- Título da Tarefa -->
@@ -1131,8 +1129,8 @@
 
           <!-- BOTÃO EXCLUSIVO: Desestruturar com IA -->
           <div class="mb-2.5">
-            <button 
-              onclick="desestruturarTarefaComIA('${t.id}')" 
+            <button
+              onclick="desestruturarTarefaComIA('${t.id}')"
               class="w-full py-1.5 px-2.5 rounded-lg bg-[#1f1f24] hover:bg-[#26262b] hover:border-[#fffff2] text-[#fffff2] border border-[#3a3a42] text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 group/btn"
               title="Decompor objetivo com inteligência artificial Gemini"
             >
@@ -1142,9 +1140,10 @@
             </button>
           </div>
 
+          ${totalSubs > 0 ? `
           <!-- Botão gatilho para Accordion de Passos Inteligentes -->
-          <div 
-            onclick="alternarAccordion('${t.id}')" 
+          <div
+            onclick="alternarAccordion('${t.id}')"
             class="flex items-center justify-between pt-2 border-t border-[#26262b] text-xs text-[#9d9da6] hover:text-[#fffff2] cursor-pointer"
           >
             <span class="flex items-center gap-1.5 font-medium text-[11px]">
@@ -1169,6 +1168,7 @@
               </ul>
             </div>
           </div>
+          ` : ''}
 
           <!-- Rodapé de Ações de Coluna Rápida -->
           <div class="mt-2.5 pt-2 border-t border-[#26262b] flex items-center justify-end gap-1.5 text-[9px] font-mono">

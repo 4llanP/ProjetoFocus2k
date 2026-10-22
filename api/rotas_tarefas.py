@@ -56,18 +56,6 @@ def listar_passos_tarefa(tarefa_id: int, usuario_logado: dict = Depends(verifica
         passo_repo = PassoRepository(db)
         passos = passo_repo.listar_por_tarefa(tarefa_id)
 
-        # Se não houver passos salvos, tenta gerar via IA opcionalmente ou retorna vazio
-        if not passos:
-            try:
-                textos_ia = gerar_passos_tarefa(tarefa.titulo)
-                # Salva os passos gerados pela IA automaticamente
-                for i, texto in enumerate(textos_ia, 1):
-                    novo_p = Passo(tarefa_id=tarefa_id, texto=texto, ordem=i, concluido=False)
-                    passo_repo.salvar(novo_p)
-                passos = passo_repo.listar_por_tarefa(tarefa_id)
-            except Exception:
-                pass
-
         return passos
 
 
