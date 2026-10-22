@@ -10,7 +10,7 @@ from google.genai import types
 API_KEY = os.environ.get("GEMINI_API_KEY")
 client = genai.Client() if API_KEY else None
 # Modelo ideal para tarefas rápidas de texto e resumos no terminal
-MODELO_GEMINI = "gemini-2.5-flash"
+MODELO_GEMINI = "gemini-2.0-flash"
 
 
 def _obter_instrucao_ia(estilo_usuario: str) -> str:
@@ -58,8 +58,8 @@ def obter_resposta_ia(pergunta: str, estilo_usuario: str, contexto_tarefa: str =
 
         # Divide a resposta por linhas para bater com a estrutura de exibição da UI do terminal
         return [linha.strip() for linha in response.text.split("\n") if linha.strip()]
-    except (ConnectionError, TimeoutError) as e:
-        return [f"Não foi possível nos comunicarmos com a IA: {str(e)}"]
+    except Exception as e:
+        return [f"Erro na comunicação com a IA: {str(e)}"]
 
 
 def gerar_passos_tarefa(titulo_tarefa: str, descricao_tarefa: str = "") -> list:
@@ -101,5 +101,5 @@ def gerar_passos_tarefa(titulo_tarefa: str, descricao_tarefa: str = "") -> list:
             if p_limpo:
                 passos_limpos.append(p_limpo)
         return passos_limpos
-    except (ConnectionError, TimeoutError) as e:
-        return [f"Não foi possível gerar os passos: {str(e)}"]
+    except Exception as e:
+        return [f"Erro ao gerar passos com a IA: {str(e)}"]
