@@ -405,19 +405,12 @@
     <div>
       <input class="w-full bg-[#0c0c0e] border border-[#26262b] focus:border-[#fffff2] rounded-xl px-4 py-3 text-sm text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none transition" id="inputNomeTarefaModal" placeholder="Nome da tarefa" type="text">
     </div>
-    <!-- Campo Data & Lógica de Status Automático -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
-      <!-- Coluna Data -->
-      <div>
-        <label class="block text-xs font-bold text-[#fffff2] mb-1.5 font-mono">Data / Prazo</label>
-        <div class="relative flex items-center">
-          <input class="w-full bg-[#0c0c0e] border border-[#26262b] focus:border-[#fffff2] rounded-xl px-3.5 py-2.5 text-xs font-mono text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none transition pr-10" id="inputDataModal" type="text" placeholder="DD/MM/AAAA">
-          <span class="material-symbols-outlined text-[#9d9da6] text-[18px] absolute right-3 pointer-events-none">calendar_today</span>
-        </div>
-      </div>
-      <!-- Info Status Automático -->
-      <div class="bg-[#0c0c0e] border border-[#26262b] rounded-xl p-2.5 text-[11px] text-[#9d9da6] leading-relaxed">
-        ℹ️ <b class="text-[#fffff2]">Status Automático:</b> Padrão <span class="text-amber-400 font-bold">A Fazer</span>. Se a data informada já passou, vai para <span class="text-sky-400 font-bold">Em progresso</span>. Concluído é alterado manualmente pelo usuário.
+    <!-- Campo Data / Prazo -->
+    <div>
+      <label class="block text-xs font-bold text-[#fffff2] mb-1.5 font-mono">Data / Prazo</label>
+      <div class="relative flex items-center">
+        <input class="w-full bg-[#0c0c0e] border border-[#26262b] focus:border-[#fffff2] rounded-xl px-3.5 py-2.5 text-xs font-mono text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none transition pr-10" id="inputDataModal" type="text" placeholder="DD/MM/AAAA">
+        <span class="material-symbols-outlined text-[#9d9da6] text-[18px] absolute right-3 pointer-events-none">calendar_today</span>
       </div>
     </div>
     <!-- Campo Descrição -->
