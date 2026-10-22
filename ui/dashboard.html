@@ -405,40 +405,19 @@
     <div>
       <input class="w-full bg-[#0c0c0e] border border-[#26262b] focus:border-[#fffff2] rounded-xl px-4 py-3 text-sm text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none transition" id="inputNomeTarefaModal" placeholder="Nome da tarefa" type="text">
     </div>
-    <!-- Linha Dupla: Data & Status -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-start">
+    <!-- Campo Data & Lógica de Status Automático -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
       <!-- Coluna Data -->
       <div>
-        <label class="block text-xs font-bold text-[#fffff2] mb-1.5 font-mono">Data</label>
+        <label class="block text-xs font-bold text-[#fffff2] mb-1.5 font-mono">Data / Prazo</label>
         <div class="relative flex items-center">
-          <input class="w-full bg-[#0c0c0e] border border-[#26262b] focus:border-[#fffff2] rounded-xl px-3.5 py-2.5 text-xs font-mono text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none transition pr-10" id="inputDataModal" type="text" value="21/10/2026">
+          <input class="w-full bg-[#0c0c0e] border border-[#26262b] focus:border-[#fffff2] rounded-xl px-3.5 py-2.5 text-xs font-mono text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none transition pr-10" id="inputDataModal" type="text" placeholder="DD/MM/AAAA">
           <span class="material-symbols-outlined text-[#9d9da6] text-[18px] absolute right-3 pointer-events-none">calendar_today</span>
         </div>
       </div>
-      <!-- Coluna Status com seletores circulares -->
-      <div>
-        <label class="block text-xs font-bold text-[#fffff2] mb-1.5 font-mono">Status</label>
-        <div class="flex items-center gap-4 pt-1">
-          <!-- A Fazer -->
-          <label class="flex flex-col items-center gap-1.5 cursor-pointer group" onclick="selecionarStatusModal('pendente')">
-            <div id="statusDotPendente" class="w-6 h-6 rounded-full border-2 border-emerald-400 flex items-center justify-center transition group-hover:scale-105">
-              <div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
-            </div>
-            <span class="text-[11px] font-bold text-[#fffff2]">A Fazer</span>
-          </label>
-          <!-- Em Progresso -->
-          <label class="flex flex-col items-center gap-1.5 cursor-pointer group" onclick="selecionarStatusModal('em_andamento')">
-            <div id="statusDotEmAndamento" class="w-6 h-6 rounded-full border border-[#3a3a42] flex items-center justify-center transition group-hover:border-[#fffff2]">
-            </div>
-            <span class="text-[11px] font-medium text-[#9d9da6] group-hover:text-[#fffff2]">Em Progresso</span>
-          </label>
-          <!-- Concluído -->
-          <label class="flex flex-col items-center gap-1.5 cursor-pointer group" onclick="selecionarStatusModal('concluido')">
-            <div id="statusDotConcluido" class="w-6 h-6 rounded-full border border-[#3a3a42] flex items-center justify-center transition group-hover:border-[#fffff2]">
-            </div>
-            <span class="text-[11px] font-medium text-[#9d9da6] group-hover:text-[#fffff2]">Concluído</span>
-          </label>
-        </div>
+      <!-- Info Status Automático -->
+      <div class="bg-[#0c0c0e] border border-[#26262b] rounded-xl p-2.5 text-[11px] text-[#9d9da6] leading-relaxed">
+        ℹ️ <b class="text-[#fffff2]">Status Automático:</b> Padrão <span class="text-amber-400 font-bold">A Fazer</span>. Se a data informada já passou, vai para <span class="text-sky-400 font-bold">Em progresso</span>. Concluído é alterado manualmente pelo usuário.
       </div>
     </div>
     <!-- Campo Descrição -->
@@ -1342,7 +1321,6 @@
       }, 3000);
     }
 
-    let modalStatusSelecionado = 'pendente';
     let modalTipoEstudoSelecionado = 'tarefas_educacionais';
 
     function abrirModalCriarTarefa() {
@@ -1362,7 +1340,6 @@
         const ano = hoje.getFullYear();
         if (inputData) inputData.value = `${dia}/${mes}/${ano}`;
 
-        selecionarStatusModal('pendente');
         selecionarTipoEstudo('educacional');
 
         modal.classList.remove('hidden');
@@ -1377,31 +1354,6 @@
       if (modal) {
         modal.classList.add('hidden');
         modal.style.display = 'none';
-      }
-    }
-
-    function selecionarStatusModal(status) {
-      modalStatusSelecionado = status;
-      const indPend = document.getElementById('statusDotPendente');
-      const indAnd = document.getElementById('statusDotEmAndamento');
-      const indConc = document.getElementById('statusDotConcluido');
-
-      [indPend, indAnd, indConc].forEach(el => {
-        if (el) {
-          el.className = "w-6 h-6 rounded-full border border-[#3a3a42] flex items-center justify-center transition group-hover:border-[#fffff2]";
-          el.innerHTML = '';
-        }
-      });
-
-      if (status === 'pendente' && indPend) {
-        indPend.className = "w-6 h-6 rounded-full border-2 border-emerald-400 flex items-center justify-center transition group-hover:scale-105";
-        indPend.innerHTML = '<div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>';
-      } else if (status === 'em_andamento' && indAnd) {
-        indAnd.className = "w-6 h-6 rounded-full border-2 border-sky-400 flex items-center justify-center transition group-hover:scale-105";
-        indAnd.innerHTML = '<div class="w-2.5 h-2.5 rounded-full bg-sky-400"></div>';
-      } else if (status === 'concluido' && indConc) {
-        indConc.className = "w-6 h-6 rounded-full border-2 border-emerald-400 flex items-center justify-center transition group-hover:scale-105";
-        indConc.innerHTML = '<div class="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>';
       }
     }
 
@@ -1446,6 +1398,20 @@
         }
       }
 
+      // Regra de status automático: por padrão 'pendente' (A Fazer).
+      // Se a data/prazo já passou (menor que hoje), vai para 'em_andamento' (Em progresso).
+      let statusAutomatico = 'pendente';
+      if (prazoISO) {
+        const agora = new Date();
+        const ano = agora.getFullYear();
+        const mes = String(agora.getMonth() + 1).padStart(2, '0');
+        const dia = String(agora.getDate()).padStart(2, '0');
+        const hojeStr = `${ano}-${mes}-${dia}`;
+        if (prazoISO < hojeStr) {
+          statusAutomatico = 'em_andamento';
+        }
+      }
+
       try {
         const res = await apiFetch(`${API_URL}/tarefas`, {
           method: 'POST',
@@ -1464,17 +1430,17 @@
           const novaTarefaCriada = data.dados || data;
           const novaId = novaTarefaCriada.id;
 
-          if (modalStatusSelecionado !== 'pendente' && novaId) {
+          if (statusAutomatico === 'em_andamento' && novaId) {
             await apiFetch(`${API_URL}/tarefas/${novaId}/status`, {
               method: 'PATCH',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ status: modalStatusSelecionado })
+              body: JSON.stringify({ status: 'em_andamento' })
             });
           }
 
           fecharModalCriarTarefa();
           await carregarTarefasDaAPI();
-          mostrarToastFeedback('✨ Tarefa criada com sucesso!');
+          mostrarToastFeedback(statusAutomatico === 'em_andamento' ? '✨ Tarefa criada em "Em progresso" (data vencida)!' : '✨ Tarefa criada em "A Fazer"!');
         } else {
           mostrarToastFeedback(`Erro: ${data.detail || 'Não foi possível criar a tarefa'}`);
         }
