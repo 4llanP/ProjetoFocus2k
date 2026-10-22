@@ -1,0 +1,1262 @@
+<!DOCTYPE html><html lang="pt-BR" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Focus 2k (TPAC) - Gestão de Estudos Inteligente</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            app: {
+              bg: '#080808',
+              surface: '#111113',
+              card: '#161619',
+              cardHover: '#1c1c21',
+              border: '#26262b',
+              borderLight: '#3a3a42',
+              primaryText: '#fffff2',
+              mutedText: '#9d9da6',
+              accentLight: '#fffff2',
+              tagBg: '#1f1f24'
+            }
+          },
+          fontFamily: {
+            sans: ['"Space Grotesk"', '"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"Space Mono"', '"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<style>
+    body {
+      font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+      background-color: #080808;
+      color: #fffff2;
+      overflow-x: hidden;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #080808;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #26262b;
+      border-radius: 9999px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #3e3e46;
+    }
+    .kanban-col {
+      min-height: calc(100vh - 170px);
+    }
+    .sidebar-transition {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .drawer-transition {
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .accordion-content {
+      transition: max-height 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, margin-top 0.2s ease;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+    }
+    .accordion-content.expanded {
+      max-height: 500px;
+      opacity: 1;
+      margin-top: 0.75rem;
+    }
+    .card-highlight-active {
+      border-color: #fffff2 !important;
+      box-shadow: 0 0 0 2px #fffff2, 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+      transform: translateY(-2px);
+    }
+    .focus-ring:focus-visible {
+      outline: 2px solid #fffff2;
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body class="h-screen w-screen flex overflow-hidden bg-[#080808] text-[#fffff2] select-none antialiased">
+<!-- ================= SIDEBAR LATERAL ESQUERDA ================= -->
+<aside class="sidebar-transition w-64 flex-shrink-0 bg-[#111113] border-r border-[#26262b] flex flex-col justify-between z-30 h-full relative" id="sidebar">
+<div class="flex flex-col h-full">
+<!-- Brand & Workspace -->
+<div class="p-4 border-b border-[#26262b] flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-[#fffff2] text-[#080808] flex items-center justify-center font-bold text-base shadow-sm">
+            ⚡
+          </div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-bold text-base tracking-tight text-[#fffff2]">Focus <span class="text-[#9d9da6]">2k</span></span>
+<span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-[#1f1f24] text-[#fffff2] border border-[#26262b] font-semibold">TPAC</span>
+</div>
+
+</div>
+</div>
+</div>
+<!-- Quick Search Bar -->
+<div class="px-3 pt-3.5 pb-2">
+<div class="relative">
+<svg class="w-3.5 h-3.5 absolute left-3 top-3 text-[#9d9da6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<input aria-label="Buscar tarefas" class="w-full bg-[#080808] border border-[#26262b] rounded-lg pl-8 pr-3 py-1.5 text-xs text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none focus:border-[#fffff2] focus:ring-1 focus:ring-[#fffff2] transition" id="searchInput" oninput="filtrarTarefasInput(this.value)" placeholder="Busca em tarefas..." type="text">
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="px-2.5 py-2 space-y-1">
+<a aria-current="page" class="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-[#1f1f24] text-[#fffff2] font-medium text-xs border border-[#3a3a42]" href="#">
+<svg class="w-4 h-4 text-[#fffff2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">Página Inicial</span>
+</a>
+
+<a class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] transition font-medium text-xs border border-transparent" href="#">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+<span class="">Calendário de Metas</span>
+<span class="ml-auto text-[9px] bg-[#1f1f24] text-[#9d9da6] px-1 py-0.2 rounded font-mono">Hoje</span>
+</a>
+</nav>
+<!-- Category Filter Shortcuts -->
+<div class="px-3 pt-3">
+<h4 class="text-[10px] uppercase tracking-wider font-semibold text-[#9d9da6] mb-2 px-1">Filtros de Estudos</h4>
+<div class="space-y-1">
+<button class="filter-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs text-left bg-[#1f1f24] text-[#fffff2] font-medium border border-[#3a3a42] transition" data-filter="todas" onclick="filtrarCategoria('todas')">
+<span class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#fffff2]"></span>
+              Todas as Tarefas
+            </span>
+<span class="text-[10px] bg-[#080808] text-[#fffff2] px-1.5 py-0.5 rounded font-mono border border-[#26262b]" id="count-todas">5</span>
+</button>
+<button class="filter-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs text-left text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] border border-transparent transition" data-filter="tarefas_educacionais" onclick="filtrarCategoria('tarefas_educacionais')">
+<span class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#9d9da6]"></span>
+              Educacionais (TPAC)
+            </span>
+<span class="text-[10px] bg-[#080808] text-[#9d9da6] px-1.5 py-0.5 rounded font-mono border border-[#26262b]" id="count-edu">3</span>
+</button>
+<button class="filter-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs text-left text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] border border-transparent transition" data-filter="tarefas_diarias" onclick="filtrarCategoria('tarefas_diarias')">
+<span class="flex items-center gap-2">
+<span class="w-1.5 h-1.5 rounded-full bg-[#9d9da6]"></span>
+              Rotina &amp; Diárias
+            </span>
+<span class="text-[10px] bg-[#080808] text-[#9d9da6] px-1.5 py-0.5 rounded font-mono border border-[#26262b]" id="count-dia">2</span>
+</button>
+</div>
+</div>
+<!-- Quick Tips minimal footer -->
+<div class="mt-auto p-3 m-3 rounded-lg border border-[#26262b] bg-[#080808] text-[11px] text-[#9d9da6]">
+
+
+</div>
+</div>
+</aside>
+<!-- ================= PAINEL CENTRAL & QUADRO KANBAN ================= -->
+<main class="flex-1 flex flex-col h-full overflow-hidden bg-[#080808] relative min-w-0">
+<!-- Topbar com Botão Hambúrguer, Informações e Perfil no Canto Superior Direito -->
+<header class="h-14 px-5 border-b border-[#26262b] flex items-center justify-between bg-[#111113] flex-shrink-0 z-20">
+<div class="flex items-center gap-3">
+<!-- Botão Hambúrguer -->
+<button aria-label="Alternar menu lateral" class="p-1.5 rounded-lg bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] border border-[#26262b] transition flex items-center justify-center focus-ring" id="btnHamburger" onclick="alternarMenuLateral()" title="Expandir/Ocultar Menu Lateral">
+<svg class="w-4 h-4 transition-transform duration-200" fill="none" id="hamburgerIcon" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<!-- Título do Quadro -->
+<div class="flex items-center gap-2.5">
+<h1 class="text-base font-bold text-[#fffff2] tracking-tight flex items-center gap-2">
+            Focus2k
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-[#1f1f24] text-[#fffff2] border border-[#26262b] font-mono font-medium">Quadro TPAC</span>
+</h1>
+
+</div>
+</div>
+<!-- Barra de Ações Rápidas & PERFIL DE USUÁRIO (Canto Superior Direito) -->
+<div class="flex items-center gap-2.5">
+<!-- Toast de Notificação -->
+<div class="text-xs py-1 px-2.5 rounded-full bg-[#161619] text-[#fffff2] border border-[#fffff2]/30 flex items-center gap-1.5 shadow hidden" id="liveFeedbackToast"><span class="w-1.5 h-1.5 rounded-full bg-[#fffff2]"></span> Assistente IA Aberto</div>
+<!-- Botão Abrir Chat IA (Drawer) -->
+<button id="btnUserProfile" onclick="abrirModalAuth()" class="px-2.5 py-1.5 bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] font-medium rounded-lg text-xs border border-[#26262b] hover:border-[#3a3a42] flex items-center gap-2 transition active:scale-95 focus-ring cursor-pointer" title="Perfil e Autenticação"><span class="material-symbols-outlined text-[15px] text-[#9d9da6]">account_circle</span></button>
+<!-- COMPONENTE DE AUTENTICAÇÃO / PERFIL / CONTA (DESTACADO NA REFERÊNCIA) -->
+
+</div>
+</header>
+<!-- Subheader informativo / Legenda de Prioridades com ícones acessíveis -->
+<section class="px-5 py-2 bg-[#0d0d0f] border-b border-[#26262b] flex flex-wrap items-center justify-between text-xs text-[#9d9da6] gap-2 flex-shrink-0">
+<div class="flex items-center gap-2">
+
+
+</div>
+<!-- Legenda acessível para baixa visão / daltonismo (símbolo + forma + texto) -->
+<div class="flex items-center gap-3 text-[11px] font-mono">
+
+
+
+</div>
+</section>
+<!-- ================= QUADRO KANBAN (3 COLUNAS) ================= -->
+<div class="flex-1 p-5 overflow-x-auto custom-scroll">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5 h-full min-w-[840px]">
+<!-- COLUNA 1: A Fazer (Pendente) com BOTÃO DESTACADO: "+ Adicionar Tarefa" -->
+<div class="flex flex-col rounded-xl bg-[#111113] border border-[#26262b] shadow-sm overflow-hidden kanban-col" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'pendente')">
+<!-- Cabeçalho da coluna A Fazer -->
+<div class="p-3 border-b border-[#26262b] bg-[#161619] flex items-center justify-between flex-shrink-0 gap-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-none bg-amber-400"></span>
+<h3 class="font-bold text-xs uppercase tracking-wider text-[#fffff2]">A Fazer</h3>
+<span class="text-[10px] px-2 py-0.2 rounded bg-[#080808] text-[#fffff2] font-mono border border-[#26262b]" id="badge-count-pendente">1</span>
+</div>
+<!-- BOTÃO ADICIONAR TAREFA DESTACADO (EXATAMENTE COMO REQUISITADO NA ANOTAÇÃO VERMELHA) -->
+<button class="px-2.5 py-1 bg-[#fffff2] hover:bg-white active:scale-95 text-[#080808] font-bold rounded-lg text-xs flex items-center gap-1.5 shadow transition focus-ring cursor-pointer" onclick="criarNovaTarefa()" title="Criar nova tarefa com decomposição inteligente IA">
+<span class="material-symbols-outlined text-[16px] font-bold">add</span>
+<span class="">Adicionar Tarefa</span>
+</button>
+</div>
+<!-- Container das Tarefas em A Fazer -->
+<div class="p-3 flex-1 overflow-y-auto space-y-3 custom-scroll" id="col-pendente">
+	</div>
+</div>
+<!-- COLUNA 2: Em Andamento -->
+<div class="flex flex-col rounded-xl bg-[#111113] border border-[#26262b] shadow-sm overflow-hidden kanban-col" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'em_andamento')">
+<div class="p-3 border-b border-[#26262b] bg-[#161619] flex items-center justify-between flex-shrink-0">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-sm bg-sky-400"></span>
+<h3 class="font-bold text-xs uppercase tracking-wider text-[#fffff2]">Em Andamento</h3>
+<span class="text-[10px] px-2 py-0.2 rounded bg-[#080808] text-[#fffff2] font-mono border border-[#26262b]" id="badge-count-em_andamento">2</span>
+</div>
+<span class="text-[10px] text-[#9d9da6] font-mono">Foco Ativo</span>
+</div>
+<!-- Container das Tarefas em Andamento -->
+<div class="p-3 flex-1 overflow-y-auto space-y-3 custom-scroll" id="col-em_andamento">
+	</div>
+</div>
+<!-- COLUNA 3: Concluído -->
+<div class="flex flex-col rounded-xl bg-[#111113] border border-[#26262b] shadow-sm overflow-hidden kanban-col" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'concluido')">
+<div class="p-3 border-b border-[#26262b] bg-[#161619] flex items-center justify-between flex-shrink-0">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+<h3 class="font-bold text-xs uppercase tracking-wider text-[#fffff2]">Concluído</h3>
+<span class="text-[10px] px-2 py-0.2 rounded bg-[#080808] text-[#fffff2] font-mono border border-[#26262b]" id="badge-count-concluido">2</span>
+</div>
+<span class="text-[10px] text-[#9d9da6] font-mono">Finalizado</span>
+</div>
+<!-- Container das Tarefas Concluídas -->
+<div class="p-3 flex-1 overflow-y-auto space-y-3 custom-scroll" id="col-concluido">
+	</div>
+</div>
+</div>
+</main>
+<!-- ================= BARRA LATERAL DIREITA: CHAT & DESESTRUTURAÇÃO IA ================= -->
+<aside class="drawer-transition w-96 max-w-[90vw] flex-shrink-0 bg-[#111113] border-l border-[#26262b] flex flex-col z-40 h-full relative hidden" id="drawerChatIA" style="width: 0px;">
+<!-- Topbar do Chat -->
+<div class="p-3.5 border-b border-[#26262b] bg-[#161619] flex items-center justify-between flex-shrink-0">
+<div class="flex items-center gap-2.5">
+<div class="w-7 h-7 rounded-lg bg-[#1f1f24] border border-[#3a3a42] flex items-center justify-center text-[#fffff2]">
+<span class="material-symbols-outlined text-[17px]">psychology</span>
+</div>
+<div>
+<div class="flex items-center gap-1.5">
+<h3 class="font-bold text-xs text-[#fffff2] tracking-wide">Assistente TPAC IA</h3>
+<span class="text-[9px] px-1 py-0.2 rounded bg-[#1f1f24] text-emerald-300 border border-[#26262b] font-mono font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              Gemini
+            </span>
+</div>
+<p class="text-[10px] text-[#9d9da6] font-mono">core/tarefas.py integrado</p>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button class="p-1 rounded-md hover:bg-[#1f1f24] text-[#9d9da6] hover:text-[#fffff2] transition focus-ring" onclick="limparHistoricoChat()" title="Limpar conversa">
+<span class="material-symbols-outlined text-[16px]">delete_sweep</span>
+</button>
+<button class="p-1 rounded-md hover:bg-[#1f1f24] text-[#9d9da6] hover:text-[#fffff2] transition focus-ring" onclick="alternarDrawerChat(false)" title="Fechar Chat">
+<span class="material-symbols-outlined text-[17px]">close</span>
+</button>
+</div>
+</div>
+<!-- Banner Informativo -->
+<div class="px-3 py-1.5 bg-[#080808] border-b border-[#26262b] text-[10px] text-[#9d9da6] flex items-center justify-between flex-shrink-0">
+
+<span class="font-mono px-1.5 py-0.2 rounded bg-[#161619] text-[#fffff2] border border-[#26262b]" id="chatContextBadge">Modo: Geral</span>
+</div>
+<!-- Mensagens / Scroll -->
+<div class="flex-1 p-3.5 overflow-y-auto space-y-3.5 custom-scroll text-xs" id="chatMessagesContainer">
+<!-- Mensagem Inicial -->
+<div class="flex items-start gap-2.5">
+<div class="w-6 h-6 rounded-md bg-[#1f1f24] border border-[#3a3a42] flex items-center justify-center flex-shrink-0 text-[#fffff2]">
+<span class="material-symbols-outlined text-[14px]">auto_awesome</span>
+</div>
+<div class="bg-[#161619] border border-[#26262b] p-3 rounded-xl rounded-tl-none text-[#fffff2] max-w-[85%] space-y-1.5">
+<p class="leading-relaxed">
+            Olá! Sou o seu <b>Assistente de Decomposição TPAC</b> baseado no modelo Gemini.
+          </p>
+<p class="text-[#9d9da6] text-[11px] leading-relaxed">
+            Clique no botão <span class="px-1 py-0.2 rounded bg-[#1f1f24] text-[#fffff2] border border-[#3a3a42] font-semibold font-mono">Desestruturar com IA</span> em qualquer card do Kanban ou digite sua dúvida abaixo!
+          </p>
+</div>
+</div>
+</div>
+<!-- Indicador de Digitando -->
+<div class="hidden px-3.5 py-2 border-t border-[#26262b] bg-[#161619] flex items-center gap-2 text-xs text-[#9d9da6] flex-shrink-0" id="chatTypingIndicator">
+<div class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#fffff2] animate-bounce"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-[#fffff2] animate-bounce" style="animation-delay: 0.15s"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-[#fffff2] animate-bounce" style="animation-delay: 0.3s"></span>
+</div>
+<span class="text-[10px] font-mono text-[#fffff2]" id="chatTypingText">Analisando complexidade cognitiva...</span>
+</div>
+<!-- Formulário de Input de Mensagem -->
+<div class="p-3 border-t border-[#26262b] bg-[#0d0d0f] flex-shrink-0">
+<form class="flex items-center gap-2" id="chatForm" onsubmit="event.preventDefault(); enviarMensagemChat();">
+<input autocomplete="off" class="flex-1 bg-[#161619] border border-[#26262b] rounded-lg px-3 py-1.5 text-xs text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none focus:border-[#fffff2] focus:ring-1 focus:ring-[#fffff2] transition" id="chatInputText" placeholder="Pergunte ou peça para decompor uma prova..." type="text">
+<button class="p-1.5 bg-[#fffff2] hover:bg-white active:scale-95 text-[#080808] rounded-lg border border-[#fffff2] transition flex items-center justify-center flex-shrink-0 focus-ring" title="Enviar mensagem" type="submit">
+<span class="material-symbols-outlined text-[17px]">send</span>
+</button>
+</form>
+<div class="mt-1.5 flex items-center justify-between text-[9px] text-[#9d9da6] px-1 font-mono">
+<span class="">Enter para enviar</span>
+<span class="">TPAC Engine v2.1</span>
+</div>
+</div>
+</aside>
+<!-- ================= MODAL DE AUTENTICAÇÃO / CADASTRO ================= -->
+<div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden" id="modalAuth">
+<div class="bg-[#111113] border border-[#26262b] rounded-xl w-full max-w-md p-6 shadow-2xl relative text-[#fffff2]">
+<button class="absolute top-4 right-4 text-[#9d9da6] hover:text-[#fffff2] p-1 font-bold focus-ring rounded" onclick="fecharModalAuth()">
+        ✕
+      </button>
+<!-- Tabs de Login e Cadastro -->
+<div class="flex border-b border-[#26262b] mb-5">
+<button class="flex-1 py-2 font-bold text-xs uppercase tracking-wider text-[#fffff2] border-b-2 border-[#fffff2]" id="tabBtnLogin" onclick="alternarTabAuth('login')">Login</button>
+<button class="flex-1 py-2 font-bold text-xs uppercase tracking-wider text-[#9d9da6] hover:text-[#fffff2] border-b-2 border-transparent" id="tabBtnCadastro" onclick="alternarTabAuth('cadastro')">Cadastrar Usuário</button>
+</div>
+<!-- Alerta de Erro/Sucesso na tela -->
+<div class="hidden mb-4 p-2.5 rounded-lg text-xs font-medium" id="authAlert"></div>
+<!-- FORM LOGIN -->
+<form class="space-y-3.5" id="formLogin" onsubmit="event.preventDefault(); submeterLogin();">
+<div>
+<label class="block text-xs font-semibold text-[#fffff2] mb-1">Nome de Usuário</label>
+<input class="w-full bg-[#080808] border border-[#26262b] rounded-lg px-3 py-2 text-xs text-[#fffff2] focus:outline-none focus:border-[#fffff2]" id="loginNome" placeholder="Ex: Aluno Focus2k" type="text">
+</div>
+<div>
+<label class="block text-xs font-semibold text-[#fffff2] mb-1">Senha</label>
+<input class="w-full bg-[#080808] border border-[#26262b] rounded-lg px-3 py-2 text-xs text-[#fffff2] focus:outline-none focus:border-[#fffff2]" id="loginSenha" placeholder="••••••••" type="password">
+</div>
+<button class="w-full py-2 bg-[#fffff2] hover:bg-white text-[#080808] font-bold rounded-lg text-xs transition shadow-sm" type="submit">
+          Entrar no Focus 2k
+        </button>
+</form>
+<!-- FORM CADASTRO -->
+<form class="space-y-3.5 hidden" id="formCadastro" onsubmit="event.preventDefault(); submeterCadastro();">
+<div>
+<label class="block text-xs font-semibold text-[#fffff2] mb-1">Nome de Usuário (mínimo 3 caracteres)</label>
+<input class="w-full bg-[#080808] border border-[#26262b] rounded-lg px-3 py-2 text-xs text-[#fffff2] focus:outline-none focus:border-[#fffff2]" id="cadNome" placeholder="Ex: Maria Estudante" type="text">
+</div>
+<div>
+<label class="block text-xs font-semibold text-[#fffff2] mb-1">Senha</label>
+<input class="w-full bg-[#080808] border border-[#26262b] rounded-lg px-3 py-2 text-xs text-[#fffff2] focus:outline-none focus:border-[#fffff2]" id="cadSenha" placeholder="Crie sua senha" type="password">
+</div>
+<div>
+<label class="block text-xs font-semibold text-[#fffff2] mb-1">Estilo de Instrução da IA (TPAC)</label>
+<select class="w-full bg-[#080808] border border-[#26262b] rounded-lg px-3 py-2 text-xs text-[#fffff2] focus:outline-none focus:border-[#fffff2]" id="cadEstilo">
+<option value="detalhado">Detalhado (Passo a passo minucioso e contextual)</option>
+<option value="direto">Direto (Sintético, objetivo e sem rodeios)</option>
+<option value="invalido_teste">Outro (Opção para teste de validação)</option>
+</select>
+<p class="text-[10px] text-[#9d9da6] mt-1">Validação exige exatamente estilo 'direto' ou 'detalhado'.</p>
+</div>
+<button class="w-full py-2 bg-[#fffff2] hover:bg-white text-[#080808] font-bold rounded-lg text-xs transition shadow-sm" type="submit">
+          Cadastrar Perfil
+        </button>
+</form>
+</div>
+</div>
+<!-- ================= SCRIPTS JAVASCRIPT ================= -->
+<script>
+    /**
+     * FOCUS 2K (TPAC) - FRONT-END LOGIC & AI DECOMPOSITION MODULE
+     * Paleta Minimalista de Alto Contraste (#080808 & #fffff2)
+     */
+
+    // --- BASE DE DADOS DE TAREFAS (DINÂMICA DA API) ---
+    const API_URL = "";
+    let tarefasDB = [];
+
+    let filtroCategoriaAtiva = 'todas';
+    let termoBuscaAtivo = '';
+    let usuarioAtual = {
+      nome: 'Carregando...',
+      estiloInstrucao: 'direto',
+      autenticado: false
+    };
+    let drawerChatAberto = true;
+    let cardSendoDesestruturado = null;
+
+    function setSafeText(id, text) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.textContent = text;
+      }
+    }
+
+    function apiFetch(url, options = {}) {
+      options.credentials = 'include';
+      options.headers = options.headers || {};
+
+      let token = localStorage.getItem('token');
+      if (token) {
+        token = token.replace(/['"]+/g, '').trim();
+        if (token && token !== 'null' && token !== 'undefined' && token !== '""') {
+          if (options.headers instanceof Headers) {
+            if (!options.headers.has('Authorization')) {
+              options.headers.set('Authorization', `Bearer ${token}`);
+            }
+          } else {
+            options.headers = {
+              'Authorization': `Bearer ${token}`,
+              ...options.headers
+            };
+          }
+        }
+      }
+      return fetch(url, options);
+    }
+
+    async function verificarSessaoECarregar() {
+      let user = null;
+      try {
+        const tokenLocal = localStorage.getItem('token');
+
+        const resUser = await apiFetch(`${API_URL}/usuarios/me`);
+
+        if (!resUser.ok) {
+          const errData = await resUser.json().catch(() => ({}));
+          localStorage.removeItem('token');
+          window.location.href = 'tela_login.html';
+          return;
+        }
+        user = await resUser.json();
+      } catch (err) {
+        localStorage.removeItem('token');
+        window.location.href = 'tela_login.html';
+        return;
+      }
+
+      try {
+        usuarioAtual = {
+          nome: user.nome,
+          role: user.role,
+          estiloInstrucao: user.estilo_instrucao || 'direto',
+          autenticado: true
+        };
+        atualizarInterfaceUsuario();
+        await carregarTarefasDaAPI();
+      } catch (uiErr) {}
+    }
+
+    async function carregarTarefasDaAPI() {
+      try {
+        const res = await apiFetch(`${API_URL}/tarefas`);
+        const data = await res.json();
+        if (res.ok) {
+          const rawTarefas = data.dados || data;
+          tarefasDB = await Promise.all(rawTarefas.map(async t => {
+            let subtarefas = [];
+            try {
+              const resPassos = await apiFetch(`${API_URL}/tarefas/${t.id}/passos`);
+              if (resPassos.ok) {
+                const passos = await resPassos.json();
+                subtarefas = passos.map(p => ({
+                  id: p.id,
+                  texto: p.texto,
+                  feita: p.concluido
+                }));
+              }
+            } catch (e) {}
+
+            return {
+              id: "task_" + t.id,
+              realId: t.id,
+              titulo: t.titulo,
+              descricao: t.descricao || '',
+              prioridade: t.prioridade || 'media',
+              categoria: t.tipo || 'tarefas_educacionais',
+              status: t.status || (subtarefas.length > 0 && subtarefas.every(s => s.feita) ? 'concluido' : (subtarefas.some(s => s.feita) ? 'em_andamento' : 'pendente')),
+              subtarefas: subtarefas
+            };
+          }));
+          listarTarefas();
+        }
+      } catch (err) {
+        console.error("Erro ao carregar tarefas:", err);
+      }
+    }
+
+    function alternarMenuLateral() {
+      const sidebar = document.getElementById('sidebar');
+      const icon = document.getElementById('hamburgerIcon');
+      const estaFechada = sidebar.classList.contains('-translate-x-full') || sidebar.style.display === 'none';
+
+      if (estaFechada) {
+        sidebar.classList.remove('-translate-x-full', 'w-0', 'p-0');
+        sidebar.classList.add('w-64');
+        sidebar.style.display = 'flex';
+        icon.classList.remove('rotate-90');
+      } else {
+        sidebar.classList.add('-translate-x-full', 'w-0');
+        sidebar.classList.remove('w-64');
+        sidebar.style.display = 'none';
+        icon.classList.add('rotate-90');
+      }
+      mostrarToastFeedback(estaFechada ? 'Sidebar Aberta' : 'Sidebar Ocultada');
+    }
+
+    function alternarDrawerChat(forcarEstado) {
+      const drawer = document.getElementById('drawerChatIA');
+      if (typeof forcarEstado === 'boolean') {
+        drawerChatAberto = forcarEstado;
+      } else {
+        drawerChatAberto = !drawerChatAberto;
+      }
+
+      if (drawerChatAberto) {
+        drawer.classList.remove('hidden');
+        drawer.style.width = '24rem';
+        mostrarToastFeedback('Assistente IA Aberto');
+      } else {
+        drawer.classList.add('hidden');
+        drawer.style.width = '0px';
+      }
+    }
+
+    // --- DESESTRUTURAR TAREFA COM IA ---
+    function desestruturarTarefaComIA(taskId) {
+      const tarefa = tarefasDB.find(t => t.id === taskId);
+      if (!tarefa) return;
+
+      cardSendoDesestruturado = tarefa;
+
+      document.querySelectorAll('[id^="task_"]').forEach(el => el.classList.remove('card-highlight-active'));
+      const cardEl = document.getElementById(taskId);
+      if (cardEl) {
+        cardEl.classList.add('card-highlight-active');
+        cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      alternarDrawerChat(true);
+
+      setSafeText('chatContextBadge', `Foco: ${tarefa.titulo.slice(0, 16)}...`);
+      adicionarMensagemUsuario(`✨ Desestruture a tarefa: "${tarefa.titulo}"`);
+
+      const typingIndicator = document.getElementById('chatTypingIndicator');
+      const typingText = document.getElementById('chatTypingText');
+      if (typingIndicator) typingIndicator.classList.remove('hidden');
+      if (typingText) typingText.textContent = `Analisando complexidade com core/tarefas.py para "${tarefa.titulo.slice(0, 24)}..."`;
+      rolarChatParaFinal();
+
+      mostrarToastFeedback("Gemini gerando decomposição cognitiva...");
+
+      setTimeout(() => {
+        typingIndicator.classList.add('hidden');
+        const novasEtapas = gerarPassosDecompostos(tarefa);
+        const proposalId = 'proposal_' + Date.now();
+        renderizarPropostaDecomposicaoIA(proposalId, tarefa, novasEtapas);
+        rolarChatParaFinal();
+        mostrarToastFeedback("Decomposição gerada! Clique em 'Injetar Subtarefas'.");
+      }, 1400);
+    }
+
+    function gerarPassosDecompostos(tarefa) {
+      const t = tarefa.titulo.toLowerCase();
+      if (t.includes('circuito') || t.includes('física') || t.includes('matemática')) {
+        return [
+          { texto: "Formular esquemático com convenção de sinais", tempo: "15 min", prioridade: "alta", marcado: true },
+          { texto: "Montar equações das malhas independentes", tempo: "25 min", prioridade: "alta", marcado: true },
+          { texto: "Verificar balanço de potência e conferir gabarito", tempo: "20 min", prioridade: "media", marcado: true },
+          { texto: "Resumir erros típicos no caderno de erros TPAC", tempo: "10 min", prioridade: "baixa", marcado: true }
+        ];
+      } else if (t.includes('algoritmo') || t.includes('dijkstra') || t.includes('python')) {
+        return [
+          { texto: "Estruturar grafo ponderado como dicionário de adjacências", tempo: "20 min", prioridade: "alta", marcado: true },
+          { texto: "Implementar fila de prioridade com módulo heapq", tempo: "30 min", prioridade: "alta", marcado: true },
+          { texto: "Validar casos de borda com ciclos e vértices desconexos", tempo: "25 min", prioridade: "media", marcado: true },
+          { texto: "Documentar invariant de laço e complexidade teórica", tempo: "15 min", prioridade: "baixa", marcado: true }
+        ];
+      } else {
+        return [
+          { texto: `Fase 1: Leitura analítica e fichamento de "${tarefa.titulo.slice(0, 25)}"`, tempo: "20 min", prioridade: "alta", marcado: true },
+          { texto: "Fase 2: Elaboração de esquema visual / mapa conceitual", tempo: "30 min", prioridade: "alta", marcado: true },
+          { texto: "Fase 3: Exercício prático de validação pedagógica", tempo: "25 min", prioridade: "media", marcado: true },
+          { texto: "Fase 4: Check de consolidação e revisão rápida de 5 min", tempo: "10 min", prioridade: "baixa", marcado: true }
+        ];
+      }
+    }
+
+    function renderizarPropostaDecomposicaoIA(proposalId, tarefa, etapas) {
+      const container = document.getElementById('chatMessagesContainer');
+
+      let itensCheckboxHtml = '';
+      etapas.forEach((etapa, idx) => {
+        let badgeCor = etapa.prioridade === 'alta' 
+          ? 'border-rose-500 text-rose-300' 
+          : (etapa.prioridade === 'media' ? 'border-amber-400 text-amber-300' : 'border-[#3a3a42] text-[#fffff2]');
+
+        itensCheckboxHtml += `
+          <label class="flex items-start gap-2.5 p-2 rounded-lg bg-[#080808] border border-[#26262b] hover:border-[#fffff2] transition cursor-pointer select-none">
+            <input type="checkbox" id="${proposalId}_chk_${idx}" ${etapa.marcado ? 'checked' : ''} class="mt-0.5 w-3.5 h-3.5 rounded border-[#26262b] bg-[#161619] text-[#fffff2] focus:ring-[#fffff2] cursor-pointer">
+            <div class="flex-1 min-w-0">
+              <span class="text-xs text-[#fffff2] font-medium leading-tight block">${etapa.texto}</span>
+              <div class="flex items-center gap-2 mt-1">
+                <span class="text-[9px] font-mono px-1 py-0.2 rounded border ${badgeCor}">${etapa.prioridade.toUpperCase()}</span>
+                <span class="text-[9px] font-mono text-[#9d9da6]">⏱ ${etapa.tempo}</span>
+              </div>
+            </div>
+          </label>
+        `;
+      });
+
+      const messageCardHtml = `
+        <div class="flex items-start gap-2.5">
+          <div class="w-6 h-6 rounded-md bg-[#fffff2] text-[#080808] flex items-center justify-center flex-shrink-0 font-bold text-xs">
+            <span class="material-symbols-outlined text-[15px]">account_tree</span>
+          </div>
+          <div class="bg-[#161619] border border-[#3a3a42] rounded-xl rounded-tl-none text-[#fffff2] w-full max-w-[90%] p-3 shadow-lg space-y-2.5">
+            <div class="flex items-center justify-between border-b border-[#26262b] pb-2">
+              <div class="flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#fffff2]"></span>
+                <h4 class="font-bold text-xs text-[#fffff2]">Subtarefas Propostas</h4>
+              </div>
+              <span class="text-[9px] font-mono px-1 py-0.2 rounded bg-[#1f1f24] text-[#fffff2] border border-[#26262b]">TPAC</span>
+            </div>
+
+            <p class="text-[11px] text-[#9d9da6] leading-relaxed">
+              Decompus <b>"${tarefa.titulo}"</b> em ${etapas.length} etapas estratégicas:
+            </p>
+
+            <div id="${proposalId}_list" class="space-y-1.5" data-task-id="${tarefa.id}">
+              ${itensCheckboxHtml}
+            </div>
+
+            <button 
+              onclick="injetarSubtarefasNoKanban('${proposalId}', '${tarefa.id}')" 
+              class="w-full py-1.5 px-3 bg-[#fffff2] hover:bg-white active:scale-95 text-[#080808] font-bold text-xs rounded-lg border border-[#fffff2] flex items-center justify-center gap-1.5 transition shadow"
+            >
+              <span class="material-symbols-outlined text-[16px]">playlist_add</span>
+              <span>Injetar Subtarefas no Kanban</span>
+            </button>
+          </div>
+        </div>
+      `;
+
+      container.insertAdjacentHTML('beforeend', messageCardHtml);
+    }
+
+    function injetarSubtarefasNoKanban(proposalId, taskId) {
+      const tarefa = tarefasDB.find(t => t.id === taskId);
+      if (!tarefa) return;
+
+      const listContainer = document.getElementById(`${proposalId}_list`);
+      if (!listContainer) return;
+
+      const checkboxes = listContainer.querySelectorAll('input[type="checkbox"]');
+      let injetadasCount = 0;
+
+      checkboxes.forEach((chk, idx) => {
+        if (chk.checked) {
+          const labelSpan = chk.closest('label').querySelector('span.text-xs');
+          const texto = labelSpan ? labelSpan.textContent.trim() : `Nova etapa #${idx + 1}`;
+          
+          tarefa.subtarefas.push({
+            id: `sub_ia_${Date.now()}_${idx}`,
+            texto: texto,
+            feita: false
+          });
+          injetadasCount++;
+        }
+      });
+
+      if (injetadasCount === 0) {
+        mostrarToastFeedback('Selecione ao menos 1 subtarefa para injetar.');
+        return;
+      }
+
+      listarTarefas();
+
+      setTimeout(() => {
+        const acc = document.getElementById(`accordion-${taskId}`);
+        const arrow = document.getElementById(`arrow-${taskId}`);
+        const label = document.getElementById(`label-acc-${taskId}`);
+        if (acc) {
+          acc.classList.add('expanded');
+          if (arrow) arrow.classList.add('rotate-180');
+          if (label) label.textContent = 'Recolher passos';
+        }
+      }, 100);
+
+      adicionarMensagemIA(`✅ <b>${injetadasCount} novas subtarefas</b> foram injetadas no card <i>"${tarefa.titulo}"</i> no seu Kanban.`);
+      rolarChatParaFinal();
+
+      mostrarToastFeedback(`🎉 ${injetadasCount} subtarefas injetadas em "${tarefa.titulo.slice(0, 18)}..."`);
+    }
+
+    function enviarMensagemChat() {
+      const input = document.getElementById('chatInputText');
+      const texto = (input.value || '').trim();
+      if (!texto) return;
+
+      adicionarMensagemUsuario(texto);
+      input.value = '';
+
+      const typingIndicator = document.getElementById('chatTypingIndicator');
+      const typingText = document.getElementById('chatTypingText');
+      typingIndicator.classList.remove('hidden');
+      typingText.textContent = 'Processando diretriz TPAC via Gemini core...';
+      rolarChatParaFinal();
+
+      setTimeout(() => {
+        typingIndicator.classList.add('hidden');
+        responderMensagemLivre(texto);
+        rolarChatParaFinal();
+      }, 1100);
+    }
+
+    function responderMensagemLivre(texto) {
+      const t = texto.toLowerCase();
+      let resposta = '';
+
+      if (t.includes('pomodoro') || t.includes('tempo') || t.includes('foco')) {
+        resposta = `O método ideal recomendado é o ciclo 50/10: 50 minutos de alta concentração sem distrações e 10 minutos de pausa reflexiva. No fim do dia, faça 15 min de consolidação.`;
+      } else if (t.includes('prova') || t.includes('exame') || t.includes('estudo')) {
+        resposta = `Para provas densas, aplique <b>Interleaving</b> (estudo intercalado) com resolução ativa de exercícios passados antes de reler anotações passivas. Use o botão 'Desestruturar com IA' em um card para ver o plano!`;
+      } else {
+        resposta = `Compreendido: <i>"${texto}"</i>. Com base na metodologia TPAC, sugiro quebrar essa meta em três frentes: fundamentação conceitual, exercício prático e verificação metacognitiva.`;
+      }
+
+      adicionarMensagemIA(resposta);
+    }
+
+    function adicionarMensagemUsuario(texto) {
+      const container = document.getElementById('chatMessagesContainer');
+      const html = `
+        <div class="flex items-start justify-end gap-2.5">
+          <div class="bg-[#1f1f24] border border-[#3a3a42] p-2.5 rounded-xl rounded-tr-none text-[#fffff2] max-w-[85%]">
+            <p class="leading-relaxed select-text">${texto}</p>
+          </div>
+          <div class="w-6 h-6 rounded-md bg-[#26262b] border border-[#3a3a42] flex items-center justify-center flex-shrink-0 text-[10px] font-bold text-[#fffff2]">
+            ST
+          </div>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', html);
+    }
+
+    function adicionarMensagemIA(htmlConteudo) {
+      const container = document.getElementById('chatMessagesContainer');
+      const html = `
+        <div class="flex items-start gap-2.5">
+          <div class="w-6 h-6 rounded-md bg-[#1f1f24] border border-[#3a3a42] flex items-center justify-center flex-shrink-0 text-[#fffff2]">
+            <span class="material-symbols-outlined text-[14px]">smart_toy</span>
+          </div>
+          <div class="bg-[#161619] border border-[#26262b] p-2.5 rounded-xl rounded-tl-none text-[#fffff2] max-w-[85%] space-y-1">
+            <div class="leading-relaxed select-text text-xs text-[#fffff2]">${htmlConteudo}</div>
+          </div>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', html);
+    }
+
+    function limparHistoricoChat() {
+      const container = document.getElementById('chatMessagesContainer');
+      container.innerHTML = `
+        <div class="flex items-start gap-2.5">
+          <div class="w-6 h-6 rounded-md bg-[#1f1f24] border border-[#3a3a42] flex items-center justify-center flex-shrink-0 text-[#fffff2]">
+            <span class="material-symbols-outlined text-[14px]">auto_awesome</span>
+          </div>
+          <div class="bg-[#161619] border border-[#26262b] p-2.5 rounded-xl rounded-tl-none text-[#fffff2] max-w-[85%] space-y-1.5">
+            <p class="leading-relaxed">
+              Histórico reiniciado. O assistente Gemini está pronto para novas análises e decomposições de estudo.
+            </p>
+          </div>
+        </div>
+      `;
+      setSafeText('chatContextBadge', 'Modo: Geral');
+      document.querySelectorAll('[id^="task_"]').forEach(el => el.classList.remove('card-highlight-active'));
+      mostrarToastFeedback("Histórico limpo.");
+    }
+
+    function rolarChatParaFinal() {
+      const container = document.getElementById('chatMessagesContainer');
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // --- CADASTRO E LOGIN ---
+    function cadastrarUsuario(nome, senha, estiloInstrucao) {
+      const alertBox = document.getElementById('authAlert');
+      alertBox.classList.remove('hidden', 'bg-[#1f1f24]', 'text-[#fffff2]', 'bg-rose-950/80', 'text-rose-300', 'border-[#26262b]', 'border-rose-500');
+
+      const nomeLimpo = (nome || '').trim();
+
+      if (!nomeLimpo || nomeLimpo.length < 3) {
+        alertBox.textContent = 'Erro no Cadastro: O nome deve conter ao menos 3 caracteres reais.';
+        alertBox.classList.add('bg-rose-950/80', 'text-rose-300', 'border', 'border-rose-500/50');
+        return { sucesso: false, erro: 'Nome inválido.' };
+      }
+
+      if (!senha || senha.length < 4) {
+        alertBox.textContent = 'Erro no Cadastro: A senha deve conter no mínimo 4 caracteres.';
+        alertBox.classList.add('bg-rose-950/80', 'text-rose-300', 'border', 'border-rose-500/50');
+        return { sucesso: false, erro: 'Senha curta demais.' };
+      }
+
+      const estiloNormalizado = (estiloInstrucao || '').toLowerCase().trim();
+      if (estiloNormalizado !== 'direto' && estiloNormalizado !== 'detalhado') {
+        alertBox.textContent = 'Erro no Cadastro: O estilo de instrução precisa ser "direto" ou "detalhado".';
+        alertBox.classList.add('bg-rose-950/80', 'text-rose-300', 'border', 'border-rose-500/50');
+        return { sucesso: false, erro: 'Estilo inválido.' };
+      }
+
+      usuarioAtual = {
+        nome: nomeLimpo,
+        estiloInstrucao: estiloNormalizado,
+        autenticado: true
+      };
+
+      atualizarInterfaceUsuario();
+      alertBox.textContent = `Usuário "${nomeLimpo}" cadastrado! Modo: ${estiloNormalizado.toUpperCase()}.`;
+      alertBox.classList.add('bg-[#1f1f24]', 'text-[#fffff2]', 'border', 'border-[#3a3a42]');
+      
+      setTimeout(() => { fecharModalAuth(); }, 1200);
+      return { sucesso: true, usuario: usuarioAtual };
+    }
+
+    function efetuarLogin(nome, senha) {
+      const alertBox = document.getElementById('authAlert');
+      alertBox.classList.remove('hidden', 'bg-[#1f1f24]', 'text-[#fffff2]', 'bg-rose-950/80', 'text-rose-300', 'border-[#26262b]', 'border-rose-500');
+
+      const nomeLimpo = (nome || '').trim();
+      if (!nomeLimpo || !senha || senha.trim().length === 0) {
+        alertBox.textContent = 'Acesso negado! Preencha usuário e senha corretamente.';
+        alertBox.classList.add('bg-rose-950/80', 'text-rose-300', 'border', 'border-rose-500/50');
+        return { sucesso: false, erro: 'Acesso negado!' };
+      }
+
+      usuarioAtual.nome = nomeLimpo;
+      usuarioAtual.autenticado = true;
+      atualizarInterfaceUsuario();
+
+      alertBox.textContent = `Acesso concedido! Bem-vindo de volta, ${nomeLimpo}.`;
+      alertBox.classList.add('bg-[#1f1f24]', 'text-[#fffff2]', 'border', 'border-[#3a3a42]');
+
+      setTimeout(() => { fecharModalAuth(); }, 900);
+      return { sucesso: true, usuario: usuarioAtual };
+    }
+
+    function listarTarefas() {
+      const colPendente = document.getElementById('col-pendente');
+      const colAndamento = document.getElementById('col-em_andamento');
+      const colConcluido = document.getElementById('col-concluido');
+
+      colPendente.innerHTML = '';
+      colAndamento.innerHTML = '';
+      colConcluido.innerHTML = '';
+
+      let countPendente = 0;
+      let countAndamento = 0;
+      let countConcluido = 0;
+      let totalGeral = 0;
+      let totalEdu = 0;
+      let totalDia = 0;
+
+      tarefasDB.forEach(t => {
+        totalGeral++;
+        if (t.categoria === 'tarefas_educacionais') totalEdu++;
+        if (t.categoria === 'tarefas_diarias') totalDia++;
+
+        const passaCategoria = (filtroCategoriaAtiva === 'todas' || t.categoria === filtroCategoriaAtiva);
+        const passaBusca = !termoBuscaAtivo || 
+          t.titulo.toLowerCase().includes(termoBuscaAtivo.toLowerCase()) || 
+          t.descricao.toLowerCase().includes(termoBuscaAtivo.toLowerCase());
+
+        if (passaCategoria && passaBusca) {
+          const cardHtml = renderizarCardHTML(t);
+          if (t.status === 'pendente') {
+            colPendente.insertAdjacentHTML('beforeend', cardHtml);
+            countPendente++;
+          } else if (t.status === 'em_andamento') {
+            colAndamento.insertAdjacentHTML('beforeend', cardHtml);
+            countAndamento++;
+          } else if (t.status === 'concluido') {
+            colConcluido.insertAdjacentHTML('beforeend', cardHtml);
+            countConcluido++;
+          }
+        }
+      });
+
+      setSafeText('badge-count-pendente', countPendente);
+      setSafeText('badge-count-em_andamento', countAndamento);
+      setSafeText('badge-count-concluido', countConcluido);
+
+      setSafeText('count-todas', totalGeral);
+      setSafeText('count-edu', totalEdu);
+      setSafeText('count-dia', totalDia);
+    }
+
+    // --- CRIAR NOVA TAREFA (ACIONADO PELO BOTÃO DESTACADO NA COLUNA A FAZER) ---
+    function criarNovaTarefa() {
+      const colPendente = document.getElementById('col-pendente');
+      const tempId = 'temp_spinner_' + Date.now();
+
+      const spinnerCardHTML = `
+        <div id="${tempId}" class="p-3.5 rounded-xl bg-[#161619] border border-[#fffff2] shadow-xl transition-all">
+          <div class="flex items-center gap-2.5">
+            <div class="w-4 h-4 border-2 border-[#fffff2] border-t-transparent rounded-full animate-spin"></div>
+            <div>
+              <span class="text-[10px] font-bold text-[#fffff2] uppercase tracking-wider font-mono">Gemini TPAC Engine</span>
+              <p class="text-xs text-[#fffff2] font-medium">Decompondo passos pedagógicos...</p>
+            </div>
+          </div>
+        </div>
+      `;
+
+      colPendente.insertAdjacentHTML('afterbegin', spinnerCardHTML);
+      mostrarToastFeedback("Decompondo nova tarefa com IA...");
+
+      setTimeout(() => {
+        const tempElement = document.getElementById(tempId);
+        if (tempElement) tempElement.remove();
+
+        const novaId = 'task_' + (tarefasDB.length + 1) + '_' + Math.floor(Math.random() * 100);
+
+        const novaTarefa = {
+          id: novaId,
+          titulo: "Estudo de Algoritmos Gulosos (Greedy) & Huffman",
+          descricao: "Entender critérios de escolha ótima local e codificação ótima para compressão de dados.",
+          prioridade: "alta",
+          categoria: "tarefas_educacionais",
+          status: "pendente",
+          subtarefas: [
+            { id: novaId + "_s1", texto: "Compreender teorema da subestrutura ótima", feita: false },
+            { id: novaId + "_s2", texto: "Construir árvore de Huffman manualmente para um texto exemplo", feita: false },
+            { id: novaId + "_s3", texto: "Implementar fila de prioridade para a geração de prefixos", feita: false }
+          ]
+        };
+
+        tarefasDB.unshift(novaTarefa);
+        listarTarefas();
+        mostrarToastFeedback("✨ Nova Tarefa adicionada em 'A Fazer'!");
+      }, 1200);
+    }
+
+    async function arrastarTarefa(idTarefa, novaColuna) {
+      const tarefa = tarefasDB.find(t => t.id === idTarefa);
+      if (tarefa) {
+        tarefa.status = novaColuna;
+        listarTarefas();
+
+        const nomesCol = {
+          pendente: 'A Fazer',
+          em_andamento: 'Em Andamento',
+          concluido: 'Concluído'
+        };
+        mostrarToastFeedback(`Tarefa movida para "${nomesCol[novaColuna]}"`);
+
+        if (tarefa.realId) {
+          try {
+            await apiFetch(`${API_URL}/tarefas/${tarefa.realId}/status`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status: novaColuna })
+            });
+          } catch (err) {
+            console.error("Erro ao persistir status da tarefa:", err);
+          }
+        }
+      }
+    }
+
+    function renderizarCardHTML(t) {
+      const totalSubs = t.subtarefas.length;
+      const subsFeitas = t.subtarefas.filter(s => s.feita).length;
+      const todasFeitas = totalSubs > 0 && subsFeitas === totalSubs;
+
+      // Badges com ícone + forma + alto contraste para acessibilidade (TDAH & Baixa Visão)
+      let prioridadeBadge = '';
+      if (t.prioridade === 'alta') {
+        prioridadeBadge = '<span class="text-[9px] px-2 py-0.5 rounded bg-[#1f1f24] text-rose-300 border border-rose-500/60 font-mono font-semibold flex items-center gap-1"><span class="w-1.5 h-1.5 bg-rose-500 inline-block"></span> ALTA</span>';
+      } else if (t.prioridade === 'media') {
+        prioridadeBadge = '<span class="text-[9px] px-2 py-0.5 rounded bg-[#1f1f24] text-amber-300 border border-amber-400/60 font-mono font-semibold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-sm bg-amber-400 inline-block"></span> MÉDIA</span>';
+      } else {
+        prioridadeBadge = '<span class="text-[9px] px-2 py-0.5 rounded bg-[#1f1f24] text-emerald-300 border border-emerald-400/60 font-mono font-semibold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span> BAIXA</span>';
+      }
+
+      const isEdu = t.categoria === 'tarefas_educacionais';
+      const catBadge = isEdu 
+        ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-[#080808] text-[#fffff2] border border-[#26262b] font-mono">TPAC Edu</span>'
+        : '<span class="text-[9px] px-1.5 py-0.5 rounded bg-[#080808] text-[#9d9da6] border border-[#26262b] font-mono">Rotina</span>';
+
+      let subtarefasHTML = '';
+      t.subtarefas.forEach((sub, idx) => {
+        const textoClasses = sub.feita ? 'line-through text-[#9d9da6]' : 'text-[#fffff2]';
+        subtarefasHTML += `
+          <li class="flex items-start gap-2.5 p-2 rounded-lg bg-[#080808] border border-[#26262b] hover:border-[#3a3a42] transition">
+            <span class="text-[10px] font-mono text-[#9d9da6] font-bold mt-0.5">#${idx + 1}</span>
+            <input 
+              type="checkbox" 
+              ${sub.feita ? 'checked' : ''} 
+              onchange="alternarSubtarefa(event, '${t.id}', '${sub.id}')"
+              class="mt-1 w-3.5 h-3.5 rounded border-[#26262b] bg-[#161619] text-[#fffff2] focus:ring-[#fffff2] cursor-pointer"
+            >
+            <span class="text-xs ${textoClasses} select-text leading-tight">${sub.texto}</span>
+          </li>
+        `;
+      });
+
+      return `
+        <div 
+          id="${t.id}"
+          draggable="true" 
+          ondragstart="iniciarArrasto(event, '${t.id}')"
+          class="group rounded-xl bg-[#161619] border border-[#26262b] hover:border-[#3a3a42] p-3.5 cursor-grab active:cursor-grabbing transition duration-150"
+        >
+          <!-- Cabeçalho do Card (Prioridade + Categoria + Progresso) -->
+          <div class="flex items-center justify-between gap-2 mb-2">
+            <div class="flex items-center gap-1.5">
+              ${prioridadeBadge}
+              ${catBadge}
+            </div>
+            <div id="progresso-${t.id}" class="text-[10px] font-mono px-2 py-0.2 rounded ${todasFeitas ? 'bg-[#fffff2] text-[#080808] font-bold' : 'bg-[#080808] text-[#fffff2]'} border border-[#26262b]">
+              ${subsFeitas}/${totalSubs}
+            </div>
+          </div>
+
+          <!-- Título da Tarefa -->
+          <h4 class="font-bold text-xs text-[#fffff2] tracking-tight leading-snug mb-1">
+            ${t.titulo}
+          </h4>
+
+          <!-- Descrição curta -->
+          <p class="text-[11px] text-[#9d9da6] line-clamp-2 leading-relaxed mb-3">
+            ${t.descricao}
+          </p>
+
+          <!-- BOTÃO EXCLUSIVO: Desestruturar com IA -->
+          <div class="mb-2.5">
+            <button 
+              onclick="desestruturarTarefaComIA('${t.id}')" 
+              class="w-full py-1.5 px-2.5 rounded-lg bg-[#1f1f24] hover:bg-[#26262b] hover:border-[#fffff2] text-[#fffff2] border border-[#3a3a42] text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 group/btn"
+              title="Decompor objetivo com inteligência artificial Gemini"
+            >
+              <span class="material-symbols-outlined text-[15px] text-[#fffff2]">magic_button</span>
+              <span>Desestruturar com IA</span>
+              <span class="text-[9px] text-[#9d9da6] group-hover/btn:text-[#fffff2] font-mono">Gemini</span>
+            </button>
+          </div>
+
+          <!-- Botão gatilho para Accordion de Passos Inteligentes -->
+          <div 
+            onclick="alternarAccordion('${t.id}')" 
+            class="flex items-center justify-between pt-2 border-t border-[#26262b] text-xs text-[#9d9da6] hover:text-[#fffff2] cursor-pointer"
+          >
+            <span class="flex items-center gap-1.5 font-medium text-[11px]">
+              <span class="material-symbols-outlined text-[14px]">checklist</span>
+              Passos Inteligentes IA
+            </span>
+            <span class="flex items-center gap-1 text-[10px]">
+              <span id="label-acc-${t.id}">Ver passos</span>
+              <svg id="arrow-${t.id}" class="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+            </span>
+          </div>
+
+          <!-- Conteúdo do Accordion Expansível -->
+          <div id="accordion-${t.id}" class="accordion-content">
+            <div class="p-2 rounded-lg bg-[#111113] border border-[#26262b] space-y-1.5">
+              <div class="flex items-center justify-between text-[10px] text-[#9d9da6] mb-1 font-mono">
+                <span>Roteiro Pedagógico:</span>
+                <span class="text-[#fffff2] font-semibold">${subsFeitas === totalSubs && totalSubs > 0 ? '✓ Concluído' : 'Em curso'}</span>
+              </div>
+              <ul class="space-y-1">
+                ${subtarefasHTML}
+              </ul>
+            </div>
+          </div>
+
+          <!-- Rodapé de Ações de Coluna Rápida -->
+          <div class="mt-2.5 pt-2 border-t border-[#26262b] flex items-center justify-end gap-1.5 text-[9px] font-mono">
+            <span class="text-[#9d9da6] mr-auto">Mover:</span>
+            ${t.status !== 'pendente' ? `<button onclick="arrastarTarefa('${t.id}', 'pendente')" class="px-2 py-0.5 rounded bg-[#1f1f24] text-[#fffff2] hover:bg-[#fffff2] hover:text-[#080808] transition">A Fazer</button>` : ''}
+            ${t.status !== 'em_andamento' ? `<button onclick="arrastarTarefa('${t.id}', 'em_andamento')" class="px-2 py-0.5 rounded bg-[#1f1f24] text-[#fffff2] hover:bg-[#fffff2] hover:text-[#080808] transition">Andamento</button>` : ''}
+            ${t.status !== 'concluido' ? `<button onclick="arrastarTarefa('${t.id}', 'concluido')" class="px-2 py-0.5 rounded bg-[#1f1f24] text-[#fffff2] hover:bg-[#fffff2] hover:text-[#080808] transition">Concluir</button>` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    function alternarAccordion(cardId) {
+      const accordion = document.getElementById(`accordion-${cardId}`);
+      const arrow = document.getElementById(`arrow-${cardId}`);
+      const label = document.getElementById(`label-acc-${cardId}`);
+
+      if (accordion.classList.contains('expanded')) {
+        accordion.classList.remove('expanded');
+        arrow.classList.remove('rotate-180');
+        label.textContent = 'Ver passos';
+      } else {
+        accordion.classList.add('expanded');
+        arrow.classList.add('rotate-180');
+        label.textContent = 'Recolher passos';
+      }
+    }
+
+    function alternarSubtarefa(event, taskId, subId) {
+      event.stopPropagation();
+      const tarefa = tarefasDB.find(t => t.id === taskId);
+      if (!tarefa) return;
+
+      const subtarefa = tarefa.subtarefas.find(s => s.id === subId);
+      if (subtarefa) {
+        subtarefa.feita = event.target.checked;
+        const totalSubs = tarefa.subtarefas.length;
+        const subsFeitas = tarefa.subtarefas.filter(s => s.feita).length;
+        
+        if (subsFeitas === totalSubs && tarefa.status !== 'concluido') {
+          mostrarToastFeedback(`Todas as etapas de "${tarefa.titulo.slice(0, 20)}..." cumpridas!`);
+        }
+
+        listarTarefas();
+        setTimeout(() => {
+          const acc = document.getElementById(`accordion-${taskId}`);
+          const arrow = document.getElementById(`arrow-${taskId}`);
+          const label = document.getElementById(`label-acc-${taskId}`);
+          if (acc) {
+            acc.classList.add('expanded');
+            if (arrow) arrow.classList.add('rotate-180');
+            if (label) label.textContent = 'Recolher passos';
+          }
+        }, 50);
+      }
+    }
+
+    let idSendoArrastado = null;
+
+    function iniciarArrasto(event, taskId) {
+      idSendoArrastado = taskId;
+      event.dataTransfer.setData('text/plain', taskId);
+      event.dataTransfer.effectAllowed = 'move';
+    }
+
+    function permitirSoltar(event) {
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'move';
+    }
+
+    function soltarTarefa(event, novaColuna) {
+      event.preventDefault();
+      const taskId = event.dataTransfer.getData('text/plain') || idSendoArrastado;
+      if (taskId) {
+        arrastarTarefa(taskId, novaColuna);
+      }
+    }
+
+    function filtrarCategoria(cat) {
+      filtroCategoriaAtiva = cat;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        if (btn.getAttribute('data-filter') === cat) {
+          btn.classList.add('bg-[#1f1f24]', 'text-[#fffff2]', 'border-[#3a3a42]');
+          btn.classList.remove('text-[#9d9da6]', 'border-transparent');
+        } else {
+          btn.classList.remove('bg-[#1f1f24]', 'text-[#fffff2]', 'border-[#3a3a42]');
+          btn.classList.add('text-[#9d9da6]', 'border-transparent');
+        }
+      });
+      listarTarefas();
+    }
+
+    function filtrarTarefasInput(valor) {
+      termoBuscaAtivo = valor;
+      listarTarefas();
+    }
+
+    function abrirModalAuth() {
+      document.getElementById('modalAuth').classList.remove('hidden');
+    }
+
+    function fecharModalAuth() {
+      document.getElementById('modalAuth').classList.add('hidden');
+      document.getElementById('authAlert').classList.add('hidden');
+    }
+
+    function alternarTabAuth(tab) {
+      const formLogin = document.getElementById('formLogin');
+      const formCad = document.getElementById('formCadastro');
+      const btnLog = document.getElementById('tabBtnLogin');
+      const btnCad = document.getElementById('tabBtnCadastro');
+      const alertBox = document.getElementById('authAlert');
+      alertBox.classList.add('hidden');
+
+      if (tab === 'login') {
+        formLogin.classList.remove('hidden');
+        formCad.classList.add('hidden');
+        btnLog.className = "flex-1 py-2 font-bold text-xs uppercase tracking-wider text-[#fffff2] border-b-2 border-[#fffff2]";
+        btnCad.className = "flex-1 py-2 font-bold text-xs uppercase tracking-wider text-[#9d9da6] hover:text-[#fffff2] border-b-2 border-transparent";
+      } else {
+        formLogin.classList.add('hidden');
+        formCad.classList.remove('hidden');
+        btnCad.className = "flex-1 py-2 font-bold text-xs uppercase tracking-wider text-[#fffff2] border-b-2 border-[#fffff2]";
+        btnLog.className = "flex-1 py-2 font-bold text-xs uppercase tracking-wider text-[#9d9da6] hover:text-[#fffff2] border-b-2 border-transparent";
+      }
+    }
+
+    function submeterLogin() {
+      const nome = document.getElementById('loginNome').value;
+      const senha = document.getElementById('loginSenha').value;
+      efetuarLogin(nome, senha);
+    }
+
+    function submeterCadastro() {
+      const nome = document.getElementById('cadNome').value;
+      const senha = document.getElementById('cadSenha').value;
+      const estilo = document.getElementById('cadEstilo').value;
+      cadastrarUsuario(nome, senha, estilo);
+    }
+
+    function atualizarInterfaceUsuario() {
+      try {
+        const badge = document.getElementById('userStatusBadge');
+        if (badge) badge.textContent = 'Conectado';
+      } catch(e) {}
+    }
+
+    function mostrarToastFeedback(msg) {
+      const toast = document.getElementById('liveFeedbackToast');
+      toast.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-[#fffff2]"></span> ${msg}`;
+      toast.classList.remove('hidden');
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3000);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      verificarSessaoECarregar();
+    });
+  </script>
+
+
+<div class="fixed bottom-6 right-6 z-50"><button id="fabToggleChat" onclick="alternarDrawerChat()" class="px-4 py-2.5 bg-[#161619] hover:bg-[#1f1f24] active:scale-95 text-[#fffff2] rounded-full border border-[#3a3a42] hover:border-[#fffff2] shadow-2xl flex items-center gap-2.5 transition duration-150 focus-ring cursor-pointer group"><span class="w-2 h-2 rounded-full bg-emerald-400 group-hover:scale-125 transition-transform"></span><span class="material-symbols-outlined text-[18px] text-[#fffff2]">smart_toy</span><span class="text-xs font-semibold tracking-wide">Assistente IA</span><span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#080808] text-[#9d9da6] group-hover:text-[#fffff2] border border-[#26262b]">TPAC</span></button></div>
+
+<!-- Elementos de suporte de sessão ocultos para evitar null reference -->
+<div id="userStatusBadge" class="hidden"></div>
+<div id="loggedUserName" class="hidden"></div>
+<div id="loggedUserStyle" class="hidden"></div>
+
+</body></html>

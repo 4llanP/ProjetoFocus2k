@@ -1,8 +1,12 @@
 import jwt
 import os
+from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
-from fastapi import HTTPException, Security, Depends
+from fastapi import HTTPException, Security, Depends, Cookie
+from typing import Optional
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
+load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 if not SECRET_KEY:
@@ -10,8 +14,8 @@ if not SECRET_KEY:
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
-# Define que o token deve vir no header "Authorization: Bearer <token>"
-security = HTTPBearer()
+# Define que o token pode vir no header Bearer ou via Cookie
+security = HTTPBearer(auto_error=False)
 
 def criar_token_acesso(dados: dict):
     to_encode = dados.copy()
@@ -20,8 +24,19 @@ def criar_token_acesso(dados: dict):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-def verificar_token(credentials: HTTPAuthorizationCredentials = Security(security)):
-    token = credentials.credentials
+def verificar_token(
+    credentials: Optional[HTTPAuthorizationCredentials] = Security(security),
+    access_token: Optional[str] = Cookie(None)
+):
+    token = None
+    if credentials and credentials.credentials:
+        token = credentials.credentials
+    elif access_token:
+        token = access_token
+
+    if not token:
+        raise HTTPException(status_code=401, detail="Token ausente ou não autenticado")
+
     try:
         # Tenta decodificar o token
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])

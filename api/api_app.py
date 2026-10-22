@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from api.rotas_usuarios import router as usuarios_router
 from api.rotas_tarefas import router as tarefas_router
@@ -17,6 +18,9 @@ app.add_middleware(
 app.include_router(usuarios_router)
 app.include_router(tarefas_router)
 
+# Monta a pasta ui para servir o front-end
+app.mount("/ui", StaticFiles(directory="ui"), name="ui")
+
 @app.get("/")
 def inicio():
-    return {"sistema": "TPaC", "api": "funcionando"}
+    return {"sistema": "TPaC", "api": "funcionando", "ui": "/ui/tela_login.html"}

@@ -23,6 +23,9 @@ class Tarefa(Base):
     )
     prazo: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
     concluida: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    status: Mapped[str] = mapped_column(
+        String(20), default="pendente", nullable=False
+    )
     criado_em: Mapped[datetime] = mapped_column(
         DateTime, default=datetime.utcnow, nullable=False
     )
@@ -37,5 +40,6 @@ class Tarefa(Base):
             "prioridade": self.prioridade,
             "prazo": self.prazo.isoformat() if self.prazo else None,
             "concluida": self.concluida,
+            "status": self.status,
             "criado_em": self.criado_em.isoformat() if self.criado_em else None
         }

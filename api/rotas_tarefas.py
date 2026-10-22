@@ -5,7 +5,7 @@ from config.database import SessionLocal
 from controllers.tarefa_controller import TarefaController
 from core.auth import verificar_token
 from core.ia_service import gerar_passos_tarefa
-from models.tarefa_schema import NovaTarefa, NovoPasso, AtualizarPasso, PassoResposta
+from models.tarefa_schema import NovaTarefa, NovoPasso, AtualizarPasso, PassoResposta, AtualizarStatusTarefa
 from models.passo import Passo
 import models.usuario
 from repositories.tarefa_repository import TarefaRepository
@@ -188,3 +188,26 @@ def deletar_tarefa(tarefa_id: int, usuario_logado: dict = Depends(verificar_toke
 
         repo.deletar(tarefa)
         return {"mensagem": "Tarefa excluída com sucesso."}
+
+
+@router.patch("/{tarefa_id}/status")
+def atualizar_status_tarefa(tarefa_id: int, dados: AtualizarStatusTarefa, usuario_logado: dict = Depends(verificar_token)):
+    with SessionLocal() as db:
+        repo = TarefaRepository(db)
+        tarefa = repo.buscar_por_id(tarefa_id)
+        if not tarefa:
+            raise HTTPException(status_code=404, detail="Tarefa não encontrada.")
+        if tarefa.usuario_id != int(usuario_logado['sub']):
+            raise HTTPException(status_code=403, detail="Acesso negado.")
+
+        if dados.status not in ["pendente", "em_andamento", "concluido"]:
+            raise HTTPException(status_code=422, detail="Status inválido.")
+
+        tarefa.status = dados.status
+        if dados.status == "concluido":
+            tarefa.concluida = True
+        else:
+            tarefa.concluida = False
+
+        repo.salvar(tarefa)
+        return {"mensagem": "Status atualizado com sucesso.", "dados": tarefa.to_dict()}

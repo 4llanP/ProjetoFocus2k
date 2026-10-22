@@ -58,3 +58,7 @@ class TarefaResposta(BaseModel):
     status: str
     prazo: Optional[date] = None
     criado_em: Optional[datetime] = None
+
+
+class AtualizarStatusTarefa(BaseModel):
+    status: str

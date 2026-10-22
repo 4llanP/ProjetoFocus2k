@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, Response
 from pydantic import BaseModel
 
 from config.database import SessionLocal
@@ -128,10 +128,21 @@ def criar_usuario(dados: NovoUsuario):
 
 
 @router.post("/login")
-def login(dados: Login):
+def login(dados: Login, response: Response):
     resposta = controller.autenticar_perfil(dados.email, dados.senha)
     if not resposta["sucesso"]:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=resposta["mensagem"])
+
+    # Define o cookie HTTP-only para gerenciar a sessão de forma segura e automática
+    response.set_cookie(
+        key="access_token",
+        value=resposta["token"],
+        httponly=True,
+        samesite="lax",
+        secure=False,
+        path="/",
+        max_age=3600
+    )
     return resposta
 
 
