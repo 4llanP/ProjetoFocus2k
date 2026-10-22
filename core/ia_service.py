@@ -1,4 +1,4 @@
-"""Serviço de integração com a API Gemini para recursos de IA."""
+"""Serviço de integração com IA para recursos do sistema."""
 
 # pylint: disable=line-too-long
 # pylint: disable=astroid-error
@@ -34,7 +34,7 @@ def _obter_instrucao_ia(estilo_usuario: str) -> str:
 
 
 def obter_resposta_ia(pergunta: str, estilo_usuario: str) -> list:
-    """Conecta ao Gemini para responder dúvidas gerais de estudos ou organização."""
+    """Conecta ao serviço de IA para responder dúvidas gerais de estudos ou organização."""
     if not client:
         return [
             "Erro: Variável de ambiente GEMINI_API_KEY não configurada.",
@@ -58,7 +58,7 @@ def obter_resposta_ia(pergunta: str, estilo_usuario: str) -> list:
 
 
 def gerar_passos_tarefa(titulo_tarefa: str) -> list:
-    """Usa o Gemini para quebrar uma tarefa macro em micro-ações sequenciais."""
+    """Usa a IA para quebrar uma tarefa macro em micro-ações sequenciais."""
     if not client:
         return ["Configure a GEMINI_API_KEY para habilitar esta função."]
     prompt = (

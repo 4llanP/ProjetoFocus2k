@@ -269,7 +269,7 @@
 <h3 class="font-bold text-xs text-[#fffff2] tracking-wide">Assistente IA</h3>
 <span class="text-[9px] px-1 py-0.2 rounded bg-[#1f1f24] text-emerald-300 border border-[#26262b] font-mono font-semibold flex items-center gap-1">
 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-              Gemini
+              Ativo
             </span>
 </div>
 <p class="text-[10px] text-[#9d9da6] font-mono">core/tarefas.py integrado</p>
@@ -298,7 +298,7 @@
 </div>
 <div class="bg-[#161619] border border-[#26262b] p-3 rounded-xl rounded-tl-none text-[#fffff2] max-w-[85%] space-y-1.5">
 <p class="leading-relaxed">
-            Olá! Sou o seu <b>Assistente de Decomposição</b> baseado no modelo Gemini.
+            Olá! Sou o seu <b>Assistente de Decomposição</b> inteligente.
           </p>
 <p class="text-[#9d9da6] text-[11px] leading-relaxed">
             Clique no botão <span class="px-1 py-0.2 rounded bg-[#1f1f24] text-[#fffff2] border border-[#3a3a42] font-semibold font-mono">Desestruturar com IA</span> em qualquer card do Kanban ou digite sua dúvida abaixo!
@@ -641,10 +641,10 @@
       const typingIndicator = document.getElementById('chatTypingIndicator');
       const typingText = document.getElementById('chatTypingText');
       if (typingIndicator) typingIndicator.classList.remove('hidden');
-      if (typingText) typingText.textContent = `Analisando complexidade com core/tarefas.py para "${tarefa.titulo.slice(0, 24)}..."`;
+      if (typingText) typingText.textContent = `Analisando complexidade para "${tarefa.titulo.slice(0, 24)}..."`;
       rolarChatParaFinal();
 
-      mostrarToastFeedback("Gemini gerando decomposição cognitiva...");
+      mostrarToastFeedback("Gerando decomposição cognitiva...");
 
       setTimeout(() => {
         typingIndicator.classList.add('hidden');
@@ -800,7 +800,7 @@
       const typingIndicator = document.getElementById('chatTypingIndicator');
       const typingText = document.getElementById('chatTypingText');
       typingIndicator.classList.remove('hidden');
-      typingText.textContent = 'Processando diretriz via Gemini core...';
+      typingText.textContent = 'Processando diretriz...';
       rolarChatParaFinal();
 
       setTimeout(() => {
@@ -864,7 +864,7 @@
           </div>
           <div class="bg-[#161619] border border-[#26262b] p-2.5 rounded-xl rounded-tl-none text-[#fffff2] max-w-[85%] space-y-1.5">
             <p class="leading-relaxed">
-              Histórico reiniciado. O assistente Gemini está pronto para novas análises e decomposições de estudo.
+              Histórico reiniciado. O assistente está pronto para novas análises e decomposições de estudo.
             </p>
           </div>
         </div>
@@ -1001,7 +1001,7 @@
           <div class="flex items-center gap-2.5">
             <div class="w-4 h-4 border-2 border-[#fffff2] border-t-transparent rounded-full animate-spin"></div>
             <div>
-              <span class="text-[10px] font-bold text-[#fffff2] uppercase tracking-wider font-mono">Gemini Focus Engine</span>
+              <span class="text-[10px] font-bold text-[#fffff2] uppercase tracking-wider font-mono">Focus Engine</span>
               <p class="text-xs text-[#fffff2] font-medium">Decompondo passos pedagógicos...</p>
             </div>
           </div>
@@ -1132,11 +1132,10 @@
             <button
               onclick="desestruturarTarefaComIA('${t.id}')"
               class="w-full py-1.5 px-2.5 rounded-lg bg-[#1f1f24] hover:bg-[#26262b] hover:border-[#fffff2] text-[#fffff2] border border-[#3a3a42] text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 group/btn"
-              title="Decompor objetivo com inteligência artificial Gemini"
+              title="Decompor objetivo com inteligência artificial"
             >
               <span class="material-symbols-outlined text-[15px] text-[#fffff2]">magic_button</span>
               <span>Desestruturar com IA</span>
-              <span class="text-[9px] text-[#9d9da6] group-hover/btn:text-[#fffff2] font-mono">Gemini</span>
             </button>
           </div>
 
