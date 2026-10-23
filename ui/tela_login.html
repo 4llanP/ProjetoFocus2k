@@ -64,18 +64,18 @@
         <!-- Tabs Acessíveis com Alto Contraste -->
         <div class="flex border-b border-[#222226] mb-6 gap-2">
           <button id="tabLogin" onclick="mudarAba('login')" class="flex-1 pb-3 text-sm sm:text-base font-bold text-[#fffff2] border-b-2 border-[#fffff2] text-center transition flex items-center justify-center gap-2">
-            <span class="">●</span>
+            <span class=""></span>
             <span class="">Entrar na Conta</span>
           </button>
           <button id="tabCadastro" onclick="mudarAba('cadastro')" class="flex-1 pb-3 text-sm sm:text-base font-medium text-[#75757d] hover:text-[#d6d6de] border-b-2 border-transparent text-center transition flex items-center justify-center gap-2">
-            <span class="">○</span>
+            <span class=""></span>
             <span class="">Criar Acesso</span>
           </button>
         </div>
 
         <!-- Mensagens de Alerta Dinâmicas -->
         <div id="statusAlert" class="mb-5 p-3.5 rounded-xl text-xs font-semibold border flex items-center gap-2.5 bg-[#18181c] border-[#333338] text-[#fffff2] hidden">
-          <span id="alertIcon" class="">ℹ️</span>
+          <span id="alertIcon" class="">ℹ</span>
           <span id="alertMessage" class="">Instruções de recuperação foram enviadas para seu e-mail cadastrado.</span>
         </div>
 
@@ -197,7 +197,7 @@
 
         <!-- Atalho para Teste de Dashboard -->
         <a href="dashboard.html" class="w-full py-2.5 px-3 rounded-xl border border-dashed border-[#333338] hover:border-[#fffff2] bg-[#0c0c0e] text-xs font-mono text-[#75757d] hover:text-[#fffff2] transition flex items-center justify-center gap-2">
-          <span>🚀 Ir direto para o Dashboard (Teste)</span>
+          <span> Ir direto para o Dashboard (Teste)</span>
         </a>
 
       </div>
@@ -247,10 +247,10 @@
       const icon = document.getElementById(iconId);
       if (input.type === 'password') {
         input.type = 'text';
-        icon.textContent = '🔒';
+        icon.textContent = '';
       } else {
         input.type = 'password';
-        icon.textContent = '👁️';
+        icon.textContent = '';
       }
     }
 
@@ -263,13 +263,13 @@
 
       if (tipo === 'erro') {
         alert.classList.add('bg-rose-950/70', 'border-rose-500/80', 'text-rose-200');
-        icon.textContent = '⚠️';
+        icon.textContent = '';
       } else if (tipo === 'sucesso') {
         alert.classList.add('bg-emerald-950/70', 'border-emerald-500/80', 'text-emerald-200');
-        icon.textContent = '✓';
+        icon.textContent = '';
       } else {
         alert.classList.add('bg-[#18181c]', 'border-[#333338]', 'text-[#fffff2]');
-        icon.textContent = 'ℹ️';
+        icon.textContent = 'ℹ';
       }
 
       text.textContent = msg;

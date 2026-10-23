@@ -250,7 +250,7 @@ def _mostrar_tarefas(tarefas):
             print(f"\n   {BOLD}Descrição:{RESET} {tarefa['descricao']}")
 
         for i, passo in enumerate(tarefa.get("passos", []), 1):
-            simbolo = "✓" if passo.get("concluido") else "○"
+            simbolo = "" if passo.get("concluido") else ""
             print(f"     {i}. {simbolo} {passo['texto']}")
 
 
