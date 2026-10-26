@@ -1378,7 +1378,11 @@
     
     function abrirModalPerfil() {
       document.getElementById('perfilModalNome').textContent = usuarioAtual.nome || 'Usuário';
-      document.getElementById('perfilModalRole').textContent = usuarioAtual.role || 'Estudante';
+      let roleText = usuarioAtual.role || 'Estudante';
+      if (roleText === 'admin') roleText = 'Administrador';
+      else if (roleText === 'estudante') roleText = 'Estudante';
+      else roleText = roleText.charAt(0).toUpperCase() + roleText.slice(1);
+      document.getElementById('perfilModalRole').textContent = roleText;
       document.getElementById('perfilModalEstilo').textContent = usuarioAtual.estiloInstrucao || 'direto';
       document.getElementById('modalPerfil').classList.remove('hidden');
     }
@@ -1396,7 +1400,13 @@
       const nameEl = document.getElementById('sidebarUserName');
       const roleEl = document.getElementById('sidebarUserRole');
       if (nameEl && usuarioAtual.nome) nameEl.textContent = usuarioAtual.nome;
-      if (roleEl && usuarioAtual.role) roleEl.textContent = usuarioAtual.role;
+      if (roleEl && usuarioAtual.role) {
+        let roleText = usuarioAtual.role;
+        if (roleText === 'admin') roleText = 'Administrador';
+        else if (roleText === 'estudante') roleText = 'Estudante';
+        else roleText = roleText.charAt(0).toUpperCase() + roleText.slice(1);
+        roleEl.textContent = roleText;
+      }
     }
 
     function abrirModalAuth() {
