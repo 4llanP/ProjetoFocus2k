@@ -1237,7 +1237,7 @@
       const tarefa = tarefasDB.find(t => t.id === taskId);
       if (!tarefa) return;
 
-      const subtarefa = tarefa.subtarefas.find(s => s.id === subId);
+      const subtarefa = tarefa.subtarefas.find(s => s.id == subId);
       if (subtarefa) {
         subtarefa.feita = event.target.checked;
         const totalSubs = tarefa.subtarefas.length;
@@ -1247,7 +1247,7 @@
           mostrarToastFeedback(`Todas as etapas de "${tarefa.titulo.slice(0, 20)}..." cumpridas!`);
         }
 
-        if (tarefa.realId && typeof subId === 'number') {
+        if (tarefa.realId && subId && !String(subId).startsWith('sub_ia_')) {
           try {
             await apiFetch(`${API_URL}/tarefas/passos/${subId}/toggle`, {
               method: 'PATCH',
