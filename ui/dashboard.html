@@ -732,7 +732,7 @@
       container.insertAdjacentHTML('beforeend', messageCardHtml);
     }
 
-    function injetarSubtarefasNoKanban(proposalId, taskId) {
+    async function injetarSubtarefasNoKanban(proposalId, taskId) {
       const tarefa = tarefasDB.find(t => t.id === taskId);
       if (!tarefa) return;
 
@@ -742,19 +742,41 @@
       const checkboxes = listContainer.querySelectorAll('input[type="checkbox"]');
       let injetadasCount = 0;
 
-      checkboxes.forEach((chk, idx) => {
+      for (let idx = 0; idx < checkboxes.length; idx++) {
+        const chk = checkboxes[idx];
         if (chk.checked) {
           const labelSpan = chk.closest('label').querySelector('span.text-xs');
           const texto = labelSpan ? labelSpan.textContent.trim() : `Nova etapa #${idx + 1}`;
-          
-          tarefa.subtarefas.push({
-            id: `sub_ia_${Date.now()}_${idx}`,
-            texto: texto,
-            feita: false
-          });
-          injetadasCount++;
+
+          if (tarefa.realId) {
+            try {
+              const res = await apiFetch(`${API_URL}/tarefas/${tarefa.realId}/passos`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ texto: texto, ordem: idx + 1 })
+              });
+              if (res.ok) {
+                const novoPasso = await res.json();
+                tarefa.subtarefas.push({
+                  id: novoPasso.id,
+                  texto: novoPasso.texto,
+                  feita: novoPasso.concluido
+                });
+                injetadasCount++;
+              }
+            } catch (err) {
+              console.error("Erro ao salvar passo na API:", err);
+            }
+          } else {
+            tarefa.subtarefas.push({
+              id: `sub_ia_${Date.now()}_${idx}`,
+              texto: texto,
+              feita: false
+            });
+            injetadasCount++;
+          }
         }
-      });
+      }
 
       if (injetadasCount === 0) {
         mostrarToastFeedback('Selecione ao menos 1 subtarefa para injetar.');
@@ -1210,7 +1232,7 @@
       }
     }
 
-    function alternarSubtarefa(event, taskId, subId) {
+    async function alternarSubtarefa(event, taskId, subId) {
       event.stopPropagation();
       const tarefa = tarefasDB.find(t => t.id === taskId);
       if (!tarefa) return;
@@ -1220,9 +1242,20 @@
         subtarefa.feita = event.target.checked;
         const totalSubs = tarefa.subtarefas.length;
         const subsFeitas = tarefa.subtarefas.filter(s => s.feita).length;
-        
+
         if (subsFeitas === totalSubs && tarefa.status !== 'concluido') {
           mostrarToastFeedback(`Todas as etapas de "${tarefa.titulo.slice(0, 20)}..." cumpridas!`);
+        }
+
+        if (tarefa.realId && typeof subId === 'number') {
+          try {
+            await apiFetch(`${API_URL}/tarefas/passos/${subId}/toggle`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' }
+            });
+          } catch (e) {
+            console.error("Erro ao alternar passo na API:", e);
+          }
         }
 
         listarTarefas();
