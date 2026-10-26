@@ -162,8 +162,8 @@
 	        <span class="material-symbols-outlined text-[14px]">account_circle</span>
 	      </div>
 	      <div class="min-w-0">
-	        <p class="text-xs font-semibold text-[#fffff2] truncate" id="sidebarUserName">Usuário</p>
-	        <p class="text-[10px] text-[#9d9da6] truncate" id="sidebarUserRole">Estudante</p>
+	        <p class="text-xs font-semibold text-[#fffff2] truncate" id="sidebarUserName"><script>document.write(localStorage.getItem('userName') || 'Usuário')</script></p>
+	        <p class="text-[10px] text-[#9d9da6] truncate" id="sidebarUserRole"><script>document.write(localStorage.getItem('role') || 'Estudante')</script></p>
 	      </div>
 	    </div>
 	  </div>
@@ -510,12 +510,18 @@
     let filtroCategoriaAtiva = 'todas';
     let termoBuscaAtivo = '';
     let usuarioAtual = {
-      nome: 'Carregando...',
+      nome: localStorage.getItem('userName') || '',
+      role: localStorage.getItem('role') || '',
       estiloInstrucao: 'direto',
-      autenticado: false
+      autenticado: !!localStorage.getItem('token')
     };
     let drawerChatAberto = true;
     let cardSendoDesestruturado = null;
+
+    // Atualiza imediatamente com dados salvos no localStorage, se houver
+    document.addEventListener('DOMContentLoaded', () => {
+      atualizarInterfaceUsuario();
+    });
 
     function setSafeText(id, text) {
       const el = document.getElementById(id);
@@ -574,6 +580,8 @@
           estiloInstrucao: user.estilo_instrucao || 'direto',
           autenticado: true
         };
+        localStorage.setItem('userName', user.nome);
+        localStorage.setItem('role', user.role);
         atualizarInterfaceUsuario();
         await carregarTarefasDaAPI();
       } catch (uiErr) {}
@@ -898,6 +906,33 @@
 
         if (res.ok && data.resposta) {
           adicionarMensagemIA(data.resposta);
+          if (data.dados_tarefa) {
+            let subtarefasCarregadas = [];
+            try {
+              const resPassos = await apiFetch(`${API_URL}/tarefas/${data.dados_tarefa.id}/passos`);
+              if (resPassos.ok) {
+                const passos = await resPassos.json();
+                subtarefasCarregadas = passos.map(p => ({
+                  id: p.id,
+                  texto: p.texto,
+                  feita: p.concluido
+                }));
+              }
+            } catch (e) {}
+
+            tarefasDB.push({
+              id: data.dados_tarefa.id,
+              realId: data.dados_tarefa.id,
+              titulo: data.dados_tarefa.titulo,
+              descricao: data.dados_tarefa.descricao,
+              prioridade: data.dados_tarefa.prioridade,
+              status: data.dados_tarefa.status || 'pendente',
+              tipo: data.dados_tarefa.tipo,
+              subtarefas: subtarefasCarregadas
+            });
+            listarTarefas();
+            mostrarToastFeedback("Tarefa criada pela IA no Kanban!");
+          }
         } else {
           responderMensagemLivre(texto);
         }
@@ -1377,12 +1412,8 @@
 
     
     function abrirModalPerfil() {
-      document.getElementById('perfilModalNome').textContent = usuarioAtual.nome || 'Usuário';
-      let roleText = usuarioAtual.role || 'Estudante';
-      if (roleText === 'admin') roleText = 'Administrador';
-      else if (roleText === 'estudante') roleText = 'Estudante';
-      else roleText = roleText.charAt(0).toUpperCase() + roleText.slice(1);
-      document.getElementById('perfilModalRole').textContent = roleText;
+      document.getElementById('perfilModalNome').textContent = usuarioAtual.nome || '';
+      document.getElementById('perfilModalRole').textContent = usuarioAtual.role || '';
       document.getElementById('perfilModalEstilo').textContent = usuarioAtual.estiloInstrucao || 'direto';
       document.getElementById('modalPerfil').classList.remove('hidden');
     }
@@ -1399,14 +1430,10 @@
     function atualizarInterfaceUsuario() {
       const nameEl = document.getElementById('sidebarUserName');
       const roleEl = document.getElementById('sidebarUserRole');
-      if (nameEl && usuarioAtual.nome) nameEl.textContent = usuarioAtual.nome;
-      if (roleEl && usuarioAtual.role) {
-        let roleText = usuarioAtual.role;
-        if (roleText === 'admin') roleText = 'Administrador';
-        else if (roleText === 'estudante') roleText = 'Estudante';
-        else roleText = roleText.charAt(0).toUpperCase() + roleText.slice(1);
-        roleEl.textContent = roleText;
-      }
+      const nomeVal = usuarioAtual.nome || localStorage.getItem('userName') || '';
+      const roleVal = usuarioAtual.role || localStorage.getItem('role') || '';
+      if (nameEl) nameEl.textContent = nomeVal;
+      if (roleEl) roleEl.textContent = roleVal;
     }
 
     function abrirModalAuth() {

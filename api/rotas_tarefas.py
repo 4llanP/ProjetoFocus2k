@@ -4,7 +4,7 @@ from typing import List
 from config.database import SessionLocal
 from controllers.tarefa_controller import TarefaController
 from core.auth import verificar_token
-from core.ia_service import gerar_passos_tarefa, obter_resposta_ia
+from core.ia_service import gerar_passos_tarefa, obter_resposta_ia, extrair_intent_criar_tarefa
 from pydantic import BaseModel
 from models.tarefa_schema import NovaTarefa, NovoPasso, AtualizarPasso, PassoResposta, AtualizarStatusTarefa
 from models.passo import Passo
@@ -270,15 +270,48 @@ def chat_tarefa_ia(tarefa_id: int, dados: MensagemChat, usuario_logado: dict = D
 @router.post("/chat/geral")
 def chat_geral_ia(dados: MensagemChat, usuario_logado: dict = Depends(verificar_token)):
     estilo = "direto"
+    usuario_id = int(usuario_logado['sub'])
     try:
         with SessionLocal() as db:
             from repositories.usuario_repository import UsuarioRepository
             user_repo = UsuarioRepository(db)
-            user = user_repo.buscar_por_id(int(usuario_logado['sub']))
+            user = user_repo.buscar_por_id(usuario_id)
             if user and hasattr(user, 'estilo_instrucao'):
                 estilo = user.estilo_instrucao
     except Exception:
         pass
+
+    intent = extrair_intent_criar_tarefa(dados.pergunta)
+    if intent.get("criar"):
+        try:
+            titulo = intent.get("titulo", dados.pergunta)
+            descricao = intent.get("descricao", "")
+            prioridade = intent.get("prioridade", "media")
+            tipo = intent.get("tipo", "tarefas_diarias")
+
+            nova_tarefa_data = NovaTarefa(
+                tipo=tipo,
+                titulo=titulo,
+                descricao=descricao,
+                prioridade=prioridade
+            )
+            tarefa = controller.criar_tarefa(nova_tarefa_data, usuario_id)
+
+            try:
+                passos_textos = gerar_passos_tarefa(titulo, descricao)
+                with SessionLocal() as db:
+                    passo_repo = PassoRepository(db)
+                    for idx, pt in enumerate(passos_textos, start=1):
+                        novo_p = Passo(tarefa_id=tarefa.id, texto=pt, ordem=idx, concluido=False)
+                        passo_repo.salvar(novo_p)
+            except Exception:
+                pass
+
+            resposta_texto = f"Tarefa criada com sucesso: <b>{titulo}</b>.<br>Adicionei ao seu quadro Kanban!"
+            dados_dict = tarefa.to_dict() if hasattr(tarefa, "to_dict") else tarefa
+            return {"resposta": resposta_texto, "dados_tarefa": dados_dict}
+        except Exception:
+            return {"resposta": "Não foi possível criar a tarefa automaticamente. Por favor, tente novamente ou use o formulário de criação."}
 
     respostas = obter_resposta_ia(dados.pergunta, estilo)
     return {"resposta": "<br>".join(respostas)}
