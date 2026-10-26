@@ -649,12 +649,19 @@
         });
         const data = await res.json();
         if (res.ok && data.passos) {
-          etapas = data.passos.map((texto, idx) => ({
-            texto: texto,
-            tempo: `${(idx + 1) * 10} min`,
-            prioridade: idx === 0 ? 'alta' : 'media',
-            marcado: true
-          }));
+          const textosExistentes = (tarefa.subtarefas || []).map(s => s.texto.toLowerCase().trim());
+
+          etapas = data.passos
+            .filter(texto => {
+              const textoNorm = texto.toLowerCase().trim();
+              return !textosExistentes.includes(textoNorm);
+            })
+            .map((texto, idx) => ({
+              texto: texto,
+              tempo: `${(idx + 1) * 10} min`,
+              prioridade: idx === 0 ? 'alta' : 'media',
+              marcado: true
+            }));
         }
       } catch (e) {
         console.error("Erro ao chamar API de decomposição:", e);
@@ -662,7 +669,7 @@
 
       if (etapas.length === 0) {
         etapas = [
-          { texto: "Não foi possível gerar os passos pela IA. Verifique a configuração da chave de API no servidor.", tempo: "0 min", prioridade: "alta", marcado: false }
+          { texto: "Todos os passos sugeridos pela IA já existem nesta tarefa.", tempo: "0 min", prioridade: "alta", marcado: false }
         ];
       }
 
