@@ -181,15 +181,6 @@
 
 </div>
 </div>
-<!-- Barra de Ações Rápidas & PERFIL DE USUÁRIO (Canto Superior Direito) -->
-<div class="flex items-center gap-2.5">
-<!-- Toast de Notificação -->
-<div class="text-xs py-1 px-2.5 rounded-full bg-[#161619] text-[#fffff2] border border-[#fffff2]/30 flex items-center gap-1.5 shadow hidden" id="liveFeedbackToast"><span class="w-1.5 h-1.5 rounded-full bg-[#fffff2]"></span> Assistente IA Aberto</div>
-<!-- Botão Abrir Chat IA (Drawer) -->
-<button id="btnUserProfile" onclick="abrirModalAuth()" class="px-2.5 py-1.5 bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] font-medium rounded-lg text-xs border border-[#26262b] hover:border-[#3a3a42] flex items-center gap-2 transition active:scale-95 focus-ring cursor-pointer" title="Perfil e Autenticação"><span class="material-symbols-outlined text-[15px] text-[#9d9da6]">account_circle</span></button>
-<!-- COMPONENTE DE AUTENTICAÇÃO / PERFIL / CONTA (DESTACADO NA REFERÊNCIA) -->
-
-</div>
 </header>
 <!-- Subheader informativo / Legenda de Prioridades com ícones acessíveis -->
 <section class="px-5 py-2 bg-[#0d0d0f] border-b border-[#26262b] flex flex-wrap items-center justify-between text-xs text-[#9d9da6] gap-2 flex-shrink-0">
@@ -1340,6 +1331,7 @@
 
     function mostrarToastFeedback(msg) {
       const toast = document.getElementById('liveFeedbackToast');
+      if (!toast) return;
       toast.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-[#fffff2]"></span> ${msg}`;
       toast.classList.remove('hidden');
       clearTimeout(window.toastTimer);

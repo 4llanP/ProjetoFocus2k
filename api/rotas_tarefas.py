@@ -60,6 +60,14 @@ def listar_passos_tarefa(tarefa_id: int, usuario_logado: dict = Depends(verifica
         return passos
 
 
+@router.post("/ia/decompor")
+def decompor_tarefa_ia_generica(dados: dict = None, usuario_logado: dict = Depends(verificar_token)):
+    titulo = dados.get("titulo", "") if dados else ""
+    descricao = dados.get("descricao", "") if dados else ""
+    textos_passos = gerar_passos_tarefa(titulo, descricao)
+    return {"passos": textos_passos}
+
+
 @router.post("/{tarefa_id}/decompor")
 def decompor_tarefa_ia(tarefa_id: int, usuario_logado: dict = Depends(verificar_token)):
     with SessionLocal() as db:
