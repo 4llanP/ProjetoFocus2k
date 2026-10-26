@@ -1377,24 +1377,24 @@
 
     
     function abrirModalPerfil() {
-      document.getElementById(perfilModalNome).textContent = usuarioAtual.nome || Usuário;
-      document.getElementById(perfilModalRole).textContent = usuarioAtual.role || Estudante;
-      document.getElementById(perfilModalEstilo).textContent = usuarioAtual.estiloInstrucao || direto;
-      document.getElementById(modalPerfil).classList.remove(hidden);
+      document.getElementById('perfilModalNome').textContent = usuarioAtual.nome || 'Usuário';
+      document.getElementById('perfilModalRole').textContent = usuarioAtual.role || 'Estudante';
+      document.getElementById('perfilModalEstilo').textContent = usuarioAtual.estiloInstrucao || 'direto';
+      document.getElementById('modalPerfil').classList.remove('hidden');
     }
 
     function fecharModalPerfil() {
-      document.getElementById(modalPerfil).classList.add(hidden);
+      document.getElementById('modalPerfil').classList.add('hidden');
     }
 
     function deslogar() {
-      localStorage.removeItem(token);
-      window.location.href = tela_login.html;
+      localStorage.removeItem('token');
+      window.location.href = 'tela_login.html';
     }
 
     function atualizarInterfaceUsuario() {
-      const nameEl = document.getElementById(sidebarUserName);
-      const roleEl = document.getElementById(sidebarUserRole);
+      const nameEl = document.getElementById('sidebarUserName');
+      const roleEl = document.getElementById('sidebarUserRole');
       if (nameEl && usuarioAtual.nome) nameEl.textContent = usuarioAtual.nome;
       if (roleEl && usuarioAtual.role) roleEl.textContent = usuarioAtual.role;
     }
