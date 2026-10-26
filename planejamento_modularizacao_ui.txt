@@ -1,0 +1,58 @@
+============================================================
+PLANO DE ORGANIZAÇÃO E MODULARIZAÇÃO DA INTERFACE (UI) - FOCUS 2K
+============================================================
+
+1. DIAGNÓSTICO DO ESCOPO ATUAL
+------------------------------------------------------------
+Atualmente, a pasta `ui/` possui arquivos monolíticos grandes:
+- `ui/tela_login.html`: Contém em um único arquivo a estrutura de login/cadastro, estilos CSS, configuração do Tailwind e toda a lógica JS de autenticação.
+- `ui/dashboard.html`: Contém em um único arquivo (~1650 linhas) a estrutura do Kanban, Sidebar, Chat Drawer, Modais de Perfil, além de toda a lógica de estado, requisições à API, arrastar e soltar (drag & drop), manipulação de subtarefas e integração com IA.
+
+2. OBJETIVOS DA MODULARIZAÇÃO
+------------------------------------------------------------
+- Separar responsabilidades (Separação de Concerns): HTML estrutural, Estilos (CSS), Lógica de Estado (JS) e Comunicação com API (Services).
+- Reduzir o acoplamento e o tamanho dos arquivos individuais.
+- Facilitar a manutenção, reutilização de componentes e testes unitários/E2E.
+- Preparar o front-end para escalabilidade com frameworks modernos (ex: Vite + Tailwind CSS + Componentização) ou modularização nativa em Vanilla JS.
+
+3. ESTRUTURA PROPOSTA PARA A PASTA `ui/`
+------------------------------------------------------------
+Sugestão de nova organização de diretórios e arquivos:
+
+ui/
+├── index.html                  # Ponto de entrada principal (Dashboard)
+├── login.html                  # Página de Autenticação / Cadastro
+├── css/
+│   ├── main.css                # Estilos globais, variáveis e temas de alto contraste
+│   └── tailwind.config.js      # Configuração centralizada do Tailwind CSS
+├── js/
+│   ├── api.js                  # Cliente HTTP centralizado (apiFetch, tratamento de token e erros)
+│   ├── auth.js                 # Lógica de login, cadastro, sessão e redirecionamentos
+│   ├── state.js                # Gerenciamento de estado global (usuarioAtual, tarefasDB, filtros)
+│   ├── kanban.js               # Renderização do Kanban, drag & drop e manipulação de cards
+│   ├── subtasks.js             # Lógica de subtarefas e acordeões
+│   └── chat.js                 # Drawer do assistente IA e criação de tarefas via chat
+└── components/
+    ├── sidebar.html            # Componente da barra lateral e perfil do usuário
+    ├── topbar.html             # Barra superior com ações globais
+    ├── kanban_column.html      # Template de coluna do Kanban (Pendente, Andamento, Concluído)
+    ├── kanban_card.html        # Template de card de tarefa
+    ├── chat_drawer.html        # Gaveta lateral do assistente IA
+    └── modal_perfil.html       # Modal de Perfil e Configurações
+
+4. ESTRATÉGIA DE MIGRAÇÃO EM ETAPAS (REFATORAÇÃO INCREMENTAL)
+------------------------------------------------------------
+Etapa 1: Extração de Estilos e Configurações
+- Isolar a configuração do Tailwind e estilos globais em arquivos CSS dedicados.
+
+Etapa 2: Modularização dos Scripts JavaScript
+- Dividir o bloco `<script>` monolítico do `dashboard.html` em módulos ES6 (`api.js`, `state.js`, `kanban.js`, `chat.js`).
+
+Etapa 3: Componentização da Interface
+- Dividir os blocos HTML grandes em parciais/componentes reutilizáveis (Sidebar, Topbar, Modais) injetados via JavaScript ou build tool (Vite).
+
+5. BENEFÍCIOS ESPERADOS
+------------------------------------------------------------
+- Clareza visual e facilidade para localizar trechos de código.
+- Redução de bugs decorrentes de escopo global em JavaScript.
+- Melhoria na experiência de desenvolvimento (Developer Experience - DX).
