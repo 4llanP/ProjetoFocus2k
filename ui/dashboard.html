@@ -84,6 +84,33 @@
       outline: 2px solid #fffff2;
       outline-offset: 2px;
     }
+
+    /* --- TEMAS DE CORES DO SISTEMA --- */
+    body.theme-obsidian { background-color: #080808 !important; }
+    body.theme-slate { background-color: #0d1117 !important; color: #f0f6fc !important; }
+    body.theme-indigo { background-color: #0b0f19 !important; color: #f8fafc !important; }
+
+    body.theme-slate #sidebar,
+    body.theme-slate header,
+    body.theme-slate #kanbanViewContainer .kanban-col,
+    body.theme-slate #calendarViewContainer > div,
+    body.theme-slate #drawerChatIA,
+    body.theme-slate .modal-content {
+      background-color: #161b22 !important;
+      border-color: #30363d !important;
+      color: #f0f6fc !important;
+    }
+
+    body.theme-indigo #sidebar,
+    body.theme-indigo header,
+    body.theme-indigo #kanbanViewContainer .kanban-col,
+    body.theme-indigo #calendarViewContainer > div,
+    body.theme-indigo #drawerChatIA,
+    body.theme-indigo .modal-content {
+      background-color: #111827 !important;
+      border-color: #1f2937 !important;
+      color: #f8fafc !important;
+    }
   </style>
 </head>
 <body class="h-screen w-screen flex overflow-hidden bg-[#080808] text-[#fffff2] select-none antialiased">
@@ -116,12 +143,12 @@
 </div>
 <!-- Navigation Links -->
 <nav class="px-2.5 py-2 space-y-1">
-<a aria-current="page" class="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-[#1f1f24] text-[#fffff2] font-medium text-xs border border-[#3a3a42]" href="#">
+<a id="navKanbanBtn" aria-current="page" class="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-[#1f1f24] text-[#fffff2] font-medium text-xs border border-[#3a3a42] transition cursor-pointer" onclick="mudarVisao('kanban')">
 <svg class="w-4 h-4 text-[#fffff2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
 <span class="">Página Inicial</span>
 </a>
 
-<a class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] transition font-medium text-xs border border-transparent" href="#">
+<a id="navCalendarBtn" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] transition font-medium text-xs border border-transparent cursor-pointer" onclick="mudarVisao('calendario')">
 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
 <span class="">Calendário de Metas</span>
 <span class="ml-auto text-[9px] bg-[#1f1f24] text-[#9d9da6] px-1 py-0.2 rounded font-mono">Hoje</span>
@@ -154,12 +181,18 @@
 </button>
 </div>
 </div>
-<!-- Quick Tips minimal footer -->
-<div class="mt-auto p-3 m-3 rounded-lg border border-[#26262b] bg-[#080808] text-[11px] text-[#9d9da6]">
-
-
-</div>
-</div>
+    <!-- Seletor de Tema Destacado na Sidebar -->
+    <div class="mt-auto p-3 m-3 rounded-xl border border-[#3a3a42] bg-[#161619] text-xs space-y-2 shadow-sm">
+      <div class="flex items-center gap-2 font-bold text-[#fffff2]">
+        <span class="material-symbols-outlined text-[16px] text-emerald-400">palette</span>
+        <span>Tema Visual</span>
+      </div>
+      <select id="selectTema" onchange="mudarTema(this.value)" class="w-full bg-[#080808] border border-[#3a3a42] text-[#fffff2] text-xs rounded-lg px-2.5 py-2 focus:outline-none focus:border-[#fffff2] cursor-pointer font-mono shadow-inner">
+        <option value="obsidian">Obsidian & Cyber Emerald</option>
+        <option value="slate">Midnight Slate & Amber</option>
+        <option value="indigo">Deep Indigo & Arctic Blue</option>
+      </select>
+    </div>
 </aside>
 <!-- ================= PAINEL CENTRAL & QUADRO KANBAN ================= -->
 <main class="flex-1 flex flex-col h-full overflow-hidden bg-[#080808] relative min-w-0">
@@ -196,7 +229,7 @@
 </div>
 </section>
 <!-- ================= QUADRO KANBAN (3 COLUNAS) ================= -->
-<div class="flex-1 p-5 overflow-x-auto custom-scroll">
+<div id="kanbanViewContainer" class="flex-1 p-5 overflow-x-auto custom-scroll flex flex-col">
 <div class="grid grid-cols-1 md:grid-cols-3 gap-5 h-full min-w-[840px]">
 <!-- COLUNA 1: A Fazer (Pendente) com BOTÃO DESTACADO: "+ Adicionar Tarefa" -->
 <div class="flex flex-col rounded-xl bg-[#111113] border border-[#26262b] shadow-sm overflow-hidden kanban-col" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'pendente')">
@@ -246,7 +279,46 @@
 	</div>
 </div>
 </div>
-</main>
+</div>
+<!-- ================= CALENDÁRIO DE METAS (NOVO) ================= -->
+	<div id="calendarViewContainer" class="flex-1 flex flex-col h-full overflow-y-auto custom-scroll p-6 hidden bg-[#080808]">
+	  <!-- Cabeçalho do Calendário -->
+	  <div class="flex flex-wrap items-center justify-between gap-4 mb-6 bg-[#111113] border border-[#26262b] p-4 rounded-xl flex-shrink-0">
+	    <div class="flex items-center gap-3">
+	      <div class="w-9 h-9 rounded-lg bg-[#1f1f24] border border-[#3a3a42] flex items-center justify-center text-[#fffff2]">
+	        <span class="material-symbols-outlined text-[20px]">calendar_month</span>
+	      </div>
+	      <div>
+	        <h2 id="calendarMonthTitle" class="text-base font-bold text-[#fffff2] tracking-tight">Outubro 2026</h2>
+	        <p class="text-[11px] text-[#9d9da6] font-mono">Visão cronológica de metas e prazos acadêmicos</p>
+	      </div>
+	    </div>
+	    <div class="flex items-center gap-2">
+	      <button onclick="mudarMesCalendario(-1)" class="px-3 py-1.5 rounded-lg bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] border border-[#26262b] text-xs font-semibold flex items-center gap-1 transition cursor-pointer">
+	        <span class="material-symbols-outlined text-[16px]">chevron_left</span> Mês Anterior
+	      </button>
+	      <button onclick="irParaMesAtual()" class="px-3 py-1.5 rounded-lg bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] border border-[#26262b] text-xs font-semibold transition font-mono cursor-pointer">
+	        Hoje
+	      </button>
+	      <button onclick="mudarMesCalendario(1)" class="px-3 py-1.5 rounded-lg bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] border border-[#26262b] text-xs font-semibold flex items-center gap-1 transition cursor-pointer">
+	        Próximo Mês <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+	      </button>
+	    </div>
+	  </div>
+
+	  <!-- Grade do Calendário -->
+	  <div class="bg-[#111113] border border-[#26262b] rounded-xl overflow-hidden flex-1 flex flex-col shadow-sm">
+	    <!-- Dias da Semana -->
+	    <div class="grid grid-cols-7 bg-[#161619] border-b border-[#26262b] text-center text-xs font-bold text-[#9d9da6] font-mono py-2.5 flex-shrink-0">
+	      <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+	    </div>
+	    <!-- Dias do Mês -->
+	    <div id="calendarGridDays" class="grid grid-cols-7 flex-1 auto-rows-fr divide-x divide-y divide-[#26262b] bg-[#080808]">
+	      <!-- Preenchido dinamicamente via JS -->
+	    </div>
+	  </div>
+	</div>
+	</main>
 <!-- ================= BARRA LATERAL DIREITA: CHAT & DESESTRUTURAÇÃO IA ================= -->
 <aside class="drawer-transition w-96 max-w-[90vw] flex-shrink-0 bg-[#111113] border-l border-[#26262b] flex flex-col z-40 h-full relative hidden" id="drawerChatIA" style="width: 0px;">
 <!-- Topbar do Chat -->
@@ -402,8 +474,7 @@
       <div>
         <label class="block text-xs font-bold text-[#fffff2] mb-1.5 font-mono">Data / Prazo</label>
         <div class="relative flex items-center">
-          <input class="w-full bg-[#0c0c0e] border border-[#26262b] focus:border-[#fffff2] rounded-xl px-3.5 py-2.5 text-xs font-mono text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none transition pr-10" id="inputDataModal" type="text" placeholder="DD/MM/AAAA">
-          <span class="material-symbols-outlined text-[#9d9da6] text-[18px] absolute right-3 pointer-events-none">calendar_today</span>
+          <input class="w-full bg-[#0c0c0e] border border-[#26262b] focus:border-[#fffff2] rounded-xl px-3.5 py-2.5 text-xs font-mono text-[#fffff2] focus:outline-none transition cursor-pointer" id="inputDataModal" type="date" style="color-scheme: dark;">
         </div>
       </div>
       <!-- Coluna Prioridade -->
@@ -563,10 +634,15 @@
               prioridade: t.prioridade || 'media',
               categoria: t.tipo || 'tarefas_educacionais',
               status: statusMapeado,
-              subtarefas: subtarefas
+              subtarefas: subtarefas,
+              prazo: t.prazo || null
             };
           }));
           listarTarefas();
+          const calendarContainer = document.getElementById('calendarViewContainer');
+          if (calendarContainer && !calendarContainer.classList.contains('hidden')) {
+            renderizarCalendario();
+          }
         }
       } catch (err) {
         console.error("Erro ao carregar tarefas:", err);
@@ -813,6 +889,10 @@
 
         if (res.ok && data.resposta) {
           adicionarMensagemIA(data.resposta);
+          if (data.acao_executada) {
+            await carregarTarefasDaAPI();
+            mostrarToastFeedback("✨ IA executou ação no seu Kanban/Calendário!");
+          }
         } else {
           responderMensagemLivre(texto);
         }
@@ -1364,8 +1444,8 @@
       }
     }
 
-    function abrirModalCriarTarefa() {
-      console.log("Abrindo modal criar tarefa...");
+    function abrirModalCriarTarefa(dataInicial = null) {
+      console.log("Abrindo modal criar tarefa...", { dataInicial });
       const modal = document.getElementById('modalCriarTarefa');
       if (modal) {
         const inputNome = document.getElementById('inputNomeTarefaModal');
@@ -1375,11 +1455,17 @@
         if (inputNome) inputNome.value = '';
         if (inputDesc) inputDesc.value = '';
 
-        const hoje = new Date();
-        const dia = String(hoje.getDate()).padStart(2, '0');
-        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-        const ano = hoje.getFullYear();
-        if (inputData) inputData.value = `${dia}/${mes}/${ano}`;
+        if (inputData) {
+          if (dataInicial) {
+            inputData.value = dataInicial;
+          } else {
+            const hoje = new Date();
+            const dia = String(hoje.getDate()).padStart(2, '0');
+            const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+            const ano = hoje.getFullYear();
+            inputData.value = `${ano}-${mes}-${dia}`;
+          }
+        }
 
         selecionarTipoEstudo('educacional');
         selecionarPrioridadeModal('media');
@@ -1505,9 +1591,178 @@
       }
     }
 
+    // --- CALENDÁRIO DE METAS ---
+    let calendarAnoAtual = new Date().getFullYear();
+    let calendarMesAtual = new Date().getMonth();
+
+    function mudarVisao(visao) {
+      const kanbanContainer = document.getElementById('kanbanViewContainer');
+      const calendarContainer = document.getElementById('calendarViewContainer');
+      const navKanban = document.getElementById('navKanbanBtn');
+      const navCalendar = document.getElementById('navCalendarBtn');
+
+      if (visao === 'calendario') {
+        kanbanContainer.classList.add('hidden');
+        calendarContainer.classList.remove('hidden');
+        navCalendar.className = "flex items-center gap-2.5 px-3 py-2 rounded-lg bg-[#1f1f24] text-[#fffff2] font-medium text-xs border border-[#3a3a42] transition cursor-pointer";
+        navKanban.className = "flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] transition font-medium text-xs border border-transparent cursor-pointer";
+        renderizarCalendario();
+        mostrarToastFeedback("Visão: Calendário de Metas");
+      } else {
+        calendarContainer.classList.add('hidden');
+        kanbanContainer.classList.remove('hidden');
+        navKanban.className = "flex items-center gap-2.5 px-3 py-2 rounded-lg bg-[#1f1f24] text-[#fffff2] font-medium text-xs border border-[#3a3a42] transition cursor-pointer";
+        navCalendar.className = "flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] transition font-medium text-xs border border-transparent cursor-pointer";
+        mostrarToastFeedback("Visão: Quadro Principal (Kanban)");
+      }
+    }
+
+    function mudarMesCalendario(delta) {
+      calendarMesAtual += delta;
+      if (calendarMesAtual > 11) {
+        calendarMesAtual = 0;
+        calendarAnoAtual++;
+      } else if (calendarMesAtual < 0) {
+        calendarMesAtual = 11;
+        calendarAnoAtual--;
+      }
+      renderizarCalendario();
+    }
+
+    function irParaMesAtual() {
+      const agora = new Date();
+      calendarAnoAtual = agora.getFullYear();
+      calendarMesAtual = agora.getMonth();
+      renderizarCalendario();
+    }
+
+    function renderizarCalendario() {
+      const titleEl = document.getElementById('calendarMonthTitle');
+      const gridEl = document.getElementById('calendarGridDays');
+      if (!titleEl || !gridEl) return;
+
+      const nomesMeses = [
+        "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+        "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+      ];
+
+      titleEl.textContent = `${nomesMeses[calendarMesAtual]} ${calendarAnoAtual}`;
+
+      const primeiroDiaDoMes = new Date(calendarAnoAtual, calendarMesAtual, 1);
+      const ultimoDiaDoMes = new Date(calendarAnoAtual, calendarMesAtual + 1, 0);
+      const diasNoMes = ultimoDiaDoMes.getDate();
+      const diaDaSemanaInicio = primeiroDiaDoMes.getDay();
+
+      const ultimoDiaMesAnterior = new Date(calendarAnoAtual, calendarMesAtual, 0).getDate();
+
+      let htmlGrid = '';
+      const agora = new Date();
+      const hojeStr = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, '0')}-${String(agora.getDate()).padStart(2, '0')}`;
+
+      // Dias do mês anterior
+      for (let i = diaDaSemanaInicio - 1; i >= 0; i--) {
+        const diaNum = ultimoDiaMesAnterior - i;
+        htmlGrid += `
+          <div class="min-h-[100px] p-2 bg-[#080808]/50 opacity-40 text-[#9d9da6] font-mono text-xs flex flex-col">
+            <span class="font-bold">${diaNum}</span>
+          </div>
+        `;
+      }
+
+      // Dias do mês atual
+      for (let dia = 1; dia <= diasNoMes; dia++) {
+        const mesStr = String(calendarMesAtual + 1).padStart(2, '0');
+        const diaStr = String(dia).padStart(2, '0');
+        const dataIsoStr = `${calendarAnoAtual}-${mesStr}-${diaStr}`;
+        const ehHoje = (dataIsoStr === hojeStr);
+
+        const tarefasDoDia = (typeof tarefasDB !== 'undefined' ? tarefasDB : []).filter(t => {
+          if (!t.prazo) return false;
+          return String(t.prazo).substring(0, 10) === dataIsoStr;
+        });
+
+        let tarefasHtml = '';
+        tarefasDoDia.forEach(t => {
+          let corPrioridade = 'bg-emerald-400';
+          if (t.prioridade === 'alta') corPrioridade = 'bg-rose-500';
+          else if (t.prioridade === 'media') corPrioridade = 'bg-amber-400';
+
+          const statusBadge = t.status === 'concluido' ? 'line-through opacity-60' : '';
+
+          tarefasHtml += `
+            <div onclick="event.stopPropagation(); abrirModalDetalhesTarefa('${t.id}')" class="p-1.5 rounded bg-[#161619] border border-[#26262b] hover:border-[#fffff2] transition cursor-pointer text-[10px] space-y-0.5 ${statusBadge}" title="${t.titulo}">
+              <div class="flex items-center gap-1 font-medium text-[#fffff2] truncate">
+                <span class="w-1.5 h-1.5 rounded-full ${corPrioridade} flex-shrink-0"></span>
+                <span class="truncate">${t.titulo}</span>
+              </div>
+            </div>
+          `;
+        });
+
+        const hojeClasses = ehHoje ? 'bg-[#1f1f24] border-2 border-[#fffff2]' : 'bg-[#111113]';
+        const hojeBadge = ehHoje ? '<span class="ml-auto text-[9px] bg-[#fffff2] text-[#080808] px-1 rounded font-bold">Hoje</span>' : '';
+
+        htmlGrid += `
+          <div onclick="clicarDiaCalendario('${dataIsoStr}')" class="min-h-[110px] p-2.5 ${hojeClasses} flex flex-col transition hover:bg-[#161619]/40 group cursor-pointer relative hover:border hover:border-[#fffff2]/30" title="Clique para adicionar meta nesta data">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="font-bold text-xs font-mono ${ehHoje ? 'text-[#fffff2]' : 'text-[#9d9da6] group-hover:text-[#fffff2]'}">${dia}</span>
+              <span class="opacity-0 group-hover:opacity-100 transition text-[10px] font-mono text-[#fffff2] bg-[#1f1f24] px-1.5 py-0.5 rounded border border-[#3a3a42] flex items-center gap-0.5">
+                <span class="material-symbols-outlined text-[12px]">add</span> Adicionar
+              </span>
+              ${hojeBadge}
+            </div>
+            <div class="flex-1 space-y-1 overflow-y-auto custom-scroll max-h-[80px]" onclick="event.stopPropagation()">
+              ${tarefasHtml}
+            </div>
+          </div>
+        `;
+      }
+
+      const totalCelulasPreenchidas = diaDaSemanaInicio + diasNoMes;
+      const resto = totalCelulasPreenchidas % 7;
+      if (resto !== 0) {
+        const diasRestantes = 7 - resto;
+        for (let diaProx = 1; diaProx <= diasRestantes; diaProx++) {
+          htmlGrid += `
+            <div class="min-h-[100px] p-2 bg-[#080808]/50 opacity-40 text-[#9d9da6] font-mono text-xs flex flex-col">
+              <span class="font-bold">${diaProx}</span>
+            </div>
+          `;
+        }
+      }
+
+      gridEl.innerHTML = htmlGrid;
+    }
+
+    function abrirModalDetalhesTarefa(taskId) {
+      const tarefa = tarefasDB.find(t => t.id === taskId);
+      if (!tarefa) return;
+      mostrarToastFeedback(`Meta: "${tarefa.titulo.slice(0, 30)}..." [${tarefa.status.toUpperCase()}]`);
+    }
+
+    function clicarDiaCalendario(dataIsoStr) {
+      abrirModalCriarTarefa(dataIsoStr);
+      mostrarToastFeedback(`Nova meta agendada para ${dataIsoStr}`);
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
+      const temaSalvo = localStorage.getItem('focus2k_tema') || 'obsidian';
+      const selectEl = document.getElementById('selectTema');
+      if (selectEl) selectEl.value = temaSalvo;
+      if (temaSalvo !== 'obsidian') {
+        document.body.classList.add(`theme-${temaSalvo}`);
+      }
       verificarSessaoECarregar();
     });
+
+    function mudarTema(nomeTema) {
+      document.body.className = document.body.className.replace(/theme-\S+/g, '').trim();
+      if (nomeTema !== 'obsidian') {
+        document.body.classList.add(`theme-${nomeTema}`);
+      }
+      localStorage.setItem('focus2k_tema', nomeTema);
+      mostrarToastFeedback(`Tema alterado para: ${nomeTema.toUpperCase()}`);
+    }
   </script>
 
 
