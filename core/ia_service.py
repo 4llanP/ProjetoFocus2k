@@ -101,8 +101,48 @@ def gerar_passos_tarefa(titulo_tarefa: str, descricao_tarefa: str = "") -> list:
         passos_limpos = []
         for p in passos:
             p_limpo = p.lstrip("0123456789.-* ")
-            if p_limpo:
+            if p_limpo and not p_limpo.lower().startswith("erro") and not "configure" in p_limpo.lower():
                 passos_limpos.append(p_limpo)
         return passos_limpos
-    except Exception as e:
-        return [f"Erro ao gerar passos com a IA: {str(e)}"]
+    except Exception:
+        return []
+
+
+def extrair_intent_criar_tarefa(pergunta: str) -> dict:
+    """Usa a IA para detectar se o usuário quer criar uma tarefa e extrair os dados."""
+    import json
+    if not client:
+        return {"criar": False}
+
+    prompt = (
+        f"Analise o texto do usuário: '{pergunta}'.\n"
+        "O usuário está pedindo para criar, adicionar ou registrar uma nova tarefa/atividade?\n"
+        "Se sim, retorne APENAS um objeto JSON válido (sem markdown ```json) com os campos:\n"
+        "{\n"
+        "  \"criar\": true,\n"
+        "  \"titulo\": \"título extraído da tarefa\",\n"
+        "  \"descricao\": \"descrição detalhada ou vazia\",\n"
+        "  \"prioridade\": \"baixa\" | \"media\" | \"alta\",\n"
+        "  \"tipo\": \"tarefas_diarias\" | \"tarefas_educacionais\"\n"
+        "}\n"
+        "Se não estiver pedindo para criar uma tarefa, retorne APENAS:\n"
+        "{\n"
+        "  \"criar\": false\n"
+        "}"
+    )
+    try:
+        response = client.models.generate_content(
+            model=MODELO_GEMINI,
+            contents=prompt,
+            config=types.GenerateContentConfig(temperature=0.1)
+        )
+        texto = response.text.strip()
+        if texto.startswith("```"):
+            texto = texto.split("```")[1]
+            if texto.startswith("json"):
+                texto = texto[4:]
+            texto = texto.strip("` \n")
+        return json.loads(texto)
+    except Exception:
+        return {"criar": False}
+

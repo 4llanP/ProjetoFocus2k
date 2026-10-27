@@ -321,6 +321,9 @@
           if (data.role) {
             localStorage.setItem('role', data.role);
           }
+          if (data.nome) {
+            localStorage.setItem('userName', data.nome);
+          }
           mostrarAlerta('Login realizado com sucesso! Redirecionando para o Dashboard...', 'sucesso');
           setTimeout(() => {
             window.location.href = 'dashboard.html?v=' + Date.now();
