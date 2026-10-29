@@ -116,7 +116,16 @@ def gerar_passos_tarefa(titulo_tarefa: str, descricao_tarefa: str = "", estilo_u
                 ),
             )
 
-            passos = [linha.strip() for linha in response.text.split("\n") if linha.strip()]
+            texto_resp = ""
+            if hasattr(response, "text") and response.text:
+                texto_resp = response.text
+            elif hasattr(response, "candidates") and response.candidates:
+                try:
+                    texto_resp = response.candidates[0].content.parts[0].text
+                except Exception:
+                    pass
+
+            passos = [linha.strip() for linha in texto_resp.split("\n") if linha.strip()]
             passos_limpos = []
             for p in passos:
                 p_limpo = p.lstrip("0123456789.-* ")
