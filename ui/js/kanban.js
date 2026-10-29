@@ -310,33 +310,56 @@ function abrirTimerTarefa(event, taskId) {
   if (!modal) {
     const modalHTML = `
       <div id="modalTimerPomodoro" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onclick="fecharTimerModal()">
-        <div class="bg-[#111113] border border-[#28282e] rounded-2xl w-full max-w-sm p-6 shadow-2xl relative text-[#fffff2] space-y-5 text-center" onclick="event.stopPropagation()">
+        <div class="bg-[#111113] border border-[#28282e] rounded-2xl w-full max-w-2xl p-6 shadow-2xl relative text-[#fffff2] space-y-5" onclick="event.stopPropagation()">
           <div class="flex items-center justify-between border-b border-[#26262b] pb-3">
             <h3 class="font-bold text-sm text-[#fffff2] flex items-center gap-2">
               <span class="material-symbols-outlined text-[18px] text-sky-400">timer</span>
-              Foco Pomodoro
+              Sessão de Foco Pomodoro
             </h3>
             <button onclick="fecharTimerModal()" class="text-[#9d9da6] hover:text-[#fffff2] p-1 rounded transition cursor-pointer">
               <span class="material-symbols-outlined text-[18px]">close</span>
             </button>
           </div>
-          <div>
-            <p id="timerModalTaskTitle" class="text-xs text-[#9d9da6] font-mono mb-3 truncate px-2"></p>
-            <div id="timerModalDisplay" class="text-5xl font-mono font-bold text-[#fffff2] tracking-wider my-4 py-6 bg-[#080808] rounded-xl border border-[#26262b]">
-              25:00
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            <!-- Coluna Esquerda: Timer -->
+            <div class="flex flex-col items-center justify-center bg-[#080808] border border-[#26262b] rounded-xl p-5 text-center">
+              <div class="text-[10px] font-mono text-sky-400 uppercase tracking-wider mb-2">Cronômetro Ativo</div>
+              <div id="timerModalDisplay" class="text-5xl font-mono font-bold text-[#fffff2] tracking-wider my-3">
+                25:00
+              </div>
+              <div class="flex items-center justify-center gap-2 w-full mt-4">
+                <button id="btnPlayPauseTimer" onclick="alternarPlayPauseTimer()" class="flex-1 py-2.5 bg-[#fffff2] hover:bg-white text-[#080808] font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 transition shadow cursor-pointer">
+                  <span class="material-symbols-outlined text-[16px]" id="playPauseIcon">play_arrow</span>
+                  <span id="playPauseText">Iniciar</span>
+                </button>
+                <button onclick="resetarTimer()" class="px-3 py-2.5 bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] font-semibold rounded-xl text-xs border border-[#26262b] transition cursor-pointer" title="Zerar timer">
+                  Zerar
+                </button>
+                <button onclick="definirTempoTimer(5 * 60)" class="px-3 py-2.5 bg-[#161619] hover:bg-[#1f1f24] text-[#9d9da6] hover:text-[#fffff2] font-mono rounded-xl text-xs border border-[#26262b] transition cursor-pointer" title="Pausa Curta (5 min)">
+                  5m
+                </button>
+              </div>
             </div>
-          </div>
-          <div class="flex items-center justify-center gap-3">
-            <button id="btnPlayPauseTimer" onclick="alternarPlayPauseTimer()" class="px-5 py-2.5 bg-[#fffff2] hover:bg-white text-[#080808] font-bold rounded-xl text-xs flex items-center gap-1.5 transition shadow cursor-pointer">
-              <span class="material-symbols-outlined text-[16px]" id="playPauseIcon">play_arrow</span>
-              <span id="playPauseText">Iniciar</span>
-            </button>
-            <button onclick="resetarTimer()" class="px-4 py-2.5 bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] font-semibold rounded-xl text-xs border border-[#26262b] transition cursor-pointer">
-              Zerar
-            </button>
-            <button onclick="definirTempoTimer(5 * 60)" class="px-3 py-2.5 bg-[#161619] hover:bg-[#1f1f24] text-[#9d9da6] hover:text-[#fffff2] font-mono rounded-xl text-xs border border-[#26262b] transition cursor-pointer" title="Pausa Curta (5 min)">
-              5m
-            </button>
+
+            <!-- Coluna Direita: Tarefa e Subpassos -->
+            <div class="flex flex-col space-y-3">
+              <div>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/30">Em Andamento</span>
+                <h4 id="timerModalTaskTitle" class="text-sm font-bold text-[#fffff2] mt-1.5 leading-snug"></h4>
+                <p id="timerModalTaskDesc" class="text-xs text-[#9d9da6] mt-1 line-clamp-2"></p>
+              </div>
+
+              <div class="border-t border-[#26262b] pt-3">
+                <div class="flex items-center justify-between text-xs font-mono text-[#9d9da6] mb-2">
+                  <span>Subpassos da Tarefa</span>
+                  <span id="timerModalSubCount">0/0</span>
+                </div>
+                <div id="timerModalSublistContainer" class="space-y-1.5 max-h-[160px] overflow-y-auto custom-scroll pr-1">
+                  <!-- Subpassos preenchidos dinamicamente -->
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -347,10 +370,54 @@ function abrirTimerTarefa(event, taskId) {
     modal.classList.remove('hidden');
   }
 
-  const titleEl = document.getElementById('timerModalTaskTitle');
-  if (titleEl) titleEl.textContent = `Tarefa: ${tarefa.titulo}`;
-
+  atualizarConteudoModalTimer(tarefa);
   atualizarDisplayTimerModal();
+}
+
+function atualizarConteudoModalTimer(tarefa) {
+  const titleEl = document.getElementById('timerModalTaskTitle');
+  const descEl = document.getElementById('timerModalTaskDesc');
+  const countEl = document.getElementById('timerModalSubCount');
+  const sublistEl = document.getElementById('timerModalSublistContainer');
+
+  if (titleEl) titleEl.textContent = tarefa.titulo;
+  if (descEl) {
+    if (tarefa.descricao) {
+      descEl.textContent = tarefa.descricao;
+      descEl.classList.remove('hidden');
+    } else {
+      descEl.classList.add('hidden');
+    }
+  }
+
+  const totalSubs = tarefa.subtarefas.length;
+  const feitasSubs = tarefa.subtarefas.filter(s => s.feita).length;
+  if (countEl) countEl.textContent = `${feitasSubs}/${totalSubs}`;
+
+  if (sublistEl) {
+    if (totalSubs > 0) {
+      let html = '';
+      tarefa.subtarefas.forEach(sub => {
+        html += `
+          <label class="flex items-center gap-2.5 p-2 rounded-lg bg-[#080808] border border-[#26262b] hover:border-[#3a3a42] cursor-pointer transition">
+            <input type="checkbox" ${sub.feita ? 'checked' : ''} onchange="alternarSubtarefaNoModal(event, '${tarefa.id}', '${sub.id}')" class="w-4 h-4 rounded border-[#3a3a42] bg-[#161619] accent-[#fffff2] cursor-pointer">
+            <span class="text-xs ${sub.feita ? 'line-through text-[#9d9da6]' : 'text-[#fffff2]'}">${sub.texto}</span>
+          </label>
+        `;
+      });
+      sublistEl.innerHTML = html;
+    } else {
+      sublistEl.innerHTML = `<p class="text-xs text-[#9d9da6] italic py-3 text-center">Nenhum subpasso cadastrado.</p>`;
+    }
+  }
+}
+
+async function alternarSubtarefaNoModal(event, taskId, subId) {
+  await alternarSubtarefa(event, taskId, subId);
+  const tarefa = tarefasDB.find(t => t.id === taskId);
+  if (tarefa) {
+    atualizarConteudoModalTimer(tarefa);
+  }
 }
 
 function fecharTimerModal() {
