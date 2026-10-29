@@ -173,6 +173,8 @@ def extrair_intent_criar_tarefa(pergunta: str) -> dict:
             contents=prompt,
             config=types.GenerateContentConfig(temperature=0.1)
         )
+        if not hasattr(response, "text") or not response.text:
+            return {"criar": False}
         texto = response.text.strip()
         if texto.startswith("```"):
             texto = texto.split("```")[1]

@@ -328,17 +328,7 @@ def chat_geral_ia(dados: MensagemChat, usuario_logado: dict = Depends(verificar_
             )
             tarefa = controller.criar_tarefa(nova_tarefa_data, usuario_id)
 
-            try:
-                passos_textos = gerar_passos_tarefa(titulo, descricao)
-                with SessionLocal() as db:
-                    passo_repo = PassoRepository(db)
-                    for idx, pt in enumerate(passos_textos, start=1):
-                        novo_p = Passo(tarefa_id=tarefa.id, texto=pt, ordem=idx, concluido=False)
-                        passo_repo.salvar(novo_p)
-            except Exception:
-                pass
-
-            resposta_texto = f"Tarefa criada com sucesso: <b>{titulo}</b>.<br>Adicionei ao seu quadro Kanban!"
+            resposta_texto = f"Tarefa criada com sucesso: <b>{titulo}</b>.<br>Adicionei ao seu quadro Kanban com subpassos gerados por IA!"
             dados_dict = tarefa.to_dict() if hasattr(tarefa, "to_dict") else tarefa
             return {"resposta": resposta_texto, "dados_tarefa": dados_dict}
         except Exception:
