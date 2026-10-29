@@ -141,6 +141,12 @@ function renderizarCardHTML(t) {
         <span class="text-[10px] font-mono px-2 py-0.5 rounded border ${tipoClasses}">${tipoLabel}</span>
         <div class="flex items-center gap-1.5">
           <span class="text-[10px] font-mono px-2 py-0.5 rounded border ${prioridadeClasses}">${prioridadeLabel}</span>
+          ${t.status === 'em_andamento' ? `
+          <button onclick="abrirTimerTarefa(event, '${t.id}')" title="Temporizador de Foco" class="text-sky-400 hover:text-sky-300 bg-sky-500/10 border border-sky-500/30 px-2 py-0.5 rounded text-[10px] font-mono flex items-center gap-1 transition cursor-pointer">
+            <span class="material-symbols-outlined text-[13px]">timer</span>
+            <span id="timer-display-${t.id}">25:00</span>
+          </button>
+          ` : ''}
           <button onclick="abrirModalEditarTarefa('${t.id}')" title="Editar tarefa" class="text-[#75757d] hover:text-[#fffff2] p-0.5 transition cursor-pointer">
             <span class="material-symbols-outlined text-[14px]">edit</span>
           </button>
@@ -285,5 +291,142 @@ async function deletarTarefaAPI(taskId) {
     } catch (e) {
       console.error("Erro ao excluir tarefa:", e);
     }
+  }
+}
+
+let timerIntervaloAtivo = null;
+let timerSegundosRestantes = 25 * 60;
+let timerRodando = false;
+let tarefaIdTimerAtual = null;
+
+function abrirTimerTarefa(event, taskId) {
+  if (event) event.stopPropagation();
+  const tarefa = tarefasDB.find(t => t.id === taskId);
+  if (!tarefa) return;
+
+  tarefaIdTimerAtual = taskId;
+
+  let modal = document.getElementById('modalTimerPomodoro');
+  if (!modal) {
+    const modalHTML = `
+      <div id="modalTimerPomodoro" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onclick="fecharTimerModal()">
+        <div class="bg-[#111113] border border-[#28282e] rounded-2xl w-full max-w-sm p-6 shadow-2xl relative text-[#fffff2] space-y-5 text-center" onclick="event.stopPropagation()">
+          <div class="flex items-center justify-between border-b border-[#26262b] pb-3">
+            <h3 class="font-bold text-sm text-[#fffff2] flex items-center gap-2">
+              <span class="material-symbols-outlined text-[18px] text-sky-400">timer</span>
+              Foco Pomodoro
+            </h3>
+            <button onclick="fecharTimerModal()" class="text-[#9d9da6] hover:text-[#fffff2] p-1 rounded transition cursor-pointer">
+              <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+          </div>
+          <div>
+            <p id="timerModalTaskTitle" class="text-xs text-[#9d9da6] font-mono mb-3 truncate px-2"></p>
+            <div id="timerModalDisplay" class="text-5xl font-mono font-bold text-[#fffff2] tracking-wider my-4 py-6 bg-[#080808] rounded-xl border border-[#26262b]">
+              25:00
+            </div>
+          </div>
+          <div class="flex items-center justify-center gap-3">
+            <button id="btnPlayPauseTimer" onclick="alternarPlayPauseTimer()" class="px-5 py-2.5 bg-[#fffff2] hover:bg-white text-[#080808] font-bold rounded-xl text-xs flex items-center gap-1.5 transition shadow cursor-pointer">
+              <span class="material-symbols-outlined text-[16px]" id="playPauseIcon">play_arrow</span>
+              <span id="playPauseText">Iniciar</span>
+            </button>
+            <button onclick="resetarTimer()" class="px-4 py-2.5 bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] font-semibold rounded-xl text-xs border border-[#26262b] transition cursor-pointer">
+              Zerar
+            </button>
+            <button onclick="definirTempoTimer(5 * 60)" class="px-3 py-2.5 bg-[#161619] hover:bg-[#1f1f24] text-[#9d9da6] hover:text-[#fffff2] font-mono rounded-xl text-xs border border-[#26262b] transition cursor-pointer" title="Pausa Curta (5 min)">
+              5m
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    modal = document.getElementById('modalTimerPomodoro');
+  } else {
+    modal.classList.remove('hidden');
+  }
+
+  const titleEl = document.getElementById('timerModalTaskTitle');
+  if (titleEl) titleEl.textContent = `Tarefa: ${tarefa.titulo}`;
+
+  atualizarDisplayTimerModal();
+}
+
+function fecharTimerModal() {
+  const modal = document.getElementById('modalTimerPomodoro');
+  if (modal) modal.classList.add('hidden');
+}
+
+function alternarPlayPauseTimer() {
+  if (timerRodando) {
+    pausarTimer();
+  } else {
+    iniciarTimer();
+  }
+}
+
+function iniciarTimer() {
+  if (timerRodando) return;
+  timerRodando = true;
+  const icon = document.getElementById('playPauseIcon');
+  const text = document.getElementById('playPauseText');
+  if (icon) icon.textContent = 'pause';
+  if (text) text.textContent = 'Pausar';
+
+  timerIntervaloAtivo = setInterval(() => {
+    if (timerSegundosRestantes > 0) {
+      timerSegundosRestantes--;
+      atualizarDisplayTimerModal();
+    } else {
+      pararTimer();
+      mostrarToastFeedback("Tempo de foco concluído! Bom trabalho!");
+      fecharTimerModal();
+    }
+  }, 1000);
+}
+
+function pausarTimer() {
+  timerRodando = false;
+  clearInterval(timerIntervaloAtivo);
+  const icon = document.getElementById('playPauseIcon');
+  const text = document.getElementById('playPauseText');
+  if (icon) icon.textContent = 'play_arrow';
+  if (text) text.textContent = 'Retomar';
+}
+
+function pararTimer() {
+  timerRodando = false;
+  clearInterval(timerIntervaloAtivo);
+  timerSegundosRestantes = 25 * 60;
+  const icon = document.getElementById('playPauseIcon');
+  const text = document.getElementById('playPauseText');
+  if (icon) icon.textContent = 'play_arrow';
+  if (text) text.textContent = 'Iniciar';
+}
+
+function resetarTimer() {
+  pausarTimer();
+  timerSegundosRestantes = 25 * 60;
+  atualizarDisplayTimerModal();
+}
+
+function definirTempoTimer(segundos) {
+  pausarTimer();
+  timerSegundosRestantes = segundos;
+  atualizarDisplayTimerModal();
+}
+
+function atualizarDisplayTimerModal() {
+  const mins = Math.floor(timerSegundosRestantes / 60);
+  const secs = timerSegundosRestantes % 60;
+  const formato = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+  const displayModal = document.getElementById('timerModalDisplay');
+  if (displayModal) displayModal.textContent = formato;
+
+  if (tarefaIdTimerAtual) {
+    const displayCard = document.getElementById(`timer-display-${tarefaIdTimerAtual}`);
+    if (displayCard) displayCard.textContent = formato;
   }
 }
