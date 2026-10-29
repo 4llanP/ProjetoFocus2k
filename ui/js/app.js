@@ -299,6 +299,61 @@ async function confirmarCriarTarefaModal() {
   }
 }
 
+function ativarReconhecimentoVoz() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    mostrarToastFeedback("Seu navegador não suporta reconhecimento de voz.");
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = 'pt-BR';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  const btnVoz = document.getElementById('btnVozModal');
+  const labelVoz = document.getElementById('labelVozModal');
+  const inputNome = document.getElementById('inputNomeTarefaModal');
+
+  if (btnVoz) btnVoz.classList.add('bg-sky-500/20', 'text-sky-400', 'border-sky-500/40', 'animate-pulse');
+  if (labelVoz) labelVoz.textContent = 'Ouvindo...';
+  mostrarToastFeedback("Ouvindo... Fale o nome da tarefa.");
+
+  recognition.onresult = (event) => {
+    const textoFalado = event.results[0][0].transcript;
+    if (inputNome) {
+      inputNome.value = textoFalado;
+    }
+    mostrarToastFeedback(`Reconhecido: "${textoFalado}"`);
+    restaurarBotaoVoz();
+  };
+
+  recognition.onerror = (event) => {
+    console.error("Erro no reconhecimento de voz:", event.error);
+    mostrarToastFeedback("Erro ao capturar voz. Tente novamente.");
+    restaurarBotaoVoz();
+  };
+
+  recognition.onspeechend = () => {
+    recognition.stop();
+    restaurarBotaoVoz();
+  };
+
+  try {
+    recognition.start();
+  } catch (e) {
+    console.error(e);
+    restaurarBotaoVoz();
+  }
+}
+
+function restaurarBotaoVoz() {
+  const btnVoz = document.getElementById('btnVozModal');
+  const labelVoz = document.getElementById('labelVozModal');
+  if (btnVoz) btnVoz.classList.remove('bg-sky-500/20', 'text-sky-400', 'border-sky-500/40', 'animate-pulse');
+  if (labelVoz) labelVoz.textContent = 'Falar tarefa';
+}
+
 function filtrarCategoria(cat) {
   filtroCategoriaAtiva = cat;
   document.querySelectorAll('.filter-btn').forEach(btn => {

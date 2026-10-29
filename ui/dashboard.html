@@ -426,6 +426,13 @@
     </div>
     <!-- Campo 1: Nome da tarefa -->
     <div>
+      <div class="flex items-center justify-between mb-1.5">
+        <label class="block text-xs font-bold text-[#fffff2] font-mono">Nome da tarefa</label>
+        <button type="button" onclick="ativarReconhecimentoVoz()" id="btnVozModal" class="px-2 py-0.5 bg-[#161619] hover:bg-sky-500/20 text-[#9d9da6] hover:text-sky-400 border border-[#26262b] rounded-lg text-[10px] font-mono flex items-center gap-1 transition cursor-pointer" title="Ditar tarefa por voz">
+          <span class="material-symbols-outlined text-[14px]">mic</span>
+          <span id="labelVozModal">Falar tarefa</span>
+        </button>
+      </div>
       <input class="w-full bg-[#0c0c0e] border border-[#26262b] focus:border-[#fffff2] rounded-xl px-4 py-3 text-sm text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none transition" id="inputNomeTarefaModal" placeholder="Nome da tarefa" type="text">
     </div>
     <!-- Linha Dupla: Data & Prioridade -->
