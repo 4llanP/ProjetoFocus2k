@@ -80,10 +80,11 @@ async function desestruturarTarefaComIA(taskId) {
   }
 
   if (etapas.length === 0) {
+    const t = tarefa.titulo;
     etapas = [
-      { texto: `Analisar escopo e planejar '${tarefa.titulo.slice(0, 20)}'`, tempo: "10 min", prioridade: "alta", marcado: true },
-      { texto: "Executar a etapa prática central", tempo: "20 min", prioridade: "alta", marcado: true },
-      { texto: "Revisar resultados e concluir", tempo: "10 min", prioridade: "media", marcado: true }
+      { texto: `Compreender os objetivos centrais de '${t}'`, tempo: "10 min", prioridade: "alta", marcado: true },
+      { texto: `Executar a primeira entrega prática para '${t}'`, tempo: "25 min", prioridade: "alta", marcado: true },
+      { texto: `Revisar e validar a conclusão de '${t}'`, tempo: "10 min", prioridade: "media", marcado: true }
     ];
   }
 
