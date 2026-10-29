@@ -11,39 +11,50 @@ load_dotenv()
 
 # Inicializa o cliente se a chave de API estiver presente
 API_KEY = os.environ.get("GEMINI_API_KEY")
-client = genai.Client() if API_KEY else None
+client = None
+if API_KEY:
+    try:
+        client = genai.Client()
+    except Exception:
+        client = None
+
 # Modelo ideal para tarefas rápidas de texto e resumos no terminal
 MODELO_GEMINI = "gemini-2.5-flash"
 
 
-def _obter_instrucao_ia(estilo_usuario: str) -> str:
-    """Retorna a persona e as diretrizes de formatação da IA."""
+def _obter_instrucao_chat_ia(estilo_usuario: str) -> str:
+    """Retorna a persona e as diretrizes para o chat interativo com a IA, permitindo respostas mais livres, conversacionais e acolhedoras."""
     base_prompt = (
-        "Você é um assistente especializado em produtividade, acessibilidade e foco nos estudos.\n"
-        "Seu papel é reduzir a carga cognitiva, cansaço mental e ambiguidade.\n"
-        "Diretrizes obrigatórias:\n"
-        "- Nunca use parágrafos longos, blocos densos de texto ou jargões complexos.\n"
-        "- Use frases curtas, ordem direta (Sujeito + Verbo + Objeto).\n"
-        "- Divida as respostas visualmente usando tópicos/bullets claros.\n"
-        "não use formatação de texto como bold, italico, hyperlink\n"
+        "Você é um assistente de IA amigável, acolhedor e especialista em apoio a pessoas com TDAH, produtividade e organização pessoal.\n"
+        "Seu objetivo é conversar com o usuário, tirar dúvidas, ajudar a organizar pensamentos, sugerir estratégias e planejar estudos ou rotinas.\n"
+        "Diretrizes para o chat:\n"
+        "- Tenha respostas naturais, fluidas, conversacionais e mais livres, permitindo explicações em prosa clara ou tópicos conforme necessário.\n"
+        "- Mantenha a empatia, clareza e acolhimento, evitando blocos de texto excessivamente densos para não sobrecarregar a atenção.\n"
+        "- Não utilize formatação de texto com asteriscos (*), negrito, itálico ou símbolos de markdown; escreva o texto limpo, natural e legível.\n"
     )
 
-    if estilo_usuario == "direto":
-        base_prompt += "- Seja extremamente conciso. Vá direto ao ponto, use o mínimo de palavras possível."
+    if estilo_usuario == "detalhado":
+        base_prompt += (
+            "- Forneça respostas completas, ricas em explicações didáticas, exemplos práticos e orientações detalhadas, "
+            "com acolhimento total e contexto completo."
+        )
     else:
-        base_prompt += "- Se precisar explicar um conceito, faça-o em etapas lógicas e sequenciais simples."
+        base_prompt += (
+            "- Seja conciso, direto ao ponto, pragmático e focado em soluções imediatas e acionáveis, "
+            "completamente livre de rodeios."
+        )
 
     return base_prompt
 
 
 def obter_resposta_ia(pergunta: str, estilo_usuario: str, contexto_tarefa: str = "") -> list:
-    """Conecta ao serviço de IA para responder dúvidas gerais de estudos ou organização."""
+    """Conecta ao serviço de IA para responder dúvidas gerais de estudos ou organização no chat."""
     if not client:
         return [
             "Erro: Chave de API não configurada.",
             "Por favor, configure sua chave de API.",
         ]
-    system_instruction = _obter_instrucao_ia(estilo_usuario)
+    system_instruction = _obter_instrucao_chat_ia(estilo_usuario)
 
     contents = pergunta
     if contexto_tarefa:
@@ -55,42 +66,59 @@ def obter_resposta_ia(pergunta: str, estilo_usuario: str, contexto_tarefa: str =
             contents=contents,
             config=types.GenerateContentConfig(
                 system_instruction=system_instruction,
-                temperature=0.3,
+                temperature=0.4,
             ),
         )
 
-        # Divide a resposta por linhas para bater com a estrutura de exibição da UI do terminal
-        return [linha.strip() for linha in response.text.split("\n") if linha.strip()]
+        texto_resp = response.text.strip() if response.text else "Sem resposta da IA."
+        return [texto_resp]
     except Exception as e:
         return [f"Erro na comunicação com a IA: {str(e)}"]
 
 
-def gerar_passos_tarefa(titulo_tarefa: str, descricao_tarefa: str = "") -> list:
-    """Usa a IA para quebrar uma tarefa macro em micro-ações sequenciais."""
+def gerar_passos_tarefa(titulo_tarefa: str, descricao_tarefa: str = "", estilo_usuario: str = "direto") -> list:
+    """Usa a IA para quebrar uma tarefa em micro-ações concretas adaptadas para TDAH e para o estilo de instrução."""
     if not client:
-        return ["Configure a chave de API para habilitar esta função."]
+        return [
+            f"Analisar escopo inicial de '{titulo_tarefa}'",
+            "Realizar etapa principal com foco ininterrupto",
+            "Revisar o resultado e concluir"
+        ]
 
     detalhes = f" Tarefa: '{titulo_tarefa}'."
     if descricao_tarefa:
         detalhes += f" Contexto/Descrição: '{descricao_tarefa}'."
 
-    prompt = (
-        f"Quebre a seguinte tarefa em exatamente 3 ou 4 passos sequenciais, "
-        f"curtos e fáceis de focar:{detalhes} "
-        f"Escreva apenas os passos, um por linha, sem introduções ou numeração manual."
-    )
+    if estilo_usuario == "detalhado":
+        system_instruction = (
+            "Você é um especialista em tutoria, pedagogia e produtividade para pessoas com TDAH. "
+            "Crie 3 a 5 passos sequenciais bem explicados, didáticos e acolhedores. "
+            "Cada passo deve detalhar o 'porquê' e o 'como fazer' de forma estruturada, guiando o usuário passo a passo com clareza e contexto completo, reduzindo a paralisia por análise."
+        )
+        prompt = (
+            f"Quebre a tarefa abaixo em 3 a 5 passos sequenciais detalhados, didáticos e bem explicados:{detalhes} "
+            f"Forneça explicações passo a passo acolhedoras e estruturadas, facilitando o entendimento completo do que deve ser feito e como começar. "
+            f"Escreva apenas os passos, um por linha, sem numeração manual."
+        )
+    else:  # estilo_usuario == "direto"
+        system_instruction = (
+            "Você é um especialista em foco cirúrgico e produtividade para pessoas com TDAH. "
+            "Crie 3 a 5 micro-passos sequenciais extremamente diretos, concretos, objetivos e acionáveis. "
+            "Elimine qualquer enrolação ou linguagem vaga."
+        )
+        prompt = (
+            f"Quebre a tarefa abaixo em exatamente 3 a 4 micro-passos sequenciais ultra-diretos, concretos e executáveis:{detalhes} "
+            f"Use verbos de ação imediatos e específicos relacionados ao tema. Sem introduções ou rodeios. "
+            f"Escreva apenas os passos, um por linha, sem numeração manual."
+        )
 
-    system_instruction = (
-        "Você é um especialista em produtividade para neurodivergentes. "
-        "Crie checklists limpos, com verbos de ação claros e livres de poluição textual."
-    )
     try:
         response = client.models.generate_content(
             model=MODELO_GEMINI,
             contents=prompt,
             config=types.GenerateContentConfig(
                 system_instruction=system_instruction,
-                temperature=0.2,
+                temperature=0.25,
             ),
         )
 
@@ -103,9 +131,19 @@ def gerar_passos_tarefa(titulo_tarefa: str, descricao_tarefa: str = "") -> list:
             p_limpo = p.lstrip("0123456789.-* ")
             if p_limpo and not p_limpo.lower().startswith("erro") and not "configure" in p_limpo.lower():
                 passos_limpos.append(p_limpo)
+        if not passos_limpos:
+            return [
+                f"Analisar escopo inicial de '{titulo_tarefa}'",
+                "Realizar etapa principal com foco ininterrupto",
+                "Revisar o resultado e concluir"
+            ]
         return passos_limpos
     except Exception:
-        return []
+        return [
+            f"Analisar escopo inicial de '{titulo_tarefa}'",
+            "Realizar etapa principal com foco ininterrupto",
+            "Revisar o resultado e concluir"
+        ]
 
 
 def extrair_intent_criar_tarefa(pergunta: str) -> dict:
@@ -145,4 +183,3 @@ def extrair_intent_criar_tarefa(pergunta: str) -> dict:
         return json.loads(texto)
     except Exception:
         return {"criar": False}
-

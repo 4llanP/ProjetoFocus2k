@@ -11,6 +11,7 @@ from models.passo import Passo
 import models.usuario
 from repositories.tarefa_repository import TarefaRepository
 from repositories.passo_repository import PassoRepository
+from repositories.usuario_repository import UsuarioRepository
 
 router = APIRouter(prefix="/tarefas", tags=["tarefas"])
 
@@ -64,7 +65,14 @@ def listar_passos_tarefa(tarefa_id: int, usuario_logado: dict = Depends(verifica
 def decompor_tarefa_ia_generica(dados: dict = None, usuario_logado: dict = Depends(verificar_token)):
     titulo = dados.get("titulo", "") if dados else ""
     descricao = dados.get("descricao", "") if dados else ""
-    textos_passos = gerar_passos_tarefa(titulo, descricao)
+    usuario_id = int(usuario_logado['sub'])
+    estilo = "direto"
+    with SessionLocal() as db:
+        repo = UsuarioRepository(db)
+        usuario = repo.buscar_por_id(usuario_id)
+        if usuario:
+            estilo = getattr(usuario, "estilo_instrucao", "direto")
+    textos_passos = gerar_passos_tarefa(titulo, descricao, estilo)
     return {"passos": textos_passos}
 
 
@@ -79,7 +87,14 @@ def decompor_tarefa_ia(tarefa_id: int, usuario_logado: dict = Depends(verificar_
         if tarefa.usuario_id != int(usuario_logado['sub']):
             raise HTTPException(status_code=403, detail="Acesso negado.")
 
-        textos_passos = gerar_passos_tarefa(tarefa.titulo, tarefa.descricao or "")
+        usuario_id = int(usuario_logado['sub'])
+        estilo = "direto"
+        usuario_repo = UsuarioRepository(db)
+        usuario = usuario_repo.buscar_por_id(usuario_id)
+        if usuario:
+            estilo = getattr(usuario, "estilo_instrucao", "direto")
+
+        textos_passos = gerar_passos_tarefa(tarefa.titulo, tarefa.descricao or "", estilo)
         return {"passos": textos_passos}
 
 
@@ -236,8 +251,29 @@ class DecomporRequest(BaseModel):
 
 @router.post("/ia/decompor")
 def decompor_geral_ia(dados: DecomporRequest, usuario_logado: dict = Depends(verificar_token)):
-    textos_passos = gerar_passos_tarefa(dados.titulo, dados.descricao or "")
-    return {"passos": textos_passos}
+    estilo = "direto"
+    try:
+        usuario_id = int(usuario_logado['sub'])
+        with SessionLocal() as db:
+            from repositories.usuario_repository import UsuarioRepository
+            user_repo = UsuarioRepository(db)
+            user = user_repo.buscar_por_id(usuario_id)
+            if user and hasattr(user, 'estilo_instrucao'):
+                estilo = user.estilo_instrucao
+    except Exception:
+        pass
+
+    try:
+        textos_passos = gerar_passos_tarefa(dados.titulo, dados.descricao or "", estilo)
+        return {"passos": textos_passos}
+    except Exception as e:
+        return {
+            "passos": [
+                f"Analisar escopo inicial de '{dados.titulo}'",
+                "Realizar etapa principal com foco ininterrupto",
+                "Revisar o resultado e concluir"
+            ]
+        }
 
 
 @router.post("/{tarefa_id}/chat")
@@ -264,7 +300,8 @@ def chat_tarefa_ia(tarefa_id: int, dados: MensagemChat, usuario_logado: dict = D
             pass
 
         respostas = obter_resposta_ia(dados.pergunta, estilo, contexto)
-        return {"resposta": "<br>".join(respostas)}
+        texto_resp = respostas[0] if respostas else ""
+        return {"resposta": texto_resp.replace("\n", "<br>")}
 
 
 @router.post("/chat/geral")
@@ -314,4 +351,5 @@ def chat_geral_ia(dados: MensagemChat, usuario_logado: dict = Depends(verificar_
             return {"resposta": "Não foi possível criar a tarefa automaticamente. Por favor, tente novamente ou use o formulário de criação."}
 
     respostas = obter_resposta_ia(dados.pergunta, estilo)
-    return {"resposta": "<br>".join(respostas)}
+    texto_resp = respostas[0] if respostas else ""
+    return {"resposta": texto_resp.replace("\n", "<br>")}

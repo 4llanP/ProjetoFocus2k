@@ -34,59 +34,9 @@
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-<style>
-    body {
-      font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
-      background-color: #080808;
-      color: #fffff2;
-      overflow-x: hidden;
-    }
-    .custom-scroll::-webkit-scrollbar {
-      width: 5px;
-      height: 5px;
-    }
-    .custom-scroll::-webkit-scrollbar-track {
-      background: #080808;
-    }
-    .custom-scroll::-webkit-scrollbar-thumb {
-      background: #26262b;
-      border-radius: 9999px;
-    }
-    .custom-scroll::-webkit-scrollbar-thumb:hover {
-      background: #3e3e46;
-    }
-    .kanban-col {
-      min-height: calc(100vh - 170px);
-    }
-    .sidebar-transition {
-      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .drawer-transition {
-      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .accordion-content {
-      transition: max-height 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, margin-top 0.2s ease;
-      max-height: 0;
-      overflow: hidden;
-      opacity: 0;
-    }
-    .accordion-content.expanded {
-      max-height: 500px;
-      opacity: 1;
-      margin-top: 0.75rem;
-    }
-    .card-highlight-active {
-      border-color: #fffff2 !important;
-      box-shadow: 0 0 0 2px #fffff2, 0 8px 24px rgba(0, 0, 0, 0.6) !important;
-      transform: translateY(-2px);
-    }
-    .focus-ring:focus-visible {
-      outline: 2px solid #fffff2;
-      outline-offset: 2px;
-    }
-  </style>
+<link rel="stylesheet" href="css/main.css">
 </head>
-<body class="h-screen w-screen flex overflow-hidden bg-[#080808] text-[#fffff2] select-none antialiased">
+<body class="h-screen w-screen flex overflow-hidden select-none antialiased">
 <!-- ================= SIDEBAR LATERAL ESQUERDA ================= -->
 <aside class="sidebar-transition w-64 flex-shrink-0 bg-[#111113] border-r border-[#26262b] flex flex-col justify-between z-30 h-full relative" id="sidebar">
 <div class="flex flex-col h-full">
@@ -94,12 +44,11 @@
 <div class="p-4 border-b border-[#26262b] flex items-center justify-between">
 <div class="flex items-center gap-3">
 <div class="w-8 h-8 rounded-lg bg-[#fffff2] text-[#080808] flex items-center justify-center font-bold text-base shadow-sm">
-            
+
           </div>
 <div>
 <div class="flex items-center gap-2">
 <span class="font-bold text-base tracking-tight text-[#fffff2]">Focus <span class="text-[#9d9da6]">2k</span></span>
-<span class="text-[10px] font-mono px-1.5 py-0.2 rounded bg-[#1f1f24] text-[#fffff2] border border-[#26262b] font-semibold">FOCO</span>
 </div>
 
 </div>
@@ -116,12 +65,12 @@
 </div>
 <!-- Navigation Links -->
 <nav class="px-2.5 py-2 space-y-1">
-<a aria-current="page" class="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-[#1f1f24] text-[#fffff2] font-medium text-xs border border-[#3a3a42]" href="#">
+<a id="navKanbanBtn" aria-current="page" class="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-[#1f1f24] text-[#fffff2] font-medium text-xs border border-[#3a3a42] cursor-pointer" onclick="mudarVisao('kanban')">
 <svg class="w-4 h-4 text-[#fffff2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
 <span class="">Página Inicial</span>
 </a>
 
-<a class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] transition font-medium text-xs border border-transparent" href="#">
+<a id="navCalendarBtn" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] transition font-medium text-xs border border-transparent cursor-pointer" onclick="mudarVisao('calendario')">
 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
 <span class="">Calendário de Metas</span>
 <span class="ml-auto text-[9px] bg-[#1f1f24] text-[#9d9da6] px-1 py-0.2 rounded font-mono">Hoje</span>
@@ -129,7 +78,7 @@
 </nav>
 <!-- Category Filter Shortcuts -->
 <div class="px-3 pt-3">
-<h4 class="text-[10px] uppercase tracking-wider font-semibold text-[#9d9da6] mb-2 px-1">Filtros de Estudos</h4>
+<h4 class="text-[10px] uppercase tracking-wider font-semibold text-[#9d9da6] mb-2 px-1">Filtros de Tarefas</h4>
 <div class="space-y-1">
 <button class="filter-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs text-left bg-[#1f1f24] text-[#fffff2] font-medium border border-[#3a3a42] transition" data-filter="todas" onclick="filtrarCategoria('todas')">
 <span class="flex items-center gap-2">
@@ -141,14 +90,14 @@
 <button class="filter-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs text-left text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] border border-transparent transition" data-filter="tarefas_educacionais" onclick="filtrarCategoria('tarefas_educacionais')">
 <span class="flex items-center gap-2">
 <span class="w-1.5 h-1.5 rounded-full bg-[#9d9da6]"></span>
-              Educacionais
+              Tarefas Únicas
             </span>
 <span class="text-[10px] bg-[#080808] text-[#9d9da6] px-1.5 py-0.5 rounded font-mono border border-[#26262b]" id="count-edu">0</span>
 </button>
 <button class="filter-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs text-left text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] border border-transparent transition" data-filter="tarefas_diarias" onclick="filtrarCategoria('tarefas_diarias')">
 <span class="flex items-center gap-2">
 <span class="w-1.5 h-1.5 rounded-full bg-[#9d9da6]"></span>
-              Rotina &amp; Diárias
+              Tarefas Diárias
             </span>
 <span class="text-[10px] bg-[#080808] text-[#9d9da6] px-1.5 py-0.5 rounded font-mono border border-[#26262b]" id="count-dia">0</span>
 </button>
@@ -193,28 +142,14 @@
 <!-- Título do Quadro -->
 <div class="flex items-center gap-2.5">
 <h1 class="text-base font-bold text-[#fffff2] tracking-tight flex items-center gap-2">
-            Focus2k
-            <span class="text-[10px] px-1.5 py-0.5 rounded bg-[#1f1f24] text-[#fffff2] border border-[#26262b] font-mono font-medium">Quadro Principal</span>
+            <span>Quadro Principal</span>
 </h1>
 
 </div>
 </div>
 </header>
-<!-- Subheader informativo / Legenda de Prioridades com ícones acessíveis -->
-<section class="px-5 py-2 bg-[#0d0d0f] border-b border-[#26262b] flex flex-wrap items-center justify-between text-xs text-[#9d9da6] gap-2 flex-shrink-0">
-<div class="flex items-center gap-2">
-
-
-</div>
-<!-- Legenda acessível para baixa visão / daltonismo (símbolo + forma + texto) -->
-<div class="flex items-center gap-3 text-[11px] font-mono">
-
-
-
-</div>
-</section>
 <!-- ================= QUADRO KANBAN (3 COLUNAS) ================= -->
-<div class="flex-1 p-5 overflow-x-auto custom-scroll">
+<div id="kanbanViewContainer" class="flex-1 p-5 overflow-x-auto custom-scroll flex flex-col">
 <div class="grid grid-cols-1 md:grid-cols-3 gap-5 h-full min-w-[840px]">
 <!-- COLUNA 1: A Fazer (Pendente) com BOTÃO DESTACADO: "+ Adicionar Tarefa" -->
 <div class="flex flex-col rounded-xl bg-[#111113] border border-[#26262b] shadow-sm overflow-hidden kanban-col" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'pendente')">
@@ -233,7 +168,7 @@
 </div>
 <!-- Container das Tarefas em A Fazer -->
 <div class="p-3 flex-1 overflow-y-auto space-y-3 custom-scroll" id="col-pendente">
-	</div>
+		</div>
 </div>
 <!-- COLUNA 2: Em Andamento -->
 <div class="flex flex-col rounded-xl bg-[#111113] border border-[#26262b] shadow-sm overflow-hidden kanban-col" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'em_andamento')">
@@ -247,7 +182,7 @@
 </div>
 <!-- Container das Tarefas em Andamento -->
 <div class="p-3 flex-1 overflow-y-auto space-y-3 custom-scroll" id="col-em_andamento">
-	</div>
+		</div>
 </div>
 <!-- COLUNA 3: Concluído -->
 <div class="flex flex-col rounded-xl bg-[#111113] border border-[#26262b] shadow-sm overflow-hidden kanban-col" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'concluido')">
@@ -261,9 +196,48 @@
 </div>
 <!-- Container das Tarefas Concluídas -->
 <div class="p-3 flex-1 overflow-y-auto space-y-3 custom-scroll" id="col-concluido">
+		</div>
+</div>
+</div>
+</div>
+<!-- ================= CALENDÁRIO DE METAS (NOVO) ================= -->
+	<div id="calendarViewContainer" class="flex-1 flex flex-col h-full overflow-y-auto custom-scroll p-6 hidden bg-[#080808]">
+	  <!-- Cabeçalho do Calendário -->
+	  <div class="flex flex-wrap items-center justify-between gap-4 mb-6 bg-[#111113] border border-[#26262b] p-4 rounded-xl flex-shrink-0">
+	    <div class="flex items-center gap-3">
+	      <div class="w-9 h-9 rounded-lg bg-[#1f1f24] border border-[#3a3a42] flex items-center justify-center text-[#fffff2]">
+	        <span class="material-symbols-outlined text-[20px]">calendar_month</span>
+	      </div>
+	      <div>
+	        <h2 id="calendarMonthTitle" class="text-base font-bold text-[#fffff2] tracking-tight">Outubro 2026</h2>
+	        <p class="text-[11px] text-[#9d9da6] font-mono">Visão cronológica de metas e prazos acadêmicos</p>
+	      </div>
+	    </div>
+	    <div class="flex items-center gap-2">
+	      <button onclick="mudarMesCalendario(-1)" class="px-3 py-1.5 rounded-lg bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] border border-[#26262b] text-xs font-semibold flex items-center gap-1 transition cursor-pointer">
+	        <span class="material-symbols-outlined text-[16px]">chevron_left</span> Mês Anterior
+	      </button>
+	      <button onclick="irParaMesAtual()" class="px-3 py-1.5 rounded-lg bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] border border-[#26262b] text-xs font-semibold transition font-mono cursor-pointer">
+	        Hoje
+	      </button>
+	      <button onclick="mudarMesCalendario(1)" class="px-3 py-1.5 rounded-lg bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] border border-[#26262b] text-xs font-semibold flex items-center gap-1 transition cursor-pointer">
+	        Próximo Mês <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+	      </button>
+	    </div>
+	  </div>
+
+	  <!-- Grade do Calendário -->
+	  <div class="bg-[#111113] border border-[#26262b] rounded-xl overflow-hidden flex-1 flex flex-col shadow-sm">
+	    <!-- Dias da Semana -->
+	    <div class="grid grid-cols-7 bg-[#161619] border-b border-[#26262b] text-center text-xs font-bold text-[#9d9da6] font-mono py-2.5 flex-shrink-0">
+	      <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+	    </div>
+	    <!-- Dias do Mês -->
+	    <div id="calendarGridDays" class="grid grid-cols-7 flex-1 auto-rows-fr divide-x divide-y divide-[#26262b] bg-[#080808]">
+	      <!-- Preenchido dinamicamente via JS -->
+	    </div>
+	  </div>
 	</div>
-</div>
-</div>
 </main>
 <!-- ================= BARRA LATERAL DIREITA: CHAT & DESESTRUTURAÇÃO IA ================= -->
 <aside class="drawer-transition w-96 max-w-[90vw] flex-shrink-0 bg-[#111113] border-l border-[#26262b] flex flex-col z-40 h-full relative hidden" id="drawerChatIA" style="width: 0px;">
@@ -276,12 +250,7 @@
 <div>
 <div class="flex items-center gap-1.5">
 <h3 class="font-bold text-xs text-[#fffff2] tracking-wide">Assistente IA</h3>
-<span class="text-[9px] px-1 py-0.2 rounded bg-[#1f1f24] text-emerald-300 border border-[#26262b] font-mono font-semibold flex items-center gap-1">
-<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-              Ativo
-            </span>
 </div>
-<p class="text-[10px] text-[#9d9da6] font-mono">core/tarefas.py integrado</p>
 </div>
 </div>
 <div class="flex items-center gap-1">
@@ -342,7 +311,7 @@
 <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden" id="modalAuth">
 <div class="bg-[#111113] border border-[#26262b] rounded-xl w-full max-w-md p-6 shadow-2xl relative text-[#fffff2]">
 <button class="absolute top-4 right-4 text-[#9d9da6] hover:text-[#fffff2] p-1 font-bold focus-ring rounded" onclick="fecharModalAuth()">
-        
+
       </button>
 <!-- Tabs de Login e Cadastro -->
 <div class="flex border-b border-[#26262b] mb-5">
@@ -416,12 +385,19 @@
         <label class="block text-[#9d9da6] mb-1 font-mono">Estilo de Instrução da IA</label>
         <div class="p-2.5 rounded-lg bg-[#080808] border border-[#26262b] font-medium text-[#fffff2]" id="perfilModalEstilo">-</div>
       </div>
+      <div>
+        <label class="block text-[#9d9da6] mb-1 font-mono flex items-center gap-1">
+          <span class="material-symbols-outlined text-[14px] text-emerald-400">palette</span>
+          Tema Visual (Fundo)
+        </label>
+        <select id="selectTemaModal" onchange="mudarTema(this.value)" class="w-full bg-[#080808] border border-[#26262b] text-[#fffff2] text-xs rounded-lg px-3 py-2.5 focus:outline-none focus:border-[#fffff2] cursor-pointer font-mono">
+          <option value="obsidian">Obsidian & Cyber Emerald</option>
+          <option value="slate">Midnight Slate & Amber</option>
+          <option value="indigo">Deep Indigo & Arctic Blue</option>
+        </select>
+      </div>
     </div>
     <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-[#26262b]">
-      <button onclick="deslogar()" class="px-3 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 rounded-lg text-xs font-semibold border border-rose-500/35 transition flex items-center gap-1.5 cursor-pointer">
-        <span class="material-symbols-outlined text-[15px]">logout</span>
-        Encerrar Sessão (Deslogar)
-      </button>
       <button onclick="fecharModalPerfil()" class="px-4 py-2 bg-[#fffff2] hover:bg-white text-[#080808] rounded-lg text-xs font-bold transition cursor-pointer">
         Fechar
       </button>
@@ -446,7 +422,7 @@
     </div>
     <!-- Título Principal -->
     <div>
-      <h2 class="text-[22px] font-bold text-[#fffff2] tracking-tight leading-none">Criar nova tarefa</h2>
+      <h2 id="modalCriarTarefaTitulo" class="text-[22px] font-bold text-[#fffff2] tracking-tight leading-none">Criar nova tarefa</h2>
     </div>
     <!-- Campo 1: Nome da tarefa -->
     <div>
@@ -458,8 +434,7 @@
       <div>
         <label class="block text-xs font-bold text-[#fffff2] mb-1.5 font-mono">Data / Prazo</label>
         <div class="relative flex items-center">
-          <input class="w-full bg-[#0c0c0e] border border-[#26262b] focus:border-[#fffff2] rounded-xl px-3.5 py-2.5 text-xs font-mono text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none transition pr-10" id="inputDataModal" type="text" placeholder="DD/MM/AAAA">
-          <span class="material-symbols-outlined text-[#9d9da6] text-[18px] absolute right-3 pointer-events-none">calendar_today</span>
+          <input class="w-full bg-[#0c0c0e] border border-[#26262b] focus:border-[#fffff2] rounded-xl px-3.5 py-2.5 text-xs font-mono text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none transition" id="inputDataModal" type="text" placeholder="DD/MM/AAAA" maxlength="10">
         </div>
       </div>
       <!-- Coluna Prioridade -->
@@ -476,12 +451,12 @@
     <div>
       <textarea class="w-full bg-[#0c0c0e] border border-[#26262b] focus:border-[#fffff2] rounded-xl p-3.5 text-xs text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none transition resize-none custom-scroll" id="inputDescricaoModal" placeholder="Descreva sua tarefa" rows="4"></textarea>
     </div>
-    <!-- Linha Tipo de Estudo (Segmented Control) -->
+    <!-- Linha Tipo de Tarefa (Segmented Control) -->
     <div class="flex items-center justify-between pt-1">
-      <span class="text-xs font-mono text-[#9d9da6]">Tipo de Estudo:</span>
+      <span class="text-xs font-mono text-[#9d9da6]">Tipo de Tarefa:</span>
       <div class="inline-flex items-center p-1 rounded-xl bg-[#0c0c0e] border border-[#26262b] gap-1">
-        <button class="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#fffff2] text-[#080808] shadow-sm transition" id="btnTipoEdu" onclick="selecionarTipoEstudo('educacional')" type="button">Educacional</button>
-        <button class="px-3 py-1.5 rounded-lg text-xs font-medium text-[#9d9da6] hover:text-[#fffff2] transition" id="btnTipoRotina" onclick="selecionarTipoEstudo('rotina')" type="button">Rotina Diária</button>
+        <button class="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#fffff2] text-[#080808] shadow-sm transition" id="btnTipoEdu" onclick="selecionarTipoEstudo('educacional')" type="button">Tarefas Únicas</button>
+        <button class="px-3 py-1.5 rounded-lg text-xs font-medium text-[#9d9da6] hover:text-[#fffff2] transition" id="btnTipoRotina" onclick="selecionarTipoEstudo('rotina')" type="button">Tarefas Diárias</button>
       </div>
     </div>
     <!-- Rodapé: Cancelar e + Criar Tarefa -->
@@ -491,1184 +466,35 @@
       </button>
       <button class="px-5 py-2.5 rounded-xl bg-[#fffff2] hover:bg-white text-[#080808] font-bold text-xs flex items-center gap-1.5 transition shadow active:scale-95 cursor-pointer" onclick="confirmarCriarTarefaModal()" type="button">
         <span class="material-symbols-outlined text-[16px] font-bold">add</span>
-        <span class="">Criar Tarefa</span>
+        <span id="modalCriarTarefaBtnText" class="">Criar Tarefa</span>
       </button>
     </div>
   </div>
 </div>
+
+<!-- Botão flutuante Assistente IA (inferior direito) -->
+<button id="btnAssistenteBottomRight" onclick="alternarDrawerChat(true)" class="fixed bottom-6 right-6 z-50 px-4 py-3 bg-[#111113] hover:bg-[#1c1c21] border border-[#3a3a42] text-[#fffff2] rounded-2xl shadow-2xl flex items-center gap-2.5 transition-all duration-200 cursor-pointer group hover:scale-105 active:scale-95">
+  <div class="w-7 h-7 rounded-xl bg-[#fffff2] text-[#080808] flex items-center justify-center font-bold">
+    <span class="material-symbols-outlined text-[18px]">smart_toy</span>
+  </div>
+  <div class="text-left">
+    <div class="text-xs font-bold leading-tight flex items-center gap-1.5">
+      Assistente IA
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+    </div>
+    <div class="text-[10px] text-[#9d9da6] font-mono">TDAH & Foco</div>
+  </div>
+</button>
+
 <!-- ================= SCRIPTS JAVASCRIPT ================= -->
-<script>
-    /**
-     * FOCUS 2K - FRONT-END LOGIC & AI DECOMPOSITION MODULE
-     * Paleta Minimalista de Alto Contraste (#080808 & #fffff2)
-     */
+  <script src="js/api.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/kanban.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/calendar.js"></script>
+  <script src="js/app.js"></script>
 
-    // --- BASE DE DADOS DE TAREFAS (DINÂMICA DA API) ---
-    const API_URL = "";
-    let tarefasDB = [];
-
-    let filtroCategoriaAtiva = 'todas';
-    let termoBuscaAtivo = '';
-    let usuarioAtual = {
-      nome: localStorage.getItem('userName') || '',
-      role: localStorage.getItem('role') || '',
-      estiloInstrucao: 'direto',
-      autenticado: !!localStorage.getItem('token')
-    };
-    let drawerChatAberto = true;
-    let cardSendoDesestruturado = null;
-
-    // Atualiza imediatamente com dados salvos no localStorage, se houver
-    document.addEventListener('DOMContentLoaded', () => {
-      atualizarInterfaceUsuario();
-    });
-
-    function setSafeText(id, text) {
-      const el = document.getElementById(id);
-      if (el) {
-        el.textContent = text;
-      }
-    }
-
-    function apiFetch(url, options = {}) {
-      options.credentials = 'include';
-      options.headers = options.headers || {};
-
-      let token = localStorage.getItem('token');
-      if (token) {
-        token = token.replace(/['"]+/g, '').trim();
-        if (token && token !== 'null' && token !== 'undefined' && token !== '""') {
-          if (options.headers instanceof Headers) {
-            if (!options.headers.has('Authorization')) {
-              options.headers.set('Authorization', `Bearer ${token}`);
-            }
-          } else {
-            options.headers = {
-              'Authorization': `Bearer ${token}`,
-              ...options.headers
-            };
-          }
-        }
-      }
-      return fetch(url, options);
-    }
-
-    async function verificarSessaoECarregar() {
-      let user = null;
-      try {
-        const tokenLocal = localStorage.getItem('token');
-
-        const resUser = await apiFetch(`${API_URL}/usuarios/me`);
-
-        if (!resUser.ok) {
-          const errData = await resUser.json().catch(() => ({}));
-          localStorage.removeItem('token');
-          window.location.href = 'tela_login.html';
-          return;
-        }
-        user = await resUser.json();
-      } catch (err) {
-        localStorage.removeItem('token');
-        window.location.href = 'tela_login.html';
-        return;
-      }
-
-      try {
-        usuarioAtual = {
-          nome: user.nome,
-          role: user.role,
-          estiloInstrucao: user.estilo_instrucao || 'direto',
-          autenticado: true
-        };
-        localStorage.setItem('userName', user.nome);
-        localStorage.setItem('role', user.role);
-        atualizarInterfaceUsuario();
-        await carregarTarefasDaAPI();
-      } catch (uiErr) {}
-    }
-
-    async function carregarTarefasDaAPI() {
-      try {
-        const res = await apiFetch(`${API_URL}/tarefas`);
-        const data = await res.json();
-        if (res.ok) {
-          const rawTarefas = data.dados || data;
-          tarefasDB = await Promise.all(rawTarefas.map(async t => {
-            let subtarefas = [];
-            try {
-              const resPassos = await apiFetch(`${API_URL}/tarefas/${t.id}/passos`);
-              if (resPassos.ok) {
-                const passos = await resPassos.json();
-                subtarefas = passos.map(p => ({
-                  id: p.id,
-                  texto: p.texto,
-                  feita: p.concluido
-                }));
-              }
-            } catch (e) {}
-
-            let dbStatus = (t.status || '').toLowerCase().trim();
-            let statusMapeado = 'pendente';
-            if (dbStatus === 'em_andamento' || dbStatus === 'andamento' || dbStatus === 'fazendo') {
-              statusMapeado = 'em_andamento';
-            } else if (dbStatus === 'concluido' || dbStatus === 'concluida' || t.concluida) {
-              statusMapeado = 'concluido';
-            } else if (dbStatus === 'pendente' || dbStatus === 'a_fazer') {
-              statusMapeado = 'pendente';
-            } else {
-              statusMapeado = (subtarefas.length > 0 && subtarefas.every(s => s.feita)) ? 'concluido' : ((subtarefas.some(s => s.feita)) ? 'em_andamento' : 'pendente');
-            }
-
-            return {
-              id: "task_" + t.id,
-              realId: t.id,
-              titulo: t.titulo,
-              descricao: t.descricao || '',
-              prioridade: t.prioridade || 'media',
-              categoria: t.tipo || 'tarefas_educacionais',
-              status: statusMapeado,
-              subtarefas: subtarefas
-            };
-          }));
-          listarTarefas();
-        }
-      } catch (err) {
-        console.error("Erro ao carregar tarefas:", err);
-      }
-    }
-
-    function alternarMenuLateral() {
-      const sidebar = document.getElementById('sidebar');
-      const icon = document.getElementById('hamburgerIcon');
-      const estaFechada = sidebar.classList.contains('-translate-x-full') || sidebar.style.display === 'none';
-
-      if (estaFechada) {
-        sidebar.classList.remove('-translate-x-full', 'w-0', 'p-0');
-        sidebar.classList.add('w-64');
-        sidebar.style.display = 'flex';
-        icon.classList.remove('rotate-90');
-      } else {
-        sidebar.classList.add('-translate-x-full', 'w-0');
-        sidebar.classList.remove('w-64');
-        sidebar.style.display = 'none';
-        icon.classList.add('rotate-90');
-      }
-      mostrarToastFeedback(estaFechada ? 'Sidebar Aberta' : 'Sidebar Ocultada');
-    }
-
-    function alternarDrawerChat(forcarEstado) {
-      const drawer = document.getElementById('drawerChatIA');
-      if (typeof forcarEstado === 'boolean') {
-        drawerChatAberto = forcarEstado;
-      } else {
-        drawerChatAberto = !drawerChatAberto;
-      }
-
-      if (drawerChatAberto) {
-        drawer.classList.remove('hidden');
-        drawer.style.width = '24rem';
-        mostrarToastFeedback('Assistente IA Aberto');
-      } else {
-        drawer.classList.add('hidden');
-        drawer.style.width = '0px';
-      }
-    }
-
-    // --- DESESTRUTURAR TAREFA COM IA ---
-    async function desestruturarTarefaComIA(taskId) {
-      const tarefa = tarefasDB.find(t => t.id === taskId);
-      if (!tarefa) return;
-
-      cardSendoDesestruturado = tarefa;
-
-      document.querySelectorAll('[id^="task_"]').forEach(el => el.classList.remove('card-highlight-active'));
-      const cardEl = document.getElementById(taskId);
-      if (cardEl) {
-        cardEl.classList.add('card-highlight-active');
-        cardEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
-
-      alternarDrawerChat(true);
-
-      setSafeText('chatContextBadge', `Foco: ${tarefa.titulo.slice(0, 16)}...`);
-      adicionarMensagemUsuario(` Desestruture a tarefa: "${tarefa.titulo}"`);
-
-      const typingIndicator = document.getElementById('chatTypingIndicator');
-      const typingText = document.getElementById('chatTypingText');
-      if (typingIndicator) typingIndicator.classList.remove('hidden');
-      if (typingText) typingText.textContent = `Analisando complexidade para "${tarefa.titulo.slice(0, 24)}..."`;
-      rolarChatParaFinal();
-
-      mostrarToastFeedback("Gerando decomposição cognitiva...");
-
-      let etapas = [];
-      try {
-        const res = await apiFetch(`${API_URL}/tarefas/ia/decompor`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            titulo: tarefa.titulo,
-            descricao: tarefa.descricao || ""
-          })
-        });
-        const data = await res.json();
-        if (res.ok && data.passos) {
-          const textosExistentes = (tarefa.subtarefas || []).map(s => s.texto.toLowerCase().trim());
-
-          etapas = data.passos
-            .filter(texto => {
-              const textoNorm = texto.toLowerCase().trim();
-              return !textosExistentes.includes(textoNorm);
-            })
-            .map((texto, idx) => ({
-              texto: texto,
-              tempo: `${(idx + 1) * 10} min`,
-              prioridade: idx === 0 ? 'alta' : 'media',
-              marcado: true
-            }));
-        }
-      } catch (e) {
-        console.error("Erro ao chamar API de decomposição:", e);
-      }
-
-      if (etapas.length === 0) {
-        etapas = [
-          { texto: "Todos os passos sugeridos pela IA já existem nesta tarefa.", tempo: "0 min", prioridade: "alta", marcado: false }
-        ];
-      }
-
-      if (typingIndicator) typingIndicator.classList.add('hidden');
-      const proposalId = 'proposal_' + Date.now();
-      renderizarPropostaDecomposicaoIA(proposalId, tarefa, etapas);
-      rolarChatParaFinal();
-      mostrarToastFeedback("Decomposição gerada! Clique em 'Injetar Subtarefas'.");
-    }
-
-    function renderizarPropostaDecomposicaoIA(proposalId, tarefa, etapas) {
-      const container = document.getElementById('chatMessagesContainer');
-
-      let itensCheckboxHtml = '';
-      etapas.forEach((etapa, idx) => {
-        let badgeCor = etapa.prioridade === 'alta' 
-          ? 'border-rose-500 text-rose-300' 
-          : (etapa.prioridade === 'media' ? 'border-amber-400 text-amber-300' : 'border-[#3a3a42] text-[#fffff2]');
-
-        itensCheckboxHtml += `
-          <label class="flex items-start gap-2.5 p-2 rounded-lg bg-[#080808] border border-[#26262b] hover:border-[#fffff2] transition cursor-pointer select-none">
-            <input type="checkbox" id="${proposalId}_chk_${idx}" ${etapa.marcado ? 'checked' : ''} class="mt-0.5 w-3.5 h-3.5 rounded border-[#26262b] bg-[#161619] text-[#fffff2] focus:ring-[#fffff2] cursor-pointer">
-            <div class="flex-1 min-w-0">
-              <span class="text-xs text-[#fffff2] font-medium leading-tight block">${etapa.texto}</span>
-              <div class="flex items-center gap-2 mt-1">
-                <span class="text-[9px] font-mono px-1 py-0.2 rounded border ${badgeCor}">${etapa.prioridade.toUpperCase()}</span>
-                <span class="text-[9px] font-mono text-[#9d9da6]"> ${etapa.tempo}</span>
-              </div>
-            </div>
-          </label>
-        `;
-      });
-
-      const messageCardHtml = `
-        <div class="flex items-start gap-2.5">
-          <div class="w-6 h-6 rounded-md bg-[#fffff2] text-[#080808] flex items-center justify-center flex-shrink-0 font-bold text-xs">
-            <span class="material-symbols-outlined text-[15px]">account_tree</span>
-          </div>
-          <div class="bg-[#161619] border border-[#3a3a42] rounded-xl rounded-tl-none text-[#fffff2] w-full max-w-[90%] p-3 shadow-lg space-y-2.5">
-            <div class="flex items-center justify-between border-b border-[#26262b] pb-2">
-              <div class="flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-[#fffff2]"></span>
-                <h4 class="font-bold text-xs text-[#fffff2]">Subtarefas Propostas</h4>
-              </div>
-              <span class="text-[9px] font-mono px-1 py-0.2 rounded bg-[#1f1f24] text-[#fffff2] border border-[#26262b]">IA</span>
-            </div>
-
-            <p class="text-[11px] text-[#9d9da6] leading-relaxed">
-              Decompus <b>"${tarefa.titulo}"</b> em ${etapas.length} etapas estratégicas:
-            </p>
-
-            <div id="${proposalId}_list" class="space-y-1.5" data-task-id="${tarefa.id}">
-              ${itensCheckboxHtml}
-            </div>
-
-            <button 
-              onclick="injetarSubtarefasNoKanban('${proposalId}', '${tarefa.id}')" 
-              class="w-full py-1.5 px-3 bg-[#fffff2] hover:bg-white active:scale-95 text-[#080808] font-bold text-xs rounded-lg border border-[#fffff2] flex items-center justify-center gap-1.5 transition shadow"
-            >
-              <span class="material-symbols-outlined text-[16px]">playlist_add</span>
-              <span>Injetar Subtarefas no Kanban</span>
-            </button>
-          </div>
-        </div>
-      `;
-
-      container.insertAdjacentHTML('beforeend', messageCardHtml);
-    }
-
-    async function injetarSubtarefasNoKanban(proposalId, taskId) {
-      const tarefa = tarefasDB.find(t => t.id === taskId);
-      if (!tarefa) return;
-
-      const listContainer = document.getElementById(`${proposalId}_list`);
-      if (!listContainer) return;
-
-      const checkboxes = listContainer.querySelectorAll('input[type="checkbox"]');
-      let injetadasCount = 0;
-
-      for (let idx = 0; idx < checkboxes.length; idx++) {
-        const chk = checkboxes[idx];
-        if (chk.checked) {
-          const labelSpan = chk.closest('label').querySelector('span.text-xs');
-          const texto = labelSpan ? labelSpan.textContent.trim() : `Nova etapa #${idx + 1}`;
-
-          if (tarefa.realId) {
-            try {
-              const res = await apiFetch(`${API_URL}/tarefas/${tarefa.realId}/passos`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ texto: texto, ordem: idx + 1 })
-              });
-              if (res.ok) {
-                const novoPasso = await res.json();
-                tarefa.subtarefas.push({
-                  id: novoPasso.id,
-                  texto: novoPasso.texto,
-                  feita: novoPasso.concluido
-                });
-                injetadasCount++;
-              }
-            } catch (err) {
-              console.error("Erro ao salvar passo na API:", err);
-            }
-          } else {
-            tarefa.subtarefas.push({
-              id: `sub_ia_${Date.now()}_${idx}`,
-              texto: texto,
-              feita: false
-            });
-            injetadasCount++;
-          }
-        }
-      }
-
-      if (injetadasCount === 0) {
-        mostrarToastFeedback('Selecione ao menos 1 subtarefa para injetar.');
-        return;
-      }
-
-      listarTarefas();
-
-      setTimeout(() => {
-        const acc = document.getElementById(`accordion-${taskId}`);
-        const arrow = document.getElementById(`arrow-${taskId}`);
-        const label = document.getElementById(`label-acc-${taskId}`);
-        if (acc) {
-          acc.classList.add('expanded');
-          if (arrow) arrow.classList.add('rotate-180');
-          if (label) label.textContent = 'Recolher passos';
-        }
-      }, 100);
-
-      adicionarMensagemIA(` <b>${injetadasCount} novas subtarefas</b> foram injetadas no card <i>"${tarefa.titulo}"</i> no seu Kanban.`);
-      rolarChatParaFinal();
-
-      mostrarToastFeedback(` ${injetadasCount} subtarefas injetadas em "${tarefa.titulo.slice(0, 18)}..."`);
-    }
-
-    async function enviarMensagemChat() {
-      const input = document.getElementById('chatInputText');
-      const texto = (input.value || '').trim();
-      if (!texto) return;
-
-      adicionarMensagemUsuario(texto);
-      input.value = '';
-
-      const typingIndicator = document.getElementById('chatTypingIndicator');
-      const typingText = document.getElementById('chatTypingText');
-      typingIndicator.classList.remove('hidden');
-      typingText.textContent = 'Processando diretriz...';
-      rolarChatParaFinal();
-
-      try {
-        let endpoint = `${API_URL}/tarefas/chat/geral`;
-        let payload = { pergunta: texto };
-
-        if (cardSendoDesestruturado && cardSendoDesestruturado.realId) {
-          endpoint = `${API_URL}/tarefas/${cardSendoDesestruturado.realId}/chat`;
-        }
-
-        const res = await apiFetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        const data = await res.json();
-        if (typingIndicator) typingIndicator.classList.add('hidden');
-
-        if (res.ok && data.resposta) {
-          adicionarMensagemIA(data.resposta);
-          if (data.dados_tarefa) {
-            let subtarefasCarregadas = [];
-            try {
-              const resPassos = await apiFetch(`${API_URL}/tarefas/${data.dados_tarefa.id}/passos`);
-              if (resPassos.ok) {
-                const passos = await resPassos.json();
-                subtarefasCarregadas = passos.map(p => ({
-                  id: p.id,
-                  texto: p.texto,
-                  feita: p.concluido
-                }));
-              }
-            } catch (e) {}
-
-            tarefasDB.push({
-              id: data.dados_tarefa.id,
-              realId: data.dados_tarefa.id,
-              titulo: data.dados_tarefa.titulo,
-              descricao: data.dados_tarefa.descricao,
-              prioridade: data.dados_tarefa.prioridade,
-              status: data.dados_tarefa.status || 'pendente',
-              tipo: data.dados_tarefa.tipo,
-              subtarefas: subtarefasCarregadas
-            });
-            listarTarefas();
-            mostrarToastFeedback("Tarefa criada pela IA no Kanban!");
-          }
-        } else {
-          responderMensagemLivre(texto);
-        }
-      } catch (err) {
-        if (typingIndicator) typingIndicator.classList.add('hidden');
-        responderMensagemLivre(texto);
-      }
-      rolarChatParaFinal();
-    }
-
-    function responderMensagemLivre(texto) {
-      const t = texto.toLowerCase();
-      let resposta = '';
-
-      if (t.includes('pomodoro') || t.includes('tempo') || t.includes('foco')) {
-        resposta = `O método ideal recomendado é o ciclo 50/10: 50 minutos de alta concentração sem distrações e 10 minutos de pausa reflexiva. No fim do dia, faça 15 min de consolidação.`;
-      } else if (t.includes('prova') || t.includes('exame') || t.includes('estudo')) {
-        resposta = `Para provas densas, aplique <b>Interleaving</b> (estudo intercalado) com resolução ativa de exercícios passados antes de reler anotações passivas. Use o botão 'Desestruturar com IA' em um card para ver o plano!`;
-      } else {
-        resposta = `Compreendido: <i>"${texto}"</i>. Com base na metodologia de foco, sugiro quebrar essa meta em três frentes: fundamentação conceitual, exercício prático e verificação metacognitiva.`;
-      }
-
-      adicionarMensagemIA(resposta);
-    }
-
-    function adicionarMensagemUsuario(texto) {
-      const container = document.getElementById('chatMessagesContainer');
-      const html = `
-        <div class="flex items-start justify-end gap-2.5">
-          <div class="bg-[#1f1f24] border border-[#3a3a42] p-2.5 rounded-xl rounded-tr-none text-[#fffff2] max-w-[85%]">
-            <p class="leading-relaxed select-text">${texto}</p>
-          </div>
-          <div class="w-6 h-6 rounded-md bg-[#26262b] border border-[#3a3a42] flex items-center justify-center flex-shrink-0 text-[10px] font-bold text-[#fffff2]">
-            ST
-          </div>
-        </div>
-      `;
-      container.insertAdjacentHTML('beforeend', html);
-    }
-
-    function adicionarMensagemIA(htmlConteudo) {
-      const container = document.getElementById('chatMessagesContainer');
-      const html = `
-        <div class="flex items-start gap-2.5">
-          <div class="w-6 h-6 rounded-md bg-[#1f1f24] border border-[#3a3a42] flex items-center justify-center flex-shrink-0 text-[#fffff2]">
-            <span class="material-symbols-outlined text-[14px]">smart_toy</span>
-          </div>
-          <div class="bg-[#161619] border border-[#26262b] p-2.5 rounded-xl rounded-tl-none text-[#fffff2] max-w-[85%] space-y-1">
-            <div class="leading-relaxed select-text text-xs text-[#fffff2]">${htmlConteudo}</div>
-          </div>
-        </div>
-      `;
-      container.insertAdjacentHTML('beforeend', html);
-    }
-
-    function limparHistoricoChat() {
-      cardSendoDesestruturado = null;
-      const container = document.getElementById('chatMessagesContainer');
-      container.innerHTML = `
-        <div class="flex items-start gap-2.5">
-          <div class="w-6 h-6 rounded-md bg-[#1f1f24] border border-[#3a3a42] flex items-center justify-center flex-shrink-0 text-[#fffff2]">
-            <span class="material-symbols-outlined text-[14px]">auto_awesome</span>
-          </div>
-          <div class="bg-[#161619] border border-[#26262b] p-2.5 rounded-xl rounded-tl-none text-[#fffff2] max-w-[85%] space-y-1.5">
-            <p class="leading-relaxed">
-              Histórico reiniciado. O assistente está pronto para novas análises e decomposições de estudo.
-            </p>
-          </div>
-        </div>
-      `;
-      setSafeText('chatContextBadge', 'Modo: Geral');
-      document.querySelectorAll('[id^="task_"]').forEach(el => el.classList.remove('card-highlight-active'));
-      mostrarToastFeedback("Histórico limpo.");
-    }
-
-    function rolarChatParaFinal() {
-      const container = document.getElementById('chatMessagesContainer');
-      container.scrollTop = container.scrollHeight;
-    }
-
-    // --- CADASTRO E LOGIN ---
-    function cadastrarUsuario(nome, senha, estiloInstrucao) {
-      const alertBox = document.getElementById('authAlert');
-      alertBox.classList.remove('hidden', 'bg-[#1f1f24]', 'text-[#fffff2]', 'bg-rose-950/80', 'text-rose-300', 'border-[#26262b]', 'border-rose-500');
-
-      const nomeLimpo = (nome || '').trim();
-
-      if (!nomeLimpo || nomeLimpo.length < 3) {
-        alertBox.textContent = 'Erro no Cadastro: O nome deve conter ao menos 3 caracteres reais.';
-        alertBox.classList.add('bg-rose-950/80', 'text-rose-300', 'border', 'border-rose-500/50');
-        return { sucesso: false, erro: 'Nome inválido.' };
-      }
-
-      if (!senha || senha.length < 4) {
-        alertBox.textContent = 'Erro no Cadastro: A senha deve conter no mínimo 4 caracteres.';
-        alertBox.classList.add('bg-rose-950/80', 'text-rose-300', 'border', 'border-rose-500/50');
-        return { sucesso: false, erro: 'Senha curta demais.' };
-      }
-
-      const estiloNormalizado = (estiloInstrucao || '').toLowerCase().trim();
-      if (estiloNormalizado !== 'direto' && estiloNormalizado !== 'detalhado') {
-        alertBox.textContent = 'Erro no Cadastro: O estilo de instrução precisa ser "direto" ou "detalhado".';
-        alertBox.classList.add('bg-rose-950/80', 'text-rose-300', 'border', 'border-rose-500/50');
-        return { sucesso: false, erro: 'Estilo inválido.' };
-      }
-
-      usuarioAtual = {
-        nome: nomeLimpo,
-        estiloInstrucao: estiloNormalizado,
-        autenticado: true
-      };
-
-      atualizarInterfaceUsuario();
-      alertBox.textContent = `Usuário "${nomeLimpo}" cadastrado! Modo: ${estiloNormalizado.toUpperCase()}.`;
-      alertBox.classList.add('bg-[#1f1f24]', 'text-[#fffff2]', 'border', 'border-[#3a3a42]');
-      
-      setTimeout(() => { fecharModalAuth(); }, 1200);
-      return { sucesso: true, usuario: usuarioAtual };
-    }
-
-    function efetuarLogin(nome, senha) {
-      const alertBox = document.getElementById('authAlert');
-      alertBox.classList.remove('hidden', 'bg-[#1f1f24]', 'text-[#fffff2]', 'bg-rose-950/80', 'text-rose-300', 'border-[#26262b]', 'border-rose-500');
-
-      const nomeLimpo = (nome || '').trim();
-      if (!nomeLimpo || !senha || senha.trim().length === 0) {
-        alertBox.textContent = 'Acesso negado! Preencha usuário e senha corretamente.';
-        alertBox.classList.add('bg-rose-950/80', 'text-rose-300', 'border', 'border-rose-500/50');
-        return { sucesso: false, erro: 'Acesso negado!' };
-      }
-
-      usuarioAtual.nome = nomeLimpo;
-      usuarioAtual.autenticado = true;
-      atualizarInterfaceUsuario();
-
-      alertBox.textContent = `Acesso concedido! Bem-vindo de volta, ${nomeLimpo}.`;
-      alertBox.classList.add('bg-[#1f1f24]', 'text-[#fffff2]', 'border', 'border-[#3a3a42]');
-
-      setTimeout(() => { fecharModalAuth(); }, 900);
-      return { sucesso: true, usuario: usuarioAtual };
-    }
-
-    function listarTarefas() {
-      const colPendente = document.getElementById('col-pendente');
-      const colAndamento = document.getElementById('col-em_andamento');
-      const colConcluido = document.getElementById('col-concluido');
-
-      colPendente.innerHTML = '';
-      colAndamento.innerHTML = '';
-      colConcluido.innerHTML = '';
-
-      let countPendente = 0;
-      let countAndamento = 0;
-      let countConcluido = 0;
-      let totalGeral = 0;
-      let totalEdu = 0;
-      let totalDia = 0;
-
-      tarefasDB.forEach(t => {
-        totalGeral++;
-        if (t.categoria === 'tarefas_educacionais') totalEdu++;
-        if (t.categoria === 'tarefas_diarias') totalDia++;
-
-        const passaCategoria = (filtroCategoriaAtiva === 'todas' || t.categoria === filtroCategoriaAtiva);
-        const passaBusca = !termoBuscaAtivo || 
-          t.titulo.toLowerCase().includes(termoBuscaAtivo.toLowerCase()) || 
-          t.descricao.toLowerCase().includes(termoBuscaAtivo.toLowerCase());
-
-        if (passaCategoria && passaBusca) {
-          const cardHtml = renderizarCardHTML(t);
-          if (t.status === 'pendente') {
-            colPendente.insertAdjacentHTML('beforeend', cardHtml);
-            countPendente++;
-          } else if (t.status === 'em_andamento') {
-            colAndamento.insertAdjacentHTML('beforeend', cardHtml);
-            countAndamento++;
-          } else if (t.status === 'concluido') {
-            colConcluido.insertAdjacentHTML('beforeend', cardHtml);
-            countConcluido++;
-          }
-        }
-      });
-
-      setSafeText('badge-count-pendente', countPendente);
-      setSafeText('badge-count-em_andamento', countAndamento);
-      setSafeText('badge-count-concluido', countConcluido);
-
-      setSafeText('count-todas', totalGeral);
-      setSafeText('count-edu', totalEdu);
-      setSafeText('count-dia', totalDia);
-    }
-
-    // --- CRIAR NOVA TAREFA (ACIONADO PELO BOTÃO DESTACADO NA COLUNA A FAZER) ---
-    function criarNovaTarefa() {
-      const colPendente = document.getElementById('col-pendente');
-      const tempId = 'temp_spinner_' + Date.now();
-
-      const spinnerCardHTML = `
-        <div id="${tempId}" class="p-3.5 rounded-xl bg-[#161619] border border-[#fffff2] shadow-xl transition-all">
-          <div class="flex items-center gap-2.5">
-            <div class="w-4 h-4 border-2 border-[#fffff2] border-t-transparent rounded-full animate-spin"></div>
-            <div>
-              <span class="text-[10px] font-bold text-[#fffff2] uppercase tracking-wider font-mono">Focus Engine</span>
-              <p class="text-xs text-[#fffff2] font-medium">Decompondo passos pedagógicos...</p>
-            </div>
-          </div>
-        </div>
-      `;
-
-      colPendente.insertAdjacentHTML('afterbegin', spinnerCardHTML);
-      mostrarToastFeedback("Decompondo nova tarefa com IA...");
-
-      setTimeout(() => {
-        const tempElement = document.getElementById(tempId);
-        if (tempElement) tempElement.remove();
-
-        const novaId = 'task_' + (tarefasDB.length + 1) + '_' + Math.floor(Math.random() * 100);
-
-        const novaTarefa = {
-          id: novaId,
-          titulo: "Estudo de Algoritmos Gulosos (Greedy) & Huffman",
-          descricao: "Entender critérios de escolha ótima local e codificação ótima para compressão de dados.",
-          prioridade: "alta",
-          categoria: "tarefas_educacionais",
-          status: "pendente",
-          subtarefas: []
-        };
-
-        tarefasDB.unshift(novaTarefa);
-        listarTarefas();
-        mostrarToastFeedback(" Nova Tarefa adicionada em 'A Fazer'!");
-      }, 1200);
-    }
-
-    async function arrastarTarefa(idTarefa, novaColuna) {
-      const tarefa = tarefasDB.find(t => t.id === idTarefa);
-      if (tarefa) {
-        tarefa.status = novaColuna;
-        listarTarefas();
-
-        const nomesCol = {
-          pendente: 'A Fazer',
-          em_andamento: 'Em Andamento',
-          concluido: 'Concluído'
-        };
-        mostrarToastFeedback(`Tarefa movida para "${nomesCol[novaColuna]}"`);
-
-        if (tarefa.realId) {
-          try {
-            await apiFetch(`${API_URL}/tarefas/${tarefa.realId}/status`, {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ status: novaColuna })
-            });
-          } catch (err) {
-            console.error("Erro ao persistir status da tarefa:", err);
-          }
-        }
-      }
-    }
-
-    function renderizarCardHTML(t) {
-      const totalSubs = t.subtarefas.length;
-      const subsFeitas = t.subtarefas.filter(s => s.feita).length;
-      const todasFeitas = totalSubs > 0 && subsFeitas === totalSubs;
-
-      // Badges com ícone + forma + alto contraste para acessibilidade (TDAH & Baixa Visão)
-      let prioridadeBadge = '';
-      if (t.prioridade === 'alta') {
-        prioridadeBadge = '<span class="text-[9px] px-2 py-0.5 rounded bg-[#1f1f24] text-rose-300 border border-rose-500/60 font-mono font-semibold flex items-center gap-1"><span class="w-1.5 h-1.5 bg-rose-500 inline-block"></span> ALTA</span>';
-      } else if (t.prioridade === 'media') {
-        prioridadeBadge = '<span class="text-[9px] px-2 py-0.5 rounded bg-[#1f1f24] text-amber-300 border border-amber-400/60 font-mono font-semibold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-sm bg-amber-400 inline-block"></span> MÉDIA</span>';
-      } else {
-        prioridadeBadge = '<span class="text-[9px] px-2 py-0.5 rounded bg-[#1f1f24] text-emerald-300 border border-emerald-400/60 font-mono font-semibold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span> BAIXA</span>';
-      }
-
-      const isEdu = t.categoria === 'tarefas_educacionais';
-      const catBadge = isEdu 
-        ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-[#080808] text-[#fffff2] border border-[#26262b] font-mono">Edu</span>'
-        : '<span class="text-[9px] px-1.5 py-0.5 rounded bg-[#080808] text-[#9d9da6] border border-[#26262b] font-mono">Rotina</span>';
-
-      let subtarefasHTML = '';
-      t.subtarefas.forEach((sub, idx) => {
-        const textoClasses = sub.feita ? 'line-through text-[#9d9da6]' : 'text-[#fffff2]';
-        subtarefasHTML += `
-          <li class="flex items-start gap-2.5 p-2 rounded-lg bg-[#080808] border border-[#26262b] hover:border-[#3a3a42] transition">
-            <span class="text-[10px] font-mono text-[#9d9da6] font-bold mt-0.5">#${idx + 1}</span>
-            <input 
-              type="checkbox" 
-              ${sub.feita ? 'checked' : ''} 
-              onchange="alternarSubtarefa(event, '${t.id}', '${sub.id}')"
-              class="mt-1 w-3.5 h-3.5 rounded border-[#26262b] bg-[#161619] text-[#fffff2] focus:ring-[#fffff2] cursor-pointer"
-            >
-            <span class="text-xs ${textoClasses} select-text leading-tight">${sub.texto}</span>
-          </li>
-        `;
-      });
-
-      return `
-        <div
-          id="${t.id}"
-          draggable="true"
-          ondragstart="iniciarArrasto(event, '${t.id}')"
-          class="group rounded-xl bg-[#161619] border border-[#26262b] hover:border-[#3a3a42] p-3.5 cursor-grab active:cursor-grabbing transition duration-150"
-        >
-          <!-- Cabeçalho do Card (Prioridade + Categoria + Progresso) -->
-          <div class="flex items-center justify-between gap-2 mb-2">
-            <div class="flex items-center gap-1.5">
-              ${prioridadeBadge}
-              ${catBadge}
-            </div>
-            ${totalSubs > 0 ? `
-            <div id="progresso-${t.id}" class="text-[10px] font-mono px-2 py-0.2 rounded ${todasFeitas ? 'bg-[#fffff2] text-[#080808] font-bold' : 'bg-[#080808] text-[#fffff2]'} border border-[#26262b]">
-              ${subsFeitas}/${totalSubs}
-            </div>
-            ` : ''}
-          </div>
-
-          <!-- Título da Tarefa -->
-          <h4 class="font-bold text-xs text-[#fffff2] tracking-tight leading-snug mb-1">
-            ${t.titulo}
-          </h4>
-
-          <!-- Descrição curta -->
-          <p class="text-[11px] text-[#9d9da6] line-clamp-2 leading-relaxed mb-3">
-            ${t.descricao}
-          </p>
-
-          <!-- BOTÃO EXCLUSIVO: Desestruturar com IA -->
-          <div class="mb-2.5">
-            <button
-              onclick="desestruturarTarefaComIA('${t.id}')"
-              class="w-full py-1.5 px-2.5 rounded-lg bg-[#1f1f24] hover:bg-[#26262b] hover:border-[#fffff2] text-[#fffff2] border border-[#3a3a42] text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 group/btn"
-              title="Decompor objetivo com inteligência artificial"
-            >
-              <span class="material-symbols-outlined text-[15px] text-[#fffff2]">magic_button</span>
-              <span>Desestruturar com IA</span>
-            </button>
-          </div>
-
-          ${totalSubs > 0 ? `
-          <!-- Botão gatilho para Accordion de Passos Inteligentes -->
-          <div
-            onclick="alternarAccordion('${t.id}')"
-            class="flex items-center justify-between pt-2 border-t border-[#26262b] text-xs text-[#9d9da6] hover:text-[#fffff2] cursor-pointer"
-          >
-            <span class="flex items-center gap-1.5 font-medium text-[11px]">
-              <span class="material-symbols-outlined text-[14px]">checklist</span>
-              Passos Inteligentes IA
-            </span>
-            <span class="flex items-center gap-1 text-[10px]">
-              <span id="label-acc-${t.id}">Ver passos</span>
-              <svg id="arrow-${t.id}" class="w-3 h-3 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-            </span>
-          </div>
-
-          <!-- Conteúdo do Accordion Expansível -->
-          <div id="accordion-${t.id}" class="accordion-content">
-            <div class="p-2 rounded-lg bg-[#111113] border border-[#26262b] space-y-1.5">
-              <div class="flex items-center justify-between text-[10px] text-[#9d9da6] mb-1 font-mono">
-                <span>Roteiro Pedagógico:</span>
-                <span class="text-[#fffff2] font-semibold">${subsFeitas === totalSubs && totalSubs > 0 ? ' Concluído' : 'Em curso'}</span>
-              </div>
-              <ul class="space-y-1">
-                ${subtarefasHTML}
-              </ul>
-            </div>
-          </div>
-          ` : ''}
-
-          <!-- Rodapé de Ações de Coluna Rápida -->
-          <div class="mt-2.5 pt-2 border-t border-[#26262b] flex items-center justify-end gap-1.5 text-[9px] font-mono">
-            <span class="text-[#9d9da6] mr-auto">Mover:</span>
-            ${t.status !== 'pendente' ? `<button onclick="arrastarTarefa('${t.id}', 'pendente')" class="px-2 py-0.5 rounded bg-[#1f1f24] text-[#fffff2] hover:bg-[#fffff2] hover:text-[#080808] transition">A Fazer</button>` : ''}
-            ${t.status !== 'em_andamento' ? `<button onclick="arrastarTarefa('${t.id}', 'em_andamento')" class="px-2 py-0.5 rounded bg-[#1f1f24] text-[#fffff2] hover:bg-[#fffff2] hover:text-[#080808] transition">Andamento</button>` : ''}
-            ${t.status !== 'concluido' ? `<button onclick="arrastarTarefa('${t.id}', 'concluido')" class="px-2 py-0.5 rounded bg-[#1f1f24] text-[#fffff2] hover:bg-[#fffff2] hover:text-[#080808] transition">Concluir</button>` : ''}
-          </div>
-        </div>
-      `;
-    }
-
-    function alternarAccordion(cardId) {
-      const accordion = document.getElementById(`accordion-${cardId}`);
-      const arrow = document.getElementById(`arrow-${cardId}`);
-      const label = document.getElementById(`label-acc-${cardId}`);
-
-      if (accordion.classList.contains('expanded')) {
-        accordion.classList.remove('expanded');
-        arrow.classList.remove('rotate-180');
-        label.textContent = 'Ver passos';
-      } else {
-        accordion.classList.add('expanded');
-        arrow.classList.add('rotate-180');
-        label.textContent = 'Recolher passos';
-      }
-    }
-
-    async function alternarSubtarefa(event, taskId, subId) {
-      event.stopPropagation();
-      const tarefa = tarefasDB.find(t => t.id === taskId);
-      if (!tarefa) return;
-
-      const subtarefa = tarefa.subtarefas.find(s => s.id == subId);
-      if (subtarefa) {
-        subtarefa.feita = event.target.checked;
-        const totalSubs = tarefa.subtarefas.length;
-        const subsFeitas = tarefa.subtarefas.filter(s => s.feita).length;
-
-        if (subsFeitas === totalSubs && tarefa.status !== 'concluido') {
-          mostrarToastFeedback(`Todas as etapas de "${tarefa.titulo.slice(0, 20)}..." cumpridas!`);
-        }
-
-        if (tarefa.realId && subId && !String(subId).startsWith('sub_ia_')) {
-          try {
-            await apiFetch(`${API_URL}/tarefas/passos/${subId}/toggle`, {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' }
-            });
-          } catch (e) {
-            console.error("Erro ao alternar passo na API:", e);
-          }
-        }
-
-        listarTarefas();
-        setTimeout(() => {
-          const acc = document.getElementById(`accordion-${taskId}`);
-          const arrow = document.getElementById(`arrow-${taskId}`);
-          const label = document.getElementById(`label-acc-${taskId}`);
-          if (acc) {
-            acc.classList.add('expanded');
-            if (arrow) arrow.classList.add('rotate-180');
-            if (label) label.textContent = 'Recolher passos';
-          }
-        }, 50);
-      }
-    }
-
-    let idSendoArrastado = null;
-
-    function iniciarArrasto(event, taskId) {
-      idSendoArrastado = taskId;
-      event.dataTransfer.setData('text/plain', taskId);
-      event.dataTransfer.effectAllowed = 'move';
-    }
-
-    function permitirSoltar(event) {
-      event.preventDefault();
-      event.dataTransfer.dropEffect = 'move';
-    }
-
-    function soltarTarefa(event, novaColuna) {
-      event.preventDefault();
-      const taskId = event.dataTransfer.getData('text/plain') || idSendoArrastado;
-      if (taskId) {
-        arrastarTarefa(taskId, novaColuna);
-      }
-    }
-
-    function filtrarCategoria(cat) {
-      filtroCategoriaAtiva = cat;
-      document.querySelectorAll('.filter-btn').forEach(btn => {
-        if (btn.getAttribute('data-filter') === cat) {
-          btn.classList.add('bg-[#1f1f24]', 'text-[#fffff2]', 'border-[#3a3a42]');
-          btn.classList.remove('text-[#9d9da6]', 'border-transparent');
-        } else {
-          btn.classList.remove('bg-[#1f1f24]', 'text-[#fffff2]', 'border-[#3a3a42]');
-          btn.classList.add('text-[#9d9da6]', 'border-transparent');
-        }
-      });
-      listarTarefas();
-    }
-
-    function filtrarTarefasInput(valor) {
-      termoBuscaAtivo = valor;
-      listarTarefas();
-    }
-
-    
-    function abrirModalPerfil() {
-      document.getElementById('perfilModalNome').textContent = usuarioAtual.nome || '';
-      document.getElementById('perfilModalRole').textContent = usuarioAtual.role || '';
-      document.getElementById('perfilModalEstilo').textContent = usuarioAtual.estiloInstrucao || 'direto';
-      document.getElementById('modalPerfil').classList.remove('hidden');
-    }
-
-    function fecharModalPerfil() {
-      document.getElementById('modalPerfil').classList.add('hidden');
-    }
-
-    function deslogar() {
-      localStorage.removeItem('token');
-      window.location.href = 'tela_login.html';
-    }
-
-    function atualizarInterfaceUsuario() {
-      const nameEl = document.getElementById('sidebarUserName');
-      const roleEl = document.getElementById('sidebarUserRole');
-      const nomeVal = usuarioAtual.nome || localStorage.getItem('userName') || '';
-      const roleVal = usuarioAtual.role || localStorage.getItem('role') || '';
-      if (nameEl) nameEl.textContent = nomeVal;
-      if (roleEl) roleEl.textContent = roleVal;
-    }
-
-    function abrirModalAuth() {
-      document.getElementById('modalAuth').classList.remove('hidden');
-    }
-
-    function fecharModalAuth() {
-      document.getElementById('modalAuth').classList.add('hidden');
-      document.getElementById('authAlert').classList.add('hidden');
-    }
-
-    function alternarTabAuth(tab) {
-      const formLogin = document.getElementById('formLogin');
-      const formCad = document.getElementById('formCadastro');
-      const btnLog = document.getElementById('tabBtnLogin');
-      const btnCad = document.getElementById('tabBtnCadastro');
-      const alertBox = document.getElementById('authAlert');
-      alertBox.classList.add('hidden');
-
-      if (tab === 'login') {
-        formLogin.classList.remove('hidden');
-        formCad.classList.add('hidden');
-        btnLog.className = "flex-1 py-2 font-bold text-xs uppercase tracking-wider text-[#fffff2] border-b-2 border-[#fffff2]";
-        btnCad.className = "flex-1 py-2 font-bold text-xs uppercase tracking-wider text-[#9d9da6] hover:text-[#fffff2] border-b-2 border-transparent";
-      } else {
-        formLogin.classList.add('hidden');
-        formCad.classList.remove('hidden');
-        btnCad.className = "flex-1 py-2 font-bold text-xs uppercase tracking-wider text-[#fffff2] border-b-2 border-[#fffff2]";
-        btnLog.className = "flex-1 py-2 font-bold text-xs uppercase tracking-wider text-[#9d9da6] hover:text-[#fffff2] border-b-2 border-transparent";
-      }
-    }
-
-    function submeterLogin() {
-      const nome = document.getElementById('loginNome').value;
-      const senha = document.getElementById('loginSenha').value;
-      efetuarLogin(nome, senha);
-    }
-
-    function submeterCadastro() {
-      const nome = document.getElementById('cadNome').value;
-      const senha = document.getElementById('cadSenha').value;
-      const estilo = document.getElementById('cadEstilo').value;
-      cadastrarUsuario(nome, senha, estilo);
-    }
-
-    function atualizarInterfaceUsuario() {
-      try {
-        const badge = document.getElementById('userStatusBadge');
-        if (badge) badge.textContent = 'Conectado';
-      } catch(e) {}
-    }
-
-    function mostrarToastFeedback(msg) {
-      const toast = document.getElementById('liveFeedbackToast');
-      if (!toast) return;
-      toast.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-[#fffff2]"></span> ${msg}`;
-      toast.classList.remove('hidden');
-      clearTimeout(window.toastTimer);
-      window.toastTimer = setTimeout(() => {
-        toast.classList.add('hidden');
-      }, 3000);
-    }
-
-    let modalTipoEstudoSelecionado = 'tarefas_educacionais';
-    let modalPrioridadeSelecionada = 'media';
-
-    function selecionarPrioridadeModal(prioridade) {
-      modalPrioridadeSelecionada = prioridade;
-      const btnBaixa = document.getElementById('btnPrioridadeBaixa');
-      const btnMedia = document.getElementById('btnPrioridadeMedia');
-      const btnAlta = document.getElementById('btnPrioridadeAlta');
-
-      [btnBaixa, btnMedia, btnAlta].forEach(btn => {
-        if (btn) {
-          btn.className = "flex-1 py-2 rounded-lg text-xs font-medium text-[#9d9da6] hover:text-[#fffff2] transition";
-        }
-      });
-
-      if (prioridade === 'baixa' && btnBaixa) {
-        btnBaixa.className = "flex-1 py-2 rounded-lg text-xs font-bold bg-[#fffff2] text-[#080808] shadow-sm transition";
-      } else if (prioridade === 'media' && btnMedia) {
-        btnMedia.className = "flex-1 py-2 rounded-lg text-xs font-bold bg-[#fffff2] text-[#080808] shadow-sm transition";
-      } else if (prioridade === 'alta' && btnAlta) {
-        btnAlta.className = "flex-1 py-2 rounded-lg text-xs font-bold bg-[#fffff2] text-[#080808] shadow-sm transition";
-      }
-    }
-
-    function abrirModalCriarTarefa() {
-      console.log("Abrindo modal criar tarefa...");
-      const modal = document.getElementById('modalCriarTarefa');
-      if (modal) {
-        const inputNome = document.getElementById('inputNomeTarefaModal');
-        const inputDesc = document.getElementById('inputDescricaoModal');
-        const inputData = document.getElementById('inputDataModal');
-
-        if (inputNome) inputNome.value = '';
-        if (inputDesc) inputDesc.value = '';
-
-        const hoje = new Date();
-        const dia = String(hoje.getDate()).padStart(2, '0');
-        const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-        const ano = hoje.getFullYear();
-        if (inputData) inputData.value = `${dia}/${mes}/${ano}`;
-
-        selecionarTipoEstudo('educacional');
-        selecionarPrioridadeModal('media');
-
-        modal.classList.remove('hidden');
-        modal.style.display = 'flex';
-      } else {
-        console.error("Modal #modalCriarTarefa não encontrado no DOM!");
-      }
-    }
-
-    function fecharModalCriarTarefa() {
-      const modal = document.getElementById('modalCriarTarefa');
-      if (modal) {
-        modal.classList.add('hidden');
-        modal.style.display = 'none';
-      }
-    }
-
-    function selecionarTipoEstudo(tipo) {
-      const btnEdu = document.getElementById('btnTipoEdu');
-      const btnRotina = document.getElementById('btnTipoRotina');
-
-      if (tipo === 'educacional') {
-        modalTipoEstudoSelecionado = 'tarefas_educacionais';
-        if (btnEdu) {
-          btnEdu.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-[#fffff2] text-[#080808] shadow-sm transition";
-        }
-        if (btnRotina) {
-          btnRotina.className = "px-3 py-1.5 rounded-lg text-xs font-medium text-[#9d9da6] hover:text-[#fffff2] transition";
-        }
-      } else {
-        modalTipoEstudoSelecionado = 'tarefas_diarias';
-        if (btnRotina) {
-          btnRotina.className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-[#fffff2] text-[#080808] shadow-sm transition";
-        }
-        if (btnEdu) {
-          btnEdu.className = "px-3 py-1.5 rounded-lg text-xs font-medium text-[#9d9da6] hover:text-[#fffff2] transition";
-        }
-      }
-    }
-
-    async function confirmarCriarTarefaModal() {
-      const titulo = document.getElementById('inputNomeTarefaModal').value.trim();
-      const descricao = document.getElementById('inputDescricaoModal').value.trim();
-      const dataStr = document.getElementById('inputDataModal').value.trim();
-
-      if (!titulo || titulo.length < 3) {
-        mostrarToastFeedback('O título da tarefa deve ter pelo menos 3 caracteres.');
-        return;
-      }
-
-      let prazoISO = null;
-      if (dataStr) {
-        let partes = [];
-        if (dataStr.includes('/')) {
-          partes = dataStr.split('/');
-        } else if (dataStr.includes('-')) {
-          partes = dataStr.split('-');
-        }
-        if (partes.length === 3) {
-          if (partes[0].length === 4) {
-            prazoISO = `${partes[0]}-${partes[1]}-${partes[2]}`;
-          } else {
-            prazoISO = `${partes[2]}-${partes[1]}-${partes[0]}`;
-          }
-        }
-      }
-
-      // Regra de status e prioridade automáticos:
-      // Padrão: 'pendente' (A Fazer) e prioridade escolhida pelo usuário.
-      // Caso a data/prazo já tenha passado (menor que hoje): status vai para 'em_andamento' (Em progresso) e prioridade vai para 'alta'.
-      let statusAutomatico = 'pendente';
-      let prioridadeFinal = modalPrioridadeSelecionada;
-      if (prazoISO) {
-        const agora = new Date();
-        const ano = agora.getFullYear();
-        const mes = String(agora.getMonth() + 1).padStart(2, '0');
-        const dia = String(agora.getDate()).padStart(2, '0');
-        const hojeStr = `${ano}-${mes}-${dia}`;
-        console.log("Verificando prazo:", { prazoISO, hojeStr, modalPrioridadeSelecionada });
-        if (prazoISO < hojeStr) {
-          statusAutomatico = 'em_andamento';
-          prioridadeFinal = 'alta';
-        }
-      }
-
-      try {
-        const res = await apiFetch(`${API_URL}/tarefas`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            tipo: modalTipoEstudoSelecionado,
-            titulo: titulo,
-            descricao: descricao || null,
-            prioridade: prioridadeFinal,
-            prazo: prazoISO
-          })
-        });
-
-        const data = await res.json();
-        if (res.ok) {
-          const novaTarefaCriada = data.dados || data;
-          const novaId = novaTarefaCriada.id;
-
-          if (statusAutomatico === 'em_andamento' && novaId) {
-            await apiFetch(`${API_URL}/tarefas/${novaId}/status`, {
-              method: 'PATCH',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ status: 'em_andamento' })
-            });
-          }
-
-          fecharModalCriarTarefa();
-          await carregarTarefasDaAPI();
-          mostrarToastFeedback(statusAutomatico === 'em_andamento' ? ' Tarefa criada em "Em progresso" (data vencida)!' : ' Tarefa criada em "A Fazer"!');
-        } else {
-          mostrarToastFeedback(`Erro: ${data.detail || 'Não foi possível criar a tarefa'}`);
-        }
-      } catch (err) {
-        console.error("Erro ao criar tarefa:", err);
-        mostrarToastFeedback('Erro de conexão ao criar tarefa.');
-      }
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      verificarSessaoECarregar();
-    });
-  </script>
-
-
-<div class="fixed bottom-6 right-6 z-50"><button id="fabToggleChat" onclick="alternarDrawerChat()" class="px-4 py-2.5 bg-[#161619] hover:bg-[#1f1f24] active:scale-95 text-[#fffff2] rounded-full border border-[#3a3a42] hover:border-[#fffff2] shadow-2xl flex items-center gap-2.5 transition duration-150 focus-ring cursor-pointer group"><span class="w-2 h-2 rounded-full bg-emerald-400 group-hover:scale-125 transition-transform"></span><span class="material-symbols-outlined text-[18px] text-[#fffff2]">smart_toy</span><span class="text-xs font-semibold tracking-wide">Assistente IA</span><span class="text-[9px] font-mono px-1.5 py-0.2 rounded bg-[#080808] text-[#9d9da6] group-hover:text-[#fffff2] border border-[#26262b]">FOCO</span></button></div>
 
 <!-- Elementos de suporte de sessão ocultos para evitar null reference -->
 <div id="userStatusBadge" class="hidden"></div>
