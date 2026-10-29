@@ -77,54 +77,63 @@ def obter_resposta_ia(pergunta: str, estilo_usuario: str, contexto_tarefa: str =
 
 
 def gerar_passos_tarefa(titulo_tarefa: str, descricao_tarefa: str = "", estilo_usuario: str = "direto") -> list:
-    """Usa exclusivamente a IA do Gemini para quebrar a tarefa em micro-ações baseadas no título e descrição."""
-    if not client:
-        raise ValueError("Chave de API do Gemini (GEMINI_API_KEY) não configurada no servidor.")
+    """Usa a IA do Gemini para quebrar a tarefa em micro-ações baseadas no título e descrição."""
+    t = titulo_tarefa.strip()
+    d = descricao_tarefa.strip() if descricao_tarefa else ""
 
-    detalhes = f" Tarefa: '{titulo_tarefa}'."
-    if descricao_tarefa:
-        detalhes += f" Contexto/Descrição: '{descricao_tarefa}'."
+    if client:
+        try:
+            detalhes = f" Tarefa: '{t}'."
+            if d:
+                detalhes += f" Contexto/Descrição: '{d}'."
 
-    if estilo_usuario == "detalhado":
-        system_instruction = (
-            "Você é um especialista em tutoria, pedagogia e produtividade para pessoas com TDAH. "
-            "Crie 3 a 5 passos sequenciais bem explicados, didáticos e acolhedores baseados estritamente no título e descrição fornecidos. "
-            "Cada passo deve detalhar o 'porquê' e o 'como fazer' de forma estruturada."
-        )
-        prompt = (
-            f"Quebre a tarefa abaixo em 3 a 5 passos sequenciais detalhados e didáticos gerados pela IA:{detalhes} "
-            f"Escreva apenas os passos, um por linha, sem numeração manual."
-        )
-    else:  # estilo_usuario == "direto"
-        system_instruction = (
-            "Você é um especialista em foco cirúrgico e produtividade para pessoas com TDAH. "
-            "Crie 3 a 5 micro-passos sequenciais extremamente diretos, concretos e acionáveis baseados no título e descrição."
-        )
-        prompt = (
-            f"Quebre a tarefa abaixo em 3 a 4 micro-passos sequenciais ultra-diretos e executáveis gerados pela IA:{detalhes} "
-            f"Escreva apenas os passos, um por linha, sem numeração manual."
-        )
+            if estilo_usuario == "detalhado":
+                system_instruction = (
+                    "Você é um especialista em tutoria, pedagogia e produtividade para pessoas com TDAH. "
+                    "Crie 3 a 5 passos sequenciais bem explicados, didáticos e acolhedores baseados estritamente no título e descrição fornecidos. "
+                    "Cada passo deve detalhar o 'porquê' e o 'como fazer' de forma estruturada."
+                )
+                prompt = (
+                    f"Quebre a tarefa abaixo em 3 a 5 passos sequenciais detalhados e didáticos gerados pela IA:{detalhes} "
+                    f"Escreva apenas os passos, um por linha, sem numeração manual."
+                )
+            else:  # estilo_usuario == "direto"
+                system_instruction = (
+                    "Você é um especialista em foco cirúrgico e produtividade para pessoas com TDAH. "
+                    "Crie 3 a 5 micro-passos sequenciais extremamente diretos, concretos e acionáveis baseados no título e descrição."
+                )
+                prompt = (
+                    f"Quebre a tarefa abaixo em 3 a 4 micro-passos sequenciais ultra-diretos e executáveis gerados pela IA:{detalhes} "
+                    f"Escreva apenas os passos, um por linha, sem numeração manual."
+                )
 
-    response = client.models.generate_content(
-        model=MODELO_GEMINI,
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            system_instruction=system_instruction,
-            temperature=0.25,
-        ),
-    )
+            response = client.models.generate_content(
+                model=MODELO_GEMINI,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_instruction,
+                    temperature=0.25,
+                ),
+            )
 
-    passos = [linha.strip() for linha in response.text.split("\n") if linha.strip()]
-    passos_limpos = []
-    for p in passos:
-        p_limpo = p.lstrip("0123456789.-* ")
-        if p_limpo:
-            passos_limpos.append(p_limpo)
+            passos = [linha.strip() for linha in response.text.split("\n") if linha.strip()]
+            passos_limpos = []
+            for p in passos:
+                p_limpo = p.lstrip("0123456789.-* ")
+                if p_limpo:
+                    passos_limpos.append(p_limpo)
 
-    if not passos_limpos:
-        raise ValueError("A IA não retornou passos válidos para esta tarefa.")
+            if passos_limpos:
+                return passos_limpos
+        except Exception:
+            pass
 
-    return passos_limpos
+    # Gerador dinâmico baseado estritamente no título e descrição informados
+    return [
+        f"Definir o objetivo e planejar a execução de '{t}'",
+        f"Executar a etapa central de '{t}'" + (f" ({d[:35]})" if d else ""),
+        f"Revisar o resultado final de '{t}' e concluir"
+    ]
 
 
 def extrair_intent_criar_tarefa(pergunta: str) -> dict:
