@@ -76,14 +76,49 @@ def obter_resposta_ia(pergunta: str, estilo_usuario: str, contexto_tarefa: str =
         return [f"Erro na comunicação com a IA: {str(e)}"]
 
 
+def _gerar_passos_heuristicos(titulo: str, descricao: str = "") -> list:
+    """Gera passos contextuais inteligentes baseados nas palavras-chave do título e descrição da tarefa."""
+    t_lower = (titulo + " " + descricao).lower()
+
+    if any(k in t_lower for k in ["estudar", "prova", "materia", "aprender", "leitura", "livro", "capitulo", "estudo"]):
+        return [
+            f"Fazer leitura atenta do material sobre '{titulo}'",
+            "Destacar os conceitos principais e termos-chave",
+            "Resolver 3 exercícios ou perguntas de fixação",
+            "Fazer revisão rápida dos pontos anotados"
+        ]
+    elif any(k in t_lower for k in ["codigo", "programar", "sistema", "bug", "funcionalidade", "api", "script", "app", "desenvolver"]):
+        return [
+            f"Estruturar os requisitos e lógica para '{titulo}'",
+            "Escrever o código base ou resolver o problema central",
+            "Testar a execução e validar os resultados",
+            "Refatorar e registrar a implementação"
+        ]
+    elif any(k in t_lower for k in ["redacao", "artigo", "texto", "trabalho", "relatorio", "documento", "ensaio"]):
+        return [
+            f"Fazer brainstorming e estruturar tópicos para '{titulo}'",
+            "Escrever o rascunho inicial do conteúdo",
+            "Revisar clareza, coesão e correção textual",
+            "Finalizar formatação e entrega"
+        ]
+    elif any(k in t_lower for k in ["exercicio", "treino", "atividade", "tarefa", "projeto"]):
+        return [
+            f"Definir a meta principal para '{titulo}'",
+            "Executar a primeira etapa prática da atividade",
+            "Concluir os detalhes restantes e validar o resultado"
+        ]
+    else:
+        return [
+            f"Analisar e planejar as etapas para '{titulo}'",
+            f"Executar o núcleo principal de '{titulo}' com foco",
+            "Verificar o resultado e concluir"
+        ]
+
+
 def gerar_passos_tarefa(titulo_tarefa: str, descricao_tarefa: str = "", estilo_usuario: str = "direto") -> list:
     """Usa a IA para quebrar uma tarefa em micro-ações concretas adaptadas para TDAH e para o estilo de instrução."""
     if not client:
-        return [
-            f"Analisar escopo inicial de '{titulo_tarefa}'",
-            "Realizar etapa principal com foco ininterrupto",
-            "Revisar o resultado e concluir"
-        ]
+        return _gerar_passos_heuristicos(titulo_tarefa, descricao_tarefa)
 
     detalhes = f" Tarefa: '{titulo_tarefa}'."
     if descricao_tarefa:
@@ -132,18 +167,10 @@ def gerar_passos_tarefa(titulo_tarefa: str, descricao_tarefa: str = "", estilo_u
             if p_limpo and not p_limpo.lower().startswith("erro") and not "configure" in p_limpo.lower():
                 passos_limpos.append(p_limpo)
         if not passos_limpos:
-            return [
-                f"Analisar escopo inicial de '{titulo_tarefa}'",
-                "Realizar etapa principal com foco ininterrupto",
-                "Revisar o resultado e concluir"
-            ]
+            return _gerar_passos_heuristicos(titulo_tarefa, descricao_tarefa)
         return passos_limpos
     except Exception:
-        return [
-            f"Analisar escopo inicial de '{titulo_tarefa}'",
-            "Realizar etapa principal com foco ininterrupto",
-            "Revisar o resultado e concluir"
-        ]
+        return _gerar_passos_heuristicos(titulo_tarefa, descricao_tarefa)
 
 
 def extrair_intent_criar_tarefa(pergunta: str) -> dict:
