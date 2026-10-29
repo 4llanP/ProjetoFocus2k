@@ -80,11 +80,8 @@ async function desestruturarTarefaComIA(taskId) {
   }
 
   if (etapas.length === 0) {
-    const t = tarefa.titulo;
     etapas = [
-      { texto: `Compreender os objetivos centrais de '${t}'`, tempo: "10 min", prioridade: "alta", marcado: true },
-      { texto: `Executar a primeira entrega prática para '${t}'`, tempo: "25 min", prioridade: "alta", marcado: true },
-      { texto: `Revisar e validar a conclusão de '${t}'`, tempo: "10 min", prioridade: "media", marcado: true }
+      { texto: "Não foi possível gerar os passos via IA. Verifique se a GEMINI_API_KEY está configurada no servidor.", tempo: "0 min", prioridade: "alta", marcado: false }
     ];
   }
 

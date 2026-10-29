@@ -76,49 +76,10 @@ def obter_resposta_ia(pergunta: str, estilo_usuario: str, contexto_tarefa: str =
         return [f"Erro na comunicação com a IA: {str(e)}"]
 
 
-def _gerar_passos_heuristicos(titulo: str, descricao: str = "") -> list:
-    """Gera passos contextuais inteligentes baseados nas palavras-chave do título e descrição da tarefa."""
-    t_lower = (titulo + " " + descricao).lower()
-
-    if any(k in t_lower for k in ["estudar", "prova", "materia", "aprender", "leitura", "livro", "capitulo", "estudo"]):
-        return [
-            f"Fazer leitura atenta do material sobre '{titulo}'",
-            "Destacar os conceitos principais e termos-chave",
-            "Resolver 3 exercícios ou perguntas de fixação",
-            "Fazer revisão rápida dos pontos anotados"
-        ]
-    elif any(k in t_lower for k in ["codigo", "programar", "sistema", "bug", "funcionalidade", "api", "script", "app", "desenvolver"]):
-        return [
-            f"Estruturar os requisitos e lógica para '{titulo}'",
-            "Escrever o código base ou resolver o problema central",
-            "Testar a execução e validar os resultados",
-            "Refatorar e registrar a implementação"
-        ]
-    elif any(k in t_lower for k in ["redacao", "artigo", "texto", "trabalho", "relatorio", "documento", "ensaio"]):
-        return [
-            f"Fazer brainstorming e estruturar tópicos para '{titulo}'",
-            "Escrever o rascunho inicial do conteúdo",
-            "Revisar clareza, coesão e correção textual",
-            "Finalizar formatação e entrega"
-        ]
-    elif any(k in t_lower for k in ["exercicio", "treino", "atividade", "tarefa", "projeto"]):
-        return [
-            f"Definir a meta principal para '{titulo}'",
-            "Executar a primeira etapa prática da atividade",
-            "Concluir os detalhes restantes e validar o resultado"
-        ]
-    else:
-        return [
-            f"Analisar e planejar as etapas para '{titulo}'",
-            f"Executar o núcleo principal de '{titulo}' com foco",
-            "Verificar o resultado e concluir"
-        ]
-
-
 def gerar_passos_tarefa(titulo_tarefa: str, descricao_tarefa: str = "", estilo_usuario: str = "direto") -> list:
-    """Usa a IA para quebrar uma tarefa em micro-ações concretas adaptadas para TDAH e para o estilo de instrução."""
+    """Usa exclusivamente a IA do Gemini para quebrar a tarefa em micro-ações baseadas no título e descrição."""
     if not client:
-        return _gerar_passos_heuristicos(titulo_tarefa, descricao_tarefa)
+        raise ValueError("Chave de API do Gemini (GEMINI_API_KEY) não configurada no servidor.")
 
     detalhes = f" Tarefa: '{titulo_tarefa}'."
     if descricao_tarefa:
@@ -127,50 +88,43 @@ def gerar_passos_tarefa(titulo_tarefa: str, descricao_tarefa: str = "", estilo_u
     if estilo_usuario == "detalhado":
         system_instruction = (
             "Você é um especialista em tutoria, pedagogia e produtividade para pessoas com TDAH. "
-            "Crie 3 a 5 passos sequenciais bem explicados, didáticos e acolhedores. "
-            "Cada passo deve detalhar o 'porquê' e o 'como fazer' de forma estruturada, guiando o usuário passo a passo com clareza e contexto completo, reduzindo a paralisia por análise."
+            "Crie 3 a 5 passos sequenciais bem explicados, didáticos e acolhedores baseados estritamente no título e descrição fornecidos. "
+            "Cada passo deve detalhar o 'porquê' e o 'como fazer' de forma estruturada."
         )
         prompt = (
-            f"Quebre a tarefa abaixo em 3 a 5 passos sequenciais detalhados, didáticos e bem explicados:{detalhes} "
-            f"Forneça explicações passo a passo acolhedoras e estruturadas, facilitando o entendimento completo do que deve ser feito e como começar. "
+            f"Quebre a tarefa abaixo em 3 a 5 passos sequenciais detalhados e didáticos gerados pela IA:{detalhes} "
             f"Escreva apenas os passos, um por linha, sem numeração manual."
         )
     else:  # estilo_usuario == "direto"
         system_instruction = (
             "Você é um especialista em foco cirúrgico e produtividade para pessoas com TDAH. "
-            "Crie 3 a 5 micro-passos sequenciais extremamente diretos, concretos, objetivos e acionáveis. "
-            "Elimine qualquer enrolação ou linguagem vaga."
+            "Crie 3 a 5 micro-passos sequenciais extremamente diretos, concretos e acionáveis baseados no título e descrição."
         )
         prompt = (
-            f"Quebre a tarefa abaixo em exatamente 3 a 4 micro-passos sequenciais ultra-diretos, concretos e executáveis:{detalhes} "
-            f"Use verbos de ação imediatos e específicos relacionados ao tema. Sem introduções ou rodeios. "
+            f"Quebre a tarefa abaixo em 3 a 4 micro-passos sequenciais ultra-diretos e executáveis gerados pela IA:{detalhes} "
             f"Escreva apenas os passos, um por linha, sem numeração manual."
         )
 
-    try:
-        response = client.models.generate_content(
-            model=MODELO_GEMINI,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                system_instruction=system_instruction,
-                temperature=0.25,
-            ),
-        )
+    response = client.models.generate_content(
+        model=MODELO_GEMINI,
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            system_instruction=system_instruction,
+            temperature=0.25,
+        ),
+    )
 
-        # Limpa e filtra linhas vazias
-        passos = [linha.strip() for linha in response.text.split("\n") if linha.strip()]
+    passos = [linha.strip() for linha in response.text.split("\n") if linha.strip()]
+    passos_limpos = []
+    for p in passos:
+        p_limpo = p.lstrip("0123456789.-* ")
+        if p_limpo:
+            passos_limpos.append(p_limpo)
 
-        # Remove marcadores comuns caso o modelo acabe gerando por teimosia (ex: "-", "*", "1.")
-        passos_limpos = []
-        for p in passos:
-            p_limpo = p.lstrip("0123456789.-* ")
-            if p_limpo and not p_limpo.lower().startswith("erro") and not "configure" in p_limpo.lower():
-                passos_limpos.append(p_limpo)
-        if not passos_limpos:
-            return _gerar_passos_heuristicos(titulo_tarefa, descricao_tarefa)
-        return passos_limpos
-    except Exception:
-        return _gerar_passos_heuristicos(titulo_tarefa, descricao_tarefa)
+    if not passos_limpos:
+        raise ValueError("A IA não retornou passos válidos para esta tarefa.")
+
+    return passos_limpos
 
 
 def extrair_intent_criar_tarefa(pergunta: str) -> dict:

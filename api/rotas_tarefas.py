@@ -267,13 +267,7 @@ def decompor_geral_ia(dados: DecomporRequest, usuario_logado: dict = Depends(ver
         textos_passos = gerar_passos_tarefa(dados.titulo, dados.descricao or "", estilo)
         return {"passos": textos_passos}
     except Exception as e:
-        return {
-            "passos": [
-                f"Analisar escopo inicial de '{dados.titulo}'",
-                "Realizar etapa principal com foco ininterrupto",
-                "Revisar o resultado e concluir"
-            ]
-        }
+        raise HTTPException(status_code=500, detail=f"Erro na IA ao gerar passos: {str(e)}")
 
 
 @router.post("/{tarefa_id}/chat")
