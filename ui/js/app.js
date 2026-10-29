@@ -7,6 +7,19 @@ let modalTipoEstudoSelecionado = 'tarefas_educacionais';
 let modalPrioridadeSelecionada = 'media';
 let tarefaEmEdicaoId = null;
 
+function formatarMascaraData(input) {
+  let v = input.value.replace(/\D/g, '');
+  if (v.length > 8) v = v.substring(0, 8);
+
+  if (v.length > 4) {
+    input.value = `${v.substring(0, 2)}/${v.substring(2, 4)}/${v.substring(4)}`;
+  } else if (v.length > 2) {
+    input.value = `${v.substring(0, 2)}/${v.substring(2)}`;
+  } else {
+    input.value = v;
+  }
+}
+
 function iniciarArrasto(event, taskId) {
   idSendoArrastado = taskId;
   if (event.dataTransfer) {

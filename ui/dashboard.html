@@ -434,7 +434,7 @@
       <div>
         <label class="block text-xs font-bold text-[#fffff2] mb-1.5 font-mono">Data / Prazo</label>
         <div class="relative flex items-center">
-          <input class="w-full bg-[#0c0c0e] border border-[#26262b] focus:border-[#fffff2] rounded-xl px-3.5 py-2.5 text-xs font-mono text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none transition" id="inputDataModal" type="text" placeholder="DD/MM/AAAA" maxlength="10">
+          <input class="w-full bg-[#0c0c0e] border border-[#26262b] focus:border-[#fffff2] rounded-xl px-3.5 py-2.5 text-xs font-mono text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none transition" id="inputDataModal" type="text" placeholder="DD/MM/AAAA (Dia/Mês)" maxlength="10" oninput="formatarMascaraData(this)">
         </div>
       </div>
       <!-- Coluna Prioridade -->
