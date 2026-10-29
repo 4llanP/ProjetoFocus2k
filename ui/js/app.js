@@ -212,6 +212,14 @@ async function confirmarCriarTarefaModal() {
     }
   }
 
+  if (!prazoISO) {
+    const agora = new Date();
+    const ano = agora.getFullYear();
+    const mes = String(agora.getMonth() + 1).padStart(2, '0');
+    const dia = String(agora.getDate()).padStart(2, '0');
+    prazoISO = `${ano}-${mes}-${dia}`;
+  }
+
   let statusAutomatico = 'pendente';
   let prioridadeFinal = modalPrioridadeSelecionada;
   if (prazoISO) {
