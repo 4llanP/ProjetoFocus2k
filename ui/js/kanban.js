@@ -50,6 +50,7 @@ async function carregarTarefasDaAPI() {
       if (typeof renderizarCalendario === 'function') {
         renderizarCalendario();
       }
+      inicializarTimerState();
     }
   } catch (err) {
     console.error("Erro ao carregar tarefas da API:", err);
@@ -141,12 +142,6 @@ function renderizarCardHTML(t) {
         <span class="text-[10px] font-mono px-2 py-0.5 rounded border ${tipoClasses}">${tipoLabel}</span>
         <div class="flex items-center gap-1.5">
           <span class="text-[10px] font-mono px-2 py-0.5 rounded border ${prioridadeClasses}">${prioridadeLabel}</span>
-          ${t.status === 'em_andamento' ? `
-          <button onclick="abrirTimerTarefa(event, '${t.id}')" title="Temporizador de Foco" class="text-sky-400 hover:text-sky-300 bg-sky-500/10 border border-sky-500/30 px-2 py-0.5 rounded text-[10px] font-mono flex items-center gap-1 transition cursor-pointer">
-            <span class="material-symbols-outlined text-[13px]">timer</span>
-            <span id="timer-display-${t.id}">25:00</span>
-          </button>
-          ` : ''}
           <button onclick="abrirModalEditarTarefa('${t.id}')" title="Editar tarefa" class="text-[#75757d] hover:text-[#fffff2] p-0.5 transition cursor-pointer">
             <span class="material-symbols-outlined text-[14px]">edit</span>
           </button>
@@ -157,6 +152,18 @@ function renderizarCardHTML(t) {
       </div>
       <h3 class="text-sm font-bold text-[#fffff2] mb-1 leading-snug select-text">${t.titulo}</h3>
       ${t.descricao ? `<p class="text-xs text-[#9d9da6] mb-3 line-clamp-2 select-text">${t.descricao}</p>` : ''}
+
+      ${t.status === 'em_andamento' ? `
+      <div class="mb-3">
+        <button onclick="abrirTimerTarefa(event, '${t.id}')" title="Abrir Temporizador Pomodoro" class="w-full py-2 px-3 bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 border border-sky-500/30 rounded-xl text-xs font-mono font-bold flex items-center justify-between transition cursor-pointer shadow-sm">
+          <span class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-[16px] text-sky-400 animate-spin-slow">timer</span>
+            <span>Pomodoro Ativo</span>
+          </span>
+          <span id="timer-display-${t.id}" class="bg-sky-500/20 px-2 py-0.5 rounded text-sky-200">${tarefaIdTimerAtual === t.id ? formatarTempoRestanteTimer() : '25:00'}</span>
+        </button>
+      </div>
+      ` : ''}
 
       ${totalSubs > 0 ? `
         <div class="mt-2 pt-2 border-t border-[#26262b]">
@@ -496,4 +503,47 @@ function atualizarDisplayTimerModal() {
     const displayCard = document.getElementById(`timer-display-${tarefaIdTimerAtual}`);
     if (displayCard) displayCard.textContent = formato;
   }
+
+  salvarTimerState();
+}
+
+function formatarTempoRestanteTimer() {
+  const mins = Math.floor(timerSegundosRestantes / 60);
+  const secs = timerSegundosRestantes % 60;
+  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+}
+
+function salvarTimerState() {
+  localStorage.setItem('focus_timer_segundos', timerSegundosRestantes);
+  localStorage.setItem('focus_timer_tarefa_id', tarefaIdTimerAtual || '');
+  localStorage.setItem('focus_timer_rodando', timerRodando);
+  localStorage.setItem('focus_timer_timestamp', Date.now());
+}
+
+function inicializarTimerState() {
+  const salvoSegundos = localStorage.getItem('focus_timer_segundos');
+  const salvoTarefaId = localStorage.getItem('focus_timer_tarefa_id');
+  const salvoRodando = localStorage.getItem('focus_timer_rodando') === 'true';
+  const salvoTimestamp = localStorage.getItem('focus_timer_timestamp');
+
+  if (salvoSegundos !== null) {
+    timerSegundosRestantes = parseInt(salvoSegundos, 10);
+  }
+  if (salvoTarefaId !== null && salvoTarefaId !== '') {
+    tarefaIdTimerAtual = salvoTarefaId;
+  }
+
+  if (salvoRodando && salvoTimestamp) {
+    const agora = Date.now();
+    const decorridoSegundos = Math.floor((agora - parseInt(salvoTimestamp, 10)) / 1000);
+    timerSegundosRestantes = Math.max(0, timerSegundosRestantes - decorridoSegundos);
+
+    if (timerSegundosRestantes > 0) {
+      iniciarTimer();
+    } else {
+      pararTimer();
+    }
+  }
+
+  atualizarDisplayTimerModal();
 }
