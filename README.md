@@ -21,7 +21,7 @@ Edite o arquivo `.env` com as configurações do seu banco e a chave secreta par
 
 ```env
 GEMINI_API_KEY=sua_chave_gemini
-SECRET_KEY=uma_chave_secreta_muito_segura_e_longa_123456789
+SECRET_KEY=chave_secreta
 DB_HOST=localhost
 DB_PORT=3306
 DB_USER=root
