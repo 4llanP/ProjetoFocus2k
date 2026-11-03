@@ -29,15 +29,16 @@ DB_PASSWORD=sua_senha_do_mysql
 DB_NAME=focus_db
 ```
 
-## 4. Executar a API
+## 4. Executar a API e Acessar o App
 
-A aplicação usa FastAPI. Para rodar:
+A aplicação usa FastAPI e serve a interface web estática. Para rodar:
 
 ```bash
 uvicorn api.api_app:app --reload
 ```
 
-Acesse a documentação interativa em: `http://localhost:8000/docs`
+- **Documentação da API (Swagger)**: `http://localhost:8000/docs`
+- **Interface Web**: `http://localhost:8000/ui/tela_login.html`
 
 ## Autenticação
 
