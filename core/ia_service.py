@@ -14,8 +14,9 @@ API_KEY = os.environ.get("GEMINI_API_KEY")
 client = None
 if API_KEY:
     try:
-        client = genai.Client()
-    except Exception:
+        client = genai.Client(api_key=API_KEY)
+    except Exception as e:
+        print(f"Erro ao inicializar cliente Gemini: {e}")
         client = None
 
 # Modelo ideal para tarefas rápidas de texto e resumos no terminal
@@ -35,8 +36,8 @@ def _obter_instrucao_chat_ia(estilo_usuario: str) -> str:
 
     if estilo_usuario == "detalhado":
         base_prompt += (
-            "- Forneça respostas completas, ricas em explicações didáticas, exemplos práticos e orientações detalhadas, "
-            "com acolhimento total e contexto completo."
+            "- Forneça explicações claras, didáticas e acolhedoras, com exemplos práticos curtos. "
+            "Evite absolutamente rodeios, enrolação, redundâncias ou repetições desnecessárias; vá direto ao ponto mantendo a explicação concisa (máximo de 3 linhas por tópico)."
         )
     else:
         base_prompt += (
@@ -89,13 +90,13 @@ def gerar_passos_tarefa(titulo_tarefa: str, descricao_tarefa: str = "", estilo_u
 
             if estilo_usuario == "detalhado":
                 system_instruction = (
-                    "Você é um especialista em tutoria, pedagogia e produtividade para pessoas com TDAH. "
-                    "Crie 3 a 5 passos sequenciais bem explicados, didáticos e acolhedores baseados estritamente no título e descrição fornecidos. "
-                    "Cada passo deve detalhar o 'porquê' e o 'como fazer' de forma estruturada."
+                    "Você é especialista em tutoria e produtividade TDAH. "
+                    "Crie de 3 a 5 passos sequenciais didáticos e acolhedores, explicando o 'porquê' e o 'como' de forma clara. "
+                    "Evite rigorosamente qualquer enrolação, rodeio ou repetição desnecessária. Cada passo deve ter no máximo 3 linhas."
                 )
                 prompt = (
-                    f"Quebre a tarefa abaixo em 3 a 5 passos sequenciais detalhados e didáticos gerados pela IA:{detalhes} "
-                    f"Escreva apenas os passos, um por linha, sem numeração manual."
+                    f"Quebre a tarefa abaixo em 3 a 5 passos sequenciais didáticos:{detalhes} "
+                    f"Escreva apenas os passos, um por linha, sem numeração manual. Seja direto, sem enrolação ou repetições, com no máximo 3 linhas por passo."
                 )
             else:  # estilo_usuario == "direto"
                 system_instruction = (
@@ -134,8 +135,8 @@ def gerar_passos_tarefa(titulo_tarefa: str, descricao_tarefa: str = "", estilo_u
 
             if passos_limpos:
                 return passos_limpos
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"Erro ao gerar passos IA: {e}")
 
     # Gerador dinâmico baseado estritamente no título e descrição informados
     return [

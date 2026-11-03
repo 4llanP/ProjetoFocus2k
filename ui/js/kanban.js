@@ -3,7 +3,33 @@
  * @description Kanban board loading, rendering, subtask management, accordion toggling, and drag & drop handlers.
  */
 
+try {
+  const cachedInitial = localStorage.getItem('focus_tarefas_cache');
+  if (cachedInitial) {
+    tarefasDB = JSON.parse(cachedInitial);
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        listarTarefas();
+        if (typeof renderizarCalendario === 'function') renderizarCalendario();
+      });
+    } else {
+      listarTarefas();
+      if (typeof renderizarCalendario === 'function') renderizarCalendario();
+    }
+  }
+} catch (e) {}
+
 async function carregarTarefasDaAPI() {
+  try {
+    const cached = localStorage.getItem('focus_tarefas_cache');
+    if (cached) {
+      tarefasDB = JSON.parse(cached);
+      listarTarefas();
+      if (typeof renderizarCalendario === 'function') renderizarCalendario();
+      inicializarTimerState();
+    }
+  } catch (e) {}
+
   try {
     const res = await apiFetch(`${API_URL}/tarefas`);
     const data = await res.json();
@@ -51,6 +77,9 @@ async function carregarTarefasDaAPI() {
         renderizarCalendario();
       }
       inicializarTimerState();
+      try {
+        localStorage.setItem('focus_tarefas_cache', JSON.stringify(tarefasDB));
+      } catch (e) {}
     }
   } catch (err) {
     console.error("Erro ao carregar tarefas da API:", err);
@@ -241,6 +270,11 @@ async function alternarSubtarefa(event, taskId, subId) {
       mostrarToastFeedback(`Todas as etapas de "${tarefa.titulo.slice(0, 20)}..." cumpridas!`);
     }
 
+    listarTarefas();
+    try {
+      localStorage.setItem('focus_tarefas_cache', JSON.stringify(tarefasDB));
+    } catch (e) {}
+
     if (tarefa.realId && subId) {
       try {
         await apiFetch(`${API_URL}/tarefas/passos/${subId}/toggle`, {
@@ -251,8 +285,6 @@ async function alternarSubtarefa(event, taskId, subId) {
         console.error("Erro ao alternar passo na API:", e);
       }
     }
-
-    listarTarefas();
   }
 }
 
@@ -265,6 +297,10 @@ async function arrastarTarefa(taskId, novoStatus) {
   else tarefa.concluida = false;
 
   listarTarefas();
+  if (typeof renderizarCalendario === 'function') renderizarCalendario();
+  try {
+    localStorage.setItem('focus_tarefas_cache', JSON.stringify(tarefasDB));
+  } catch (e) {}
 
   if (tarefa.realId) {
     try {
@@ -285,18 +321,29 @@ async function deletarTarefaAPI(taskId) {
   if (!tarefa) return;
   if (!confirm(`Deseja excluir a tarefa "${tarefa.titulo}"?`)) return;
 
+  const cacheBackup = [...tarefasDB];
+  tarefasDB = tarefasDB.filter(t => t.id !== taskId);
+  listarTarefas();
+  if (typeof renderizarCalendario === 'function') renderizarCalendario();
+  try {
+    localStorage.setItem('focus_tarefas_cache', JSON.stringify(tarefasDB));
+  } catch (e) {}
+  mostrarToastFeedback("Tarefa excluída com sucesso.");
+
   if (tarefa.realId) {
     try {
       const res = await apiFetch(`${API_URL}/tarefas/${tarefa.realId}`, { method: 'DELETE' });
-      if (res.ok) {
-        tarefasDB = tarefasDB.filter(t => t.id !== taskId);
+      if (!res.ok) {
+        tarefasDB = cacheBackup;
         listarTarefas();
-        mostrarToastFeedback("Tarefa excluída com sucesso.");
-      } else {
+        if (typeof renderizarCalendario === 'function') renderizarCalendario();
         mostrarToastFeedback("Erro ao excluir tarefa.");
       }
     } catch (e) {
       console.error("Erro ao excluir tarefa:", e);
+      tarefasDB = cacheBackup;
+      listarTarefas();
+      if (typeof renderizarCalendario === 'function') renderizarCalendario();
     }
   }
 }

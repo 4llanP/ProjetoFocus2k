@@ -17,15 +17,15 @@ function deslogar() {
  * Opens the user profile modal and populates fields with current user data and active theme.
  */
 function abrirModalPerfil() {
-  const modalNome = document.getElementById('perfilModalNome');
-  const modalRole = document.getElementById('perfilModalRole');
-  const modalEstilo = document.getElementById('perfilModalEstilo');
+  const inputNome = document.getElementById('inputPerfilNome');
+  const selectEstilo = document.getElementById('selectPerfilEstilo');
   const modalPerfil = document.getElementById('modalPerfil');
   const selectTemaModal = document.getElementById('selectTemaModal');
 
-  if (modalNome) modalNome.textContent = usuarioAtual.nome || localStorage.getItem('userName') || 'Usuário';
-  if (modalRole) modalRole.textContent = usuarioAtual.role || localStorage.getItem('role') || 'Estudante';
-  if (modalEstilo) modalEstilo.textContent = usuarioAtual.estiloInstrucao || 'direto';
+  if (inputNome) {
+    inputNome.value = usuarioAtual.nome || localStorage.getItem('userName') || '';
+  }
+  if (selectEstilo) selectEstilo.value = usuarioAtual.estiloInstrucao || 'direto';
   if (selectTemaModal) selectTemaModal.value = localStorage.getItem('focus2k_tema') || 'obsidian';
 
   if (modalPerfil) modalPerfil.classList.remove('hidden');
@@ -37,6 +37,64 @@ function abrirModalPerfil() {
 function fecharModalPerfil() {
   const modalPerfil = document.getElementById('modalPerfil');
   if (modalPerfil) modalPerfil.classList.add('hidden');
+}
+
+/**
+ * Saves updated profile details to the backend database.
+ */
+async function salvarPerfil() {
+  const inputNome = document.getElementById('inputPerfilNome');
+  const selectEstilo = document.getElementById('selectPerfilEstilo');
+  if (!inputNome || !selectEstilo) return;
+
+  const nomeAtual = usuarioAtual.nome || localStorage.getItem('userName') || '';
+  const novoNome = inputNome.value.trim() || nomeAtual;
+  const novoEstilo = selectEstilo.value;
+
+  if (!novoNome) {
+    alert("O nome do usuário não pode estar vazio.");
+    return;
+  }
+
+  if (!usuarioAtual.id) {
+    alert("ID do usuário não encontrado.");
+    return;
+  }
+
+  try {
+    const res = await apiFetch(`${API_URL}/usuarios/${usuarioAtual.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nome: novoNome,
+        email: usuarioAtual.email || "usuario@focus2k.com",
+        estilo_instrucao: novoEstilo
+      })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      usuarioAtual.nome = novoNome;
+      usuarioAtual.estiloInstrucao = novoEstilo;
+      localStorage.setItem('userName', novoNome);
+      if (typeof atualizarInterfaceUsuario === 'function') {
+        atualizarInterfaceUsuario();
+      }
+      fecharModalPerfil();
+      if (typeof mostrarToastFeedback === 'function') {
+        mostrarToastFeedback("Perfil e preferências atualizados com sucesso!");
+      }
+    } else {
+      if (typeof mostrarToastFeedback === 'function') {
+        mostrarToastFeedback(`Erro: ${data.detail || 'Não foi possível atualizar o perfil'}`);
+      }
+    }
+  } catch (err) {
+    console.error("Erro ao salvar perfil:", err);
+    if (typeof mostrarToastFeedback === 'function') {
+      mostrarToastFeedback('Erro de conexão ao atualizar perfil.');
+    }
+  }
 }
 
 /**
@@ -60,7 +118,9 @@ async function verificarSessaoECarregar() {
 
   try {
     usuarioAtual = {
+      id: user.id,
       nome: user.nome,
+      email: user.email,
       role: user.role,
       estiloInstrucao: user.estilo_instrucao || 'direto',
       autenticado: true

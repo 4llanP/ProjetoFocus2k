@@ -299,55 +299,115 @@ async function confirmarCriarTarefaModal() {
   }
 }
 
+let activeRecognition = null;
+let isRecordingVoz = false;
+let currentEtapaVoz = 'titulo';
+
 function ativarReconhecimentoVoz() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) {
-    mostrarToastFeedback("Seu navegador não suporta reconhecimento de voz.");
+    alert("Seu navegador não suporta reconhecimento de voz. Por favor, use o Google Chrome.");
     return;
   }
 
-  const recognition = new SpeechRecognition();
-  recognition.lang = 'pt-BR';
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
+  if (isRecordingVoz) {
+    if (activeRecognition) {
+      try {
+        activeRecognition.stop();
+      } catch (e) {
+        console.error("Erro ao parar reconhecimento:", e);
+      }
+    }
+    return;
+  }
 
+  iniciarPassoVoz('titulo', SpeechRecognition);
+}
+
+function iniciarPassoVoz(etapa, SpeechRecognition) {
+  currentEtapaVoz = etapa;
+  isRecordingVoz = true;
   const btnVoz = document.getElementById('btnVozModal');
   const labelVoz = document.getElementById('labelVozModal');
   const inputNome = document.getElementById('inputNomeTarefaModal');
+  const inputDesc = document.getElementById('inputDescricaoModal');
 
   if (btnVoz) btnVoz.classList.add('bg-sky-500/20', 'text-sky-400', 'border-sky-500/40', 'animate-pulse');
-  if (labelVoz) labelVoz.textContent = 'Ouvindo...';
-  mostrarToastFeedback("Ouvindo... Fale o nome da tarefa.");
+  if (labelVoz) {
+    labelVoz.textContent = etapa === 'titulo' ? 'Parar Título' : 'Parar Descrição';
+  }
+
+  const recognition = new SpeechRecognition();
+  activeRecognition = recognition;
+  recognition.lang = 'pt-BR';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 1;
+
+  let finalTranscript = '';
 
   recognition.onresult = (event) => {
-    const textoFalado = event.results[0][0].transcript;
-    if (inputNome) {
-      inputNome.value = textoFalado;
+    let interim = '';
+    for (let i = event.resultIndex; i < event.results.length; ++i) {
+      if (event.results[i].isFinal) {
+        finalTranscript += event.results[i][0].transcript + ' ';
+      } else {
+        interim += event.results[i][0].transcript;
+      }
     }
-    mostrarToastFeedback(`Reconhecido: "${textoFalado}"`);
-    restaurarBotaoVoz();
+    const currentText = (finalTranscript + interim).trim();
+    if (etapa === 'titulo' && inputNome) {
+      inputNome.value = currentText;
+    } else if (etapa === 'descricao' && inputDesc) {
+      inputDesc.value = currentText;
+    }
   };
 
   recognition.onerror = (event) => {
-    console.error("Erro no reconhecimento de voz:", event.error);
-    mostrarToastFeedback("Erro ao capturar voz. Tente novamente.");
+    console.warn("Aviso no reconhecimento de voz:", event.error);
+    if (event.error === 'no-speech') {
+      return;
+    }
+    if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+      alert("Permissão do microfone negada. Permita o acesso ao microfone no navegador.");
+    }
+    isRecordingVoz = false;
+    activeRecognition = null;
     restaurarBotaoVoz();
   };
 
-  recognition.onspeechend = () => {
-    recognition.stop();
-    restaurarBotaoVoz();
+  recognition.onend = () => {
+    const wasRecording = isRecordingVoz;
+    isRecordingVoz = false;
+    activeRecognition = null;
+
+    if (wasRecording) {
+      if (etapa === 'titulo') {
+        setTimeout(() => {
+          iniciarPassoVoz('descricao', SpeechRecognition);
+        }, 300);
+      } else {
+        restaurarBotaoVoz();
+      }
+    } else {
+      restaurarBotaoVoz();
+    }
   };
 
   try {
     recognition.start();
   } catch (e) {
-    console.error(e);
+    console.error("Erro ao iniciar reconhecimento:", e);
+    isRecordingVoz = false;
+    activeRecognition = null;
     restaurarBotaoVoz();
   }
 }
 
 function restaurarBotaoVoz() {
+  isRecordingVoz = false;
+  activeRecognition = null;
+  currentEtapaVoz = 'titulo';
   const btnVoz = document.getElementById('btnVozModal');
   const labelVoz = document.getElementById('labelVozModal');
   if (btnVoz) btnVoz.classList.remove('bg-sky-500/20', 'text-sky-400', 'border-sky-500/40', 'animate-pulse');
