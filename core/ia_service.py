@@ -3,11 +3,14 @@
 # pylint: disable=line-too-long
 # pylint: disable=astroid-error
 import os
+from pathlib import Path
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
 
-load_dotenv()
+# Carrega o .env explicitamente do diretório raiz do projeto
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(dotenv_path=BASE_DIR / ".env")
 
 # Inicializa o cliente se a chave de API estiver presente
 API_KEY = os.environ.get("GEMINI_API_KEY")
@@ -90,21 +93,23 @@ def gerar_passos_tarefa(titulo_tarefa: str, descricao_tarefa: str = "", estilo_u
 
             if estilo_usuario == "detalhado":
                 system_instruction = (
-                    "Você é especialista em tutoria e produtividade TDAH. "
-                    "Crie de 3 a 5 passos sequenciais didáticos e acolhedores, explicando o 'porquê' e o 'como' de forma clara. "
-                    "Evite rigorosamente qualquer enrolação, rodeio ou repetição desnecessária. Cada passo deve ter no máximo 3 linhas."
+                    "Você é um mentor especialista em produtividade TDAH. "
+                    "Crie 3 a 5 passos práticos, altamente específicos e acionáveis para o título e contexto fornecidos. "
+                    "PROIBIDO usar passos genéricos (como 'Planejar a tarefa', 'Executar etapa', 'Revisar final'). "
+                    "Diga exatamente o que fazer em cada passo de forma prática, clara e sem enrolação (máximo de 3 linhas por passo)."
                 )
                 prompt = (
-                    f"Quebre a tarefa abaixo em 3 a 5 passos sequenciais didáticos:{detalhes} "
-                    f"Escreva apenas os passos, um por linha, sem numeração manual. Seja direto, sem enrolação ou repetições, com no máximo 3 linhas por passo."
+                    f"Gere os passos ultra-específicos para resolver esta tarefa exata:{detalhes} "
+                    f"Escreva apenas os passos, um por linha, sem numeração manual. Sem rodeios, direto ao ponto."
                 )
             else:  # estilo_usuario == "direto"
                 system_instruction = (
-                    "Você é um especialista em foco cirúrgico e produtividade para pessoas com TDAH. "
-                    "Crie 3 a 5 micro-passos sequenciais extremamente diretos, concretos e acionáveis baseados no título e descrição."
+                    "Você é um especialista em foco cirúrgico e produtividade TDAH. "
+                    "Crie 3 a 5 micro-passos hiper-específicos e executáveis baseados estritamente no assunto da tarefa. "
+                    "PROIBIDO respostas genéricas. Diga a ação concreta exata a ser realizada."
                 )
                 prompt = (
-                    f"Quebre a tarefa abaixo em 3 a 4 micro-passos sequenciais ultra-diretos e executáveis gerados pela IA:{detalhes} "
+                    f"Gere passos hiper-específicos para esta tarefa:{detalhes} "
                     f"Escreva apenas os passos, um por linha, sem numeração manual."
                 )
 
@@ -136,14 +141,11 @@ def gerar_passos_tarefa(titulo_tarefa: str, descricao_tarefa: str = "", estilo_u
             if passos_limpos:
                 return passos_limpos
         except Exception as e:
-            print(f"Erro ao gerar passos IA: {e}")
+            print(f"ERRO CRÍTICO AO GERAR PASSOS VIA IA: {e}")
+            raise Exception(f"Falha na API de IA ao decompor tarefa: {str(e)}")
 
-    # Gerador dinâmico baseado estritamente no título e descrição informados
-    return [
-        f"Definir o objetivo e planejar a execução de '{t}'",
-        f"Executar a etapa central de '{t}'" + (f" ({d[:35]})" if d else ""),
-        f"Revisar o resultado final de '{t}' e concluir"
-    ]
+    print("ERRO CRÍTICO: Cliente Gemini não inicializado ou sem resposta válida.")
+    raise Exception("Chave GEMINI_API_KEY não configurada ou cliente de IA indisponível.")
 
 
 def extrair_intent_criar_tarefa(pergunta: str) -> dict:

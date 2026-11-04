@@ -316,10 +316,45 @@ async function arrastarTarefa(taskId, novoStatus) {
   }
 }
 
-async function deletarTarefaAPI(taskId) {
+let tarefaIdParaExcluir = null;
+
+function deletarTarefaAPI(taskId) {
   const tarefa = tarefasDB.find(t => t.id === taskId);
   if (!tarefa) return;
-  if (!confirm(`Deseja excluir a tarefa "${tarefa.titulo}"?`)) return;
+
+  tarefaIdParaExcluir = taskId;
+  const textoEl = document.getElementById('textoTarefaDeletar');
+  if (textoEl) textoEl.textContent = `"${tarefa.titulo}"`;
+
+  const modal = document.getElementById('modalDeletarTarefa');
+  if (modal) {
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    if (typeof atualizarVisibilidadeBotaoAssistente === 'function') {
+      atualizarVisibilidadeBotaoAssistente();
+    }
+  }
+}
+
+function fecharModalDeletarTarefa() {
+  tarefaIdParaExcluir = null;
+  const modal = document.getElementById('modalDeletarTarefa');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+    if (typeof atualizarVisibilidadeBotaoAssistente === 'function') {
+      atualizarVisibilidadeBotaoAssistente();
+    }
+  }
+}
+
+async function executarDeletarTarefa() {
+  if (!tarefaIdParaExcluir) return;
+  const taskId = tarefaIdParaExcluir;
+  fecharModalDeletarTarefa();
+
+  const tarefa = tarefasDB.find(t => t.id === taskId);
+  if (!tarefa) return;
 
   const cacheBackup = [...tarefasDB];
   tarefasDB = tarefasDB.filter(t => t.id !== taskId);
@@ -424,6 +459,10 @@ function abrirTimerTarefa(event, taskId) {
     modal.classList.remove('hidden');
   }
 
+  if (modal && typeof atualizarVisibilidadeBotaoAssistente === 'function') {
+    atualizarVisibilidadeBotaoAssistente();
+  }
+
   atualizarConteudoModalTimer(tarefa);
   atualizarDisplayTimerModal();
 }
@@ -476,7 +515,12 @@ async function alternarSubtarefaNoModal(event, taskId, subId) {
 
 function fecharTimerModal() {
   const modal = document.getElementById('modalTimerPomodoro');
-  if (modal) modal.classList.add('hidden');
+  if (modal) {
+    modal.classList.add('hidden');
+    if (typeof atualizarVisibilidadeBotaoAssistente === 'function') {
+      atualizarVisibilidadeBotaoAssistente();
+    }
+  }
 }
 
 function alternarPlayPauseTimer() {

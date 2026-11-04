@@ -32,7 +32,11 @@ async function desestruturarTarefaComIA(taskId) {
 
   let etapas = [];
   try {
-    const res = await apiFetch(`${API_URL}/tarefas/ia/decompor?_t=${Date.now()}`, {
+    let endpoint = `${API_URL}/tarefas/ia/decompor?_t=${Date.now()}`;
+    if (tarefa.realId) {
+      endpoint = `${API_URL}/tarefas/${tarefa.realId}/decompor?_t=${Date.now()}`;
+    }
+    const res = await apiFetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

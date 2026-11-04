@@ -96,6 +96,26 @@ function selecionarTipoEstudo(tipo) {
   }
 }
 
+function atualizarVisibilidadeBotaoAssistente() {
+  const btnBottomRight = document.getElementById('btnAssistenteBottomRight');
+  if (!btnBottomRight) return;
+
+  const modalCriar = document.getElementById('modalCriarTarefa');
+  const modalDeletar = document.getElementById('modalDeletarTarefa');
+  const modalTimer = document.getElementById('modalTimerPomodoro');
+
+  const algumModalAberto = (modalCriar && !modalCriar.classList.contains('hidden') && modalCriar.style.display !== 'none') ||
+                          (modalDeletar && !modalDeletar.classList.contains('hidden') && modalDeletar.style.display !== 'none') ||
+                          (modalTimer && !modalTimer.classList.contains('hidden') && modalTimer.style.display !== 'none') ||
+                          (typeof drawerChatAberto !== 'undefined' && drawerChatAberto);
+
+  if (algumModalAberto) {
+    btnBottomRight.classList.add('hidden');
+  } else {
+    btnBottomRight.classList.remove('hidden');
+  }
+}
+
 function abrirModalCriarTarefa(dataInicial = null) {
   tarefaEmEdicaoId = null;
   const modal = document.getElementById('modalCriarTarefa');
@@ -134,6 +154,7 @@ function abrirModalCriarTarefa(dataInicial = null) {
 
     modal.classList.remove('hidden');
     modal.style.display = 'flex';
+    atualizarVisibilidadeBotaoAssistente();
   }
 }
 
@@ -177,6 +198,7 @@ function abrirModalEditarTarefa(taskId) {
 
     modal.classList.remove('hidden');
     modal.style.display = 'flex';
+    atualizarVisibilidadeBotaoAssistente();
   }
 }
 
@@ -185,6 +207,7 @@ function fecharModalCriarTarefa() {
   if (modal) {
     modal.classList.add('hidden');
     modal.style.display = 'none';
+    atualizarVisibilidadeBotaoAssistente();
   }
 }
 
@@ -303,83 +326,110 @@ let mediaRecorder = null;
 let audioChunks = [];
 let isRecordingVoz = false;
 
-async function ativarReconhecimentoVoz() {
+let mediaRecorderDesc = null;
+let audioChunksDesc = [];
+let isRecordingVozDesc = false;
+
+async function ativarReconhecimentoVozGenerico(isDesc) {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     alert("Seu navegador não suporta gravação de áudio.");
     return;
   }
 
-  if (isRecordingVoz) {
-    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-      mediaRecorder.stop();
+  const recording = isDesc ? isRecordingVozDesc : isRecordingVoz;
+  const recorder = isDesc ? mediaRecorderDesc : mediaRecorder;
+
+  if (recording) {
+    if (recorder && recorder.state !== 'inactive') {
+      recorder.stop();
     }
     return;
   }
 
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder = new MediaRecorder(stream);
-    audioChunks = [];
-    isRecordingVoz = true;
+    if (isDesc) {
+      mediaRecorderDesc = new MediaRecorder(stream);
+      audioChunksDesc = [];
+      isRecordingVozDesc = true;
+    } else {
+      mediaRecorder = new MediaRecorder(stream);
+      audioChunks = [];
+      isRecordingVoz = true;
+    }
+    const currentRecorder = isDesc ? mediaRecorderDesc : mediaRecorder;
 
-    const btnVoz = document.getElementById('btnVozModal');
-    const labelVoz = document.getElementById('labelVozModal');
+    const btnVoz = document.getElementById(isDesc ? 'btnVozDescModal' : 'btnVozModal');
+    const labelVoz = document.getElementById(isDesc ? 'labelVozDescModal' : 'labelVozModal');
     if (btnVoz) btnVoz.classList.add('bg-sky-500/20', 'text-sky-400', 'border-sky-500/40', 'animate-pulse');
-    if (labelVoz) labelVoz.textContent = 'Gravando... (Clique para parar)';
+    if (labelVoz) labelVoz.textContent = isDesc ? 'Gravando...' : 'Gravando... (Clique para parar)';
 
-    mediaRecorder.ondataavailable = (event) => {
+    currentRecorder.ondataavailable = (event) => {
       if (event.data.size > 0) {
-        audioChunks.push(event.data);
+        (isDesc ? audioChunksDesc : audioChunks).push(event.data);
       }
     };
 
-    mediaRecorder.onstop = async () => {
-      isRecordingVoz = false;
-      restaurarBotaoVoz();
+    currentRecorder.onstop = async () => {
+      if (isDesc) {
+        isRecordingVozDesc = false;
+        restaurarBotaoVozDesc();
+      } else {
+        isRecordingVoz = false;
+        restaurarBotaoVoz();
+      }
 
-      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      const chunks = isDesc ? audioChunksDesc : audioChunks;
+      const audioBlob = new Blob(chunks, { type: 'audio/webm' });
       const formData = new FormData();
-      formData.append('file', audioBlob, 'gravacao.webm');
+      formData.append('file', audioBlob, isDesc ? 'gravacao_desc.webm' : 'gravacao.webm');
 
-      const inputNome = document.getElementById('inputNomeTarefaModal');
-      if (inputNome) inputNome.placeholder = 'Transcrevendo áudio com IA...';
+      const inputEl = document.getElementById(isDesc ? 'inputDescricaoModal' : 'inputNomeTarefaModal');
+      const defaultPlaceholder = isDesc ? 'Descreva sua tarefa' : 'Ex: Estudar Capítulo 3 de Matemática';
+      if (inputEl) inputEl.placeholder = isDesc ? 'Transcrevendo descrição com IA...' : 'Transcrevendo áudio com IA...';
 
       try {
         const token = localStorage.getItem('token');
         const res = await fetch('/tarefas/ia/transcrever', {
           method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          },
+          headers: { 'Authorization': `Bearer ${token}` },
           body: formData
         });
 
         const data = await res.json();
         if (data && data.texto) {
-          if (inputNome && !inputNome.value) {
-            inputNome.value = data.texto;
-          } else if (inputNome) {
-            inputNome.value += ' ' + data.texto;
+          if (inputEl && !inputEl.value) {
+            inputEl.value = data.texto;
+          } else if (inputEl) {
+            inputEl.value += ' ' + data.texto;
           }
         }
       } catch (err) {
         console.error("Erro ao transcrever áudio:", err);
         alert("Erro ao processar áudio com a IA.");
       } finally {
-        if (inputNome) inputNome.placeholder = 'Ex: Estudar Capítulo 3 de Matemática';
+        if (inputEl) inputEl.placeholder = defaultPlaceholder;
       }
 
       stream.getTracks().forEach(track => track.stop());
     };
 
-    mediaRecorder.start();
+    currentRecorder.start();
   } catch (err) {
     console.error("Erro ao acessar microfone:", err);
     alert("Permissão de microfone negada ou indisponível.");
-    isRecordingVoz = false;
-    restaurarBotaoVoz();
+    if (isDesc) {
+      isRecordingVozDesc = false;
+      restaurarBotaoVozDesc();
+    } else {
+      isRecordingVoz = false;
+      restaurarBotaoVoz();
+    }
   }
 }
+
+function ativarReconhecimentoVoz() { ativarReconhecimentoVozGenerico(false); }
+function ativarReconhecimentoVozDesc() { ativarReconhecimentoVozGenerico(true); }
 
 function restaurarBotaoVoz() {
   isRecordingVoz = false;
@@ -387,6 +437,14 @@ function restaurarBotaoVoz() {
   const labelVoz = document.getElementById('labelVozModal');
   if (btnVoz) btnVoz.classList.remove('bg-sky-500/20', 'text-sky-400', 'border-sky-500/40', 'animate-pulse');
   if (labelVoz) labelVoz.textContent = 'Falar tarefa';
+}
+
+function restaurarBotaoVozDesc() {
+  isRecordingVozDesc = false;
+  const btnVoz = document.getElementById('btnVozDescModal');
+  const labelVoz = document.getElementById('labelVozDescModal');
+  if (btnVoz) btnVoz.classList.remove('bg-sky-500/20', 'text-sky-400', 'border-sky-500/40', 'animate-pulse');
+  if (labelVoz) labelVoz.textContent = 'Falar descrição';
 }
 
 function filtrarCategoria(cat) {

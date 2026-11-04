@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, status, Depends, File, UploadFile
-from typing import List
+from typing import List, Optional
 
 from config.database import SessionLocal
 from controllers.tarefa_controller import TarefaController
@@ -70,18 +70,6 @@ async def transcrever_audio(file: UploadFile = File(...), usuario_logado: dict =
         return {"texto": texto}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao transcrever áudio: {str(e)}")
-
-    titulo = dados.get("titulo", "") if dados else ""
-    descricao = dados.get("descricao", "") if dados else ""
-    usuario_id = int(usuario_logado['sub'])
-    estilo = "direto"
-    with SessionLocal() as db:
-        repo = UsuarioRepository(db)
-        usuario = repo.buscar_por_id(usuario_id)
-        if usuario:
-            estilo = getattr(usuario, "estilo_instrucao", "direto")
-    textos_passos = gerar_passos_tarefa(titulo, descricao, estilo)
-    return {"passos": textos_passos}
 
 
 @router.post("/{tarefa_id}/decompor")
@@ -276,6 +264,8 @@ def decompor_geral_ia(dados: DecomporRequest, usuario_logado: dict = Depends(ver
         return {"passos": textos_passos}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro na IA ao gerar passos: {str(e)}")
+
+
 
 
 @router.post("/{tarefa_id}/chat")
