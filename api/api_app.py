@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from api.rotas_usuarios import router as usuarios_router
@@ -23,4 +24,4 @@ app.mount("/ui", StaticFiles(directory="ui"), name="ui")
 
 @app.get("/")
 def inicio():
-    return {"sistema": "Focus", "api": "funcionando", "ui": "/ui/tela_login.html"}
+    return RedirectResponse(url="/ui/tela_login.html")
