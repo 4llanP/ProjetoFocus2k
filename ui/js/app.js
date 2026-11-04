@@ -299,119 +299,95 @@ async function confirmarCriarTarefaModal() {
   }
 }
 
-let activeRecognition = null;
+let mediaRecorder = null;
+let audioChunks = [];
 let isRecordingVoz = false;
-let currentEtapaVoz = 'titulo';
 
-function ativarReconhecimentoVoz() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    alert("Seu navegador não suporta reconhecimento de voz. Por favor, use o Google Chrome.");
+async function ativarReconhecimentoVoz() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert("Seu navegador não suporta gravação de áudio.");
     return;
   }
 
   if (isRecordingVoz) {
-    if (activeRecognition) {
-      try {
-        activeRecognition.stop();
-      } catch (e) {
-        console.error("Erro ao parar reconhecimento:", e);
-      }
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+      mediaRecorder.stop();
     }
     return;
   }
 
-  iniciarPassoVoz('titulo', SpeechRecognition);
-}
-
-function iniciarPassoVoz(etapa, SpeechRecognition) {
-  currentEtapaVoz = etapa;
-  isRecordingVoz = true;
-  const btnVoz = document.getElementById('btnVozModal');
-  const labelVoz = document.getElementById('labelVozModal');
-  const inputNome = document.getElementById('inputNomeTarefaModal');
-  const inputDesc = document.getElementById('inputDescricaoModal');
-
-  if (btnVoz) btnVoz.classList.add('bg-sky-500/20', 'text-sky-400', 'border-sky-500/40', 'animate-pulse');
-  if (labelVoz) {
-    labelVoz.textContent = etapa === 'titulo' ? 'Parar Título' : 'Parar Descrição';
-  }
-
-  const recognition = new SpeechRecognition();
-  activeRecognition = recognition;
-  recognition.lang = 'pt-BR';
-  recognition.continuous = true;
-  recognition.interimResults = true;
-  recognition.maxAlternatives = 1;
-
-  let finalTranscript = '';
-
-  recognition.onresult = (event) => {
-    let interim = '';
-    for (let i = event.resultIndex; i < event.results.length; ++i) {
-      if (event.results[i].isFinal) {
-        finalTranscript += event.results[i][0].transcript + ' ';
-      } else {
-        interim += event.results[i][0].transcript;
-      }
-    }
-    const currentText = (finalTranscript + interim).trim();
-    if (etapa === 'titulo' && inputNome) {
-      inputNome.value = currentText;
-    } else if (etapa === 'descricao' && inputDesc) {
-      inputDesc.value = currentText;
-    }
-  };
-
-  recognition.onerror = (event) => {
-    console.warn("Aviso no reconhecimento de voz:", event.error);
-    if (event.error === 'no-speech') {
-      return;
-    }
-    if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-      alert("Permissão do microfone negada. Permita o acesso ao microfone no navegador.");
-    }
-    isRecordingVoz = false;
-    activeRecognition = null;
-    restaurarBotaoVoz();
-  };
-
-  recognition.onend = () => {
-    const wasRecording = isRecordingVoz;
-    isRecordingVoz = false;
-    activeRecognition = null;
-
-    if (wasRecording) {
-      if (etapa === 'titulo') {
-        setTimeout(() => {
-          iniciarPassoVoz('descricao', SpeechRecognition);
-        }, 300);
-      } else {
-        restaurarBotaoVoz();
-      }
-    } else {
-      restaurarBotaoVoz();
-    }
-  };
-
   try {
-    recognition.start();
-  } catch (e) {
-    console.error("Erro ao iniciar reconhecimento:", e);
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    isRecordingVoz = true;
+
+    const btnVoz = document.getElementById('btnVozModal');
+    const labelVoz = document.getElementById('labelVozModal');
+    if (btnVoz) btnVoz.classList.add('bg-sky-500/20', 'text-sky-400', 'border-sky-500/40', 'animate-pulse');
+    if (labelVoz) labelVoz.textContent = 'Gravando... (Clique para parar)';
+
+    mediaRecorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        audioChunks.push(event.data);
+      }
+    };
+
+    mediaRecorder.onstop = async () => {
+      isRecordingVoz = false;
+      restaurarBotaoVoz();
+
+      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      const formData = new FormData();
+      formData.append('file', audioBlob, 'gravacao.webm');
+
+      const inputNome = document.getElementById('inputNomeTarefaModal');
+      if (inputNome) inputNome.placeholder = 'Transcrevendo áudio com IA...';
+
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch('/tarefas/ia/transcrever', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          },
+          body: formData
+        });
+
+        const data = await res.json();
+        if (data && data.texto) {
+          if (inputNome && !inputNome.value) {
+            inputNome.value = data.texto;
+          } else if (inputNome) {
+            inputNome.value += ' ' + data.texto;
+          }
+        }
+      } catch (err) {
+        console.error("Erro ao transcrever áudio:", err);
+        alert("Erro ao processar áudio com a IA.");
+      } finally {
+        if (inputNome) inputNome.placeholder = 'Ex: Estudar Capítulo 3 de Matemática';
+      }
+
+      stream.getTracks().forEach(track => track.stop());
+    };
+
+    mediaRecorder.start();
+  } catch (err) {
+    console.error("Erro ao acessar microfone:", err);
+    alert("Permissão de microfone negada ou indisponível.");
     isRecordingVoz = false;
-    activeRecognition = null;
     restaurarBotaoVoz();
   }
 }
 
 function restaurarBotaoVoz() {
   isRecordingVoz = false;
-  activeRecognition = null;
-  currentEtapaVoz = 'titulo';
   const btnVoz = document.getElementById('btnVozModal');
   const labelVoz = document.getElementById('labelVozModal');
   if (btnVoz) btnVoz.classList.remove('bg-sky-500/20', 'text-sky-400', 'border-sky-500/40', 'animate-pulse');
   if (labelVoz) labelVoz.textContent = 'Falar tarefa';
+}
 }
 
 function filtrarCategoria(cat) {

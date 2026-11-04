@@ -1,10 +1,10 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, File, UploadFile
 from typing import List
 
 from config.database import SessionLocal
 from controllers.tarefa_controller import TarefaController
 from core.auth import verificar_token
-from core.ia_service import gerar_passos_tarefa, obter_resposta_ia, extrair_intent_criar_tarefa
+from core.ia_service import gerar_passos_tarefa, obter_resposta_ia, extrair_intent_criar_tarefa, transcrever_audio_ia
 from pydantic import BaseModel
 from models.tarefa_schema import NovaTarefa, NovoPasso, AtualizarPasso, PassoResposta, AtualizarStatusTarefa
 from models.passo import Passo
@@ -61,8 +61,16 @@ def listar_passos_tarefa(tarefa_id: int, usuario_logado: dict = Depends(verifica
         return passos
 
 
-@router.post("/ia/decompor")
-def decompor_tarefa_ia_generica(dados: dict = None, usuario_logado: dict = Depends(verificar_token)):
+@router.post("/ia/transcrever")
+async def transcrever_audio(file: UploadFile = File(...), usuario_logado: dict = Depends(verificar_token)):
+    try:
+        audio_bytes = await file.read()
+        mime_type = file.content_type or "audio/webm"
+        texto = transcrever_audio_ia(audio_bytes, mime_type)
+        return {"texto": texto}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao transcrever áudio: {str(e)}")
+
     titulo = dados.get("titulo", "") if dados else ""
     descricao = dados.get("descricao", "") if dados else ""
     usuario_id = int(usuario_logado['sub'])
