@@ -388,7 +388,6 @@ function restaurarBotaoVoz() {
   if (btnVoz) btnVoz.classList.remove('bg-sky-500/20', 'text-sky-400', 'border-sky-500/40', 'animate-pulse');
   if (labelVoz) labelVoz.textContent = 'Falar tarefa';
 }
-}
 
 function filtrarCategoria(cat) {
   filtroCategoriaAtiva = cat;
