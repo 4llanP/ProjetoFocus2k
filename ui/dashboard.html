@@ -35,10 +35,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/responsive.css">
 </head>
 <body class="h-screen w-screen flex overflow-hidden select-none antialiased">
 <!-- ================= SIDEBAR LATERAL ESQUERDA ================= -->
-<aside class="sidebar-transition w-64 flex-shrink-0 bg-[#111113] border-r border-[#26262b] flex flex-col justify-between z-30 h-full relative" id="sidebar">
+<div id="sidebarBackdrop" class="fixed inset-0 bg-black/60 z-40 hidden transition-opacity" onclick="fecharMenuLateral()"></div>
+<aside class="sidebar-transition w-64 flex-shrink-0 bg-[#111113] border-r border-[#26262b] flex flex-col justify-between z-50 h-full fixed md:relative inset-y-0 left-0 -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none" id="sidebar">
 <div class="flex flex-col h-full">
 <!-- Brand & Workspace -->
 <div class="p-4 border-b border-[#26262b] flex items-center justify-between">
@@ -53,6 +55,9 @@
 
 </div>
 </div>
+<button onclick="fecharMenuLateral()" class="md:hidden p-1.5 rounded-lg text-[#9d9da6] hover:text-[#fffff2] hover:bg-[#161619] transition cursor-pointer" aria-label="Fechar menu">
+<span class="material-symbols-outlined text-lg">close</span>
+</button>
 </div>
 <!-- Quick Search Bar -->
 <div class="px-3 pt-3.5 pb-2">
@@ -148,9 +153,21 @@
 </header>
 <!-- ================= QUADRO KANBAN (3 COLUNAS) ================= -->
 <div id="kanbanViewContainer" class="flex-1 p-5 overflow-x-auto custom-scroll flex flex-col">
-<div class="grid grid-cols-1 md:grid-cols-3 gap-5 h-full min-w-[840px]">
+<!-- Seletor de Coluna Kanban para Mobile (Visível apenas em telas menores) -->
+<div class="flex md:hidden gap-1 mb-3 bg-[#111113] p-1.5 rounded-xl border border-[#26262b] flex-shrink-0">
+  <button id="kanbanTabPendente" onclick="mudarColunaMobile('pendente')" class="flex-1 py-2 px-2 text-xs font-bold rounded-lg bg-[#1f1f24] text-[#fffff2] border border-[#3a3a42] transition text-center cursor-pointer">
+    A Fazer
+  </button>
+  <button id="kanbanTabEmAndamento" onclick="mudarColunaMobile('em_andamento')" class="flex-1 py-2 px-2 text-xs font-medium rounded-lg text-[#9d9da6] hover:text-[#fffff2] transition text-center cursor-pointer">
+    Em Andamento
+  </button>
+  <button id="kanbanTabConcluido" onclick="mudarColunaMobile('concluido')" class="flex-1 py-2 px-2 text-xs font-medium rounded-lg text-[#9d9da6] hover:text-[#fffff2] transition text-center cursor-pointer">
+    Concluído
+  </button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5 h-full md:min-w-[840px]">
 <!-- COLUNA 1: A Fazer (Pendente) com BOTÃO DESTACADO: "+ Adicionar Tarefa" -->
-<div class="flex flex-col rounded-xl bg-[#111113] border border-[#26262b] shadow-sm overflow-hidden kanban-col" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'pendente')">
+<div id="kanbanColPendente" class="flex flex-col rounded-xl bg-[#111113] border border-[#26262b] shadow-sm overflow-hidden kanban-col" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'pendente')">
 <!-- Cabeçalho da coluna A Fazer -->
 <div class="p-3 border-b border-[#26262b] bg-[#161619] flex items-center justify-between flex-shrink-0 gap-2">
 <div class="flex items-center gap-2">
@@ -169,7 +186,7 @@
 		</div>
 </div>
 <!-- COLUNA 2: Em Andamento -->
-<div class="flex flex-col rounded-xl bg-[#111113] border border-[#26262b] shadow-sm overflow-hidden kanban-col" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'em_andamento')">
+<div id="kanbanColEmAndamento" class="hidden md:flex flex-col rounded-xl bg-[#111113] border border-[#26262b] shadow-sm overflow-hidden kanban-col" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'em_andamento')">
 <div class="p-3 border-b border-[#26262b] bg-[#161619] flex items-center justify-between flex-shrink-0">
 <div class="flex items-center gap-2">
 <span class="w-2 h-2 rounded-sm bg-sky-400"></span>
@@ -182,7 +199,7 @@
 		</div>
 </div>
 <!-- COLUNA 3: Concluído -->
-<div class="flex flex-col rounded-xl bg-[#111113] border border-[#26262b] shadow-sm overflow-hidden kanban-col" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'concluido')">
+<div id="kanbanColConcluido" class="hidden md:flex flex-col rounded-xl bg-[#111113] border border-[#26262b] shadow-sm overflow-hidden kanban-col" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'concluido')">
 <div class="p-3 border-b border-[#26262b] bg-[#161619] flex items-center justify-between flex-shrink-0">
 <div class="flex items-center gap-2">
 <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
@@ -197,7 +214,7 @@
 </div>
 </div>
 <!-- ================= CALENDÁRIO DE METAS (NOVO) ================= -->
-	<div id="calendarViewContainer" class="flex-1 flex flex-col h-full overflow-y-auto custom-scroll p-6 hidden bg-[#080808]">
+	<div id="calendarViewContainer" class="flex-1 flex flex-col h-auto sm:h-full overflow-y-auto custom-scroll p-4 sm:p-6 hidden bg-[#080808]">
 	  <!-- Cabeçalho do Calendário -->
 	  <div class="flex flex-wrap items-center justify-between gap-4 mb-6 bg-[#111113] border border-[#26262b] p-4 rounded-xl flex-shrink-0">
 	    <div class="flex items-center gap-3">
@@ -229,14 +246,14 @@
 	      <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
 	    </div>
 	    <!-- Dias do Mês -->
-	    <div id="calendarGridDays" class="grid grid-cols-7 flex-1 auto-rows-fr divide-x divide-y divide-[#26262b] bg-[#080808]">
+	    <div id="calendarGridDays" class="grid grid-cols-7 flex-1 auto-rows-auto sm:auto-rows-fr divide-x divide-y divide-[#26262b] bg-[#080808]">
 	      <!-- Preenchido dinamicamente via JS -->
 	    </div>
 	  </div>
 	</div>
 </main>
 <!-- ================= BARRA LATERAL DIREITA: CHAT & DESESTRUTURAÇÃO IA ================= -->
-<aside class="drawer-transition w-96 max-w-[90vw] flex-shrink-0 bg-[#111113] border-l border-[#26262b] flex flex-col z-40 h-full relative hidden" id="drawerChatIA" style="width: 0px;">
+<aside class="drawer-transition w-full sm:w-96 max-w-full sm:max-w-[90vw] flex-shrink-0 bg-[#111113] border-l border-[#26262b] flex flex-col z-50 h-full absolute lg:relative right-0 top-0 hidden shadow-2xl" id="drawerChatIA" style="width: 0px;">
 <!-- Topbar do Chat -->
 <div class="p-3.5 border-b border-[#26262b] bg-[#161619] flex items-center justify-between flex-shrink-0">
 <div class="flex items-center gap-2.5">
@@ -305,7 +322,7 @@
 </aside>
 <!-- ================= MODAL DE AUTENTICAÇÃO / CADASTRO ================= -->
 <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden" id="modalAuth">
-<div class="bg-[#111113] border border-[#26262b] rounded-xl w-full max-w-md p-6 shadow-2xl relative text-[#fffff2]">
+<div class="bg-[#111113] border border-[#26262b] rounded-xl w-full max-w-md p-6 shadow-2xl relative text-[#fffff2] max-h-[90vh] overflow-y-auto custom-scroll">
 <button class="absolute top-4 right-4 text-[#9d9da6] hover:text-[#fffff2] p-1 font-bold focus-ring rounded" onclick="fecharModalAuth()">
 
       </button>
@@ -358,7 +375,7 @@
 
 <!-- ================= MODAL DE PERFIL & CONFIGURAÇÕES ================= -->
 <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden" id="modalPerfil" onclick="fecharModalPerfil()">
-  <div class="bg-[#111113] border border-[#28282e] rounded-2xl w-full max-w-md p-6 shadow-2xl relative text-[#fffff2] space-y-5 animate-in fade-in zoom-in-95 duration-150" onclick="event.stopPropagation()">
+  <div class="bg-[#111113] border border-[#28282e] rounded-2xl w-full max-w-md p-6 shadow-2xl relative text-[#fffff2] space-y-5 animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto custom-scroll" onclick="event.stopPropagation()">
     <div class="flex items-center justify-between border-b border-[#26262b] pb-3">
       <h3 class="font-bold text-sm text-[#fffff2] flex items-center gap-2">
         <span class="material-symbols-outlined text-[18px] text-[#fffff2]">account_circle</span>
@@ -405,7 +422,7 @@
 
 <!-- ================= MODAL DE CRIAR TAREFA ================= -->
 <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden" id="modalCriarTarefa" onclick="fecharModalCriarTarefa()">
-  <div class="bg-[#111113] border border-[#28282e] rounded-2xl w-full max-w-[620px] p-6 shadow-2xl relative text-[#fffff2] space-y-5 animate-in fade-in zoom-in-95 duration-150" onclick="event.stopPropagation()">
+  <div class="bg-[#111113] border border-[#28282e] rounded-2xl w-full max-w-[620px] p-6 shadow-2xl relative text-[#fffff2] space-y-5 animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto custom-scroll" onclick="event.stopPropagation()">
     <!-- Header da Janela estilo App / OS -->
     <div class="flex items-center justify-between border-b border-[#26262b] pb-3 -mt-1">
       <div class="flex items-center gap-2.5 font-mono text-[11px] tracking-wider text-sky-400 font-semibold">
@@ -486,7 +503,7 @@
 
 <!-- ================= MODAL DE EXCLUIR TAREFA ================= -->
 <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden" id="modalDeletarTarefa" onclick="fecharModalDeletarTarefa()">
-  <div class="bg-[#111113] border border-[#28282e] rounded-2xl w-full max-w-[420px] p-6 shadow-2xl relative text-[#fffff2] space-y-5 animate-in fade-in zoom-in-95 duration-150" onclick="event.stopPropagation()">
+  <div class="bg-[#111113] border border-[#28282e] rounded-2xl w-full max-w-[420px] p-6 shadow-2xl relative text-[#fffff2] space-y-5 animate-in fade-in zoom-in-95 duration-150 max-h-[90vh] overflow-y-auto custom-scroll" onclick="event.stopPropagation()">
     <div class="flex items-center justify-between border-b border-[#26262b] pb-3 -mt-1">
       <div class="flex items-center gap-2.5 font-mono text-[11px] tracking-wider text-rose-400 font-semibold">
         <span class="w-2 h-2 rounded-full bg-rose-500 inline-block"></span>

@@ -1,0 +1,13 @@
+/* ==========================================================================
+   Focus 2k - Responsive Foundation (responsive.css)
+   Phase 1: Foundation and Desktop Protection
+   ========================================================================== */
+
+/* Media queries and responsive utility foundation for mobile & tablet */
+@media (max-width: 1023px) {
+  /* Support for mobile device safe areas */
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}

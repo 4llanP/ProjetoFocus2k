@@ -459,6 +459,9 @@ function filtrarCategoria(cat) {
     }
   });
   if (typeof listarTarefas === 'function') listarTarefas();
+  if (window.innerWidth < 1024 && typeof fecharMenuLateral === 'function') {
+    fecharMenuLateral();
+  }
 }
 
 function filtrarTarefasInput(valor) {
@@ -466,25 +469,47 @@ function filtrarTarefasInput(valor) {
   if (typeof listarTarefas === 'function') listarTarefas();
 }
 
-function alternarMenuLateral() {
+function abrirMenuLateral() {
   const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sidebarBackdrop');
   const icon = document.getElementById('hamburgerIcon');
   if (!sidebar) return;
-  const estaFechada = sidebar.classList.contains('-translate-x-full') || sidebar.style.display === 'none';
-
-  if (estaFechada) {
-    sidebar.classList.remove('-translate-x-full', 'w-0', 'p-0');
-    sidebar.classList.add('w-64');
-    sidebar.style.display = 'flex';
-    if (icon) icon.classList.remove('rotate-90');
-  } else {
-    sidebar.classList.add('-translate-x-full', 'w-0');
-    sidebar.classList.remove('w-64');
-    sidebar.style.display = 'none';
-    if (icon) icon.classList.add('rotate-90');
-  }
-  mostrarToastFeedback(estaFechada ? 'Sidebar Aberta' : 'Sidebar Ocultada');
+  sidebar.classList.remove('-translate-x-full');
+  if (backdrop) backdrop.classList.remove('hidden');
+  if (icon) icon.classList.remove('rotate-90');
+  mostrarToastFeedback('Sidebar Aberta');
 }
+
+function fecharMenuLateral() {
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  const icon = document.getElementById('hamburgerIcon');
+  if (!sidebar) return;
+  sidebar.classList.add('-translate-x-full');
+  if (backdrop) backdrop.classList.add('hidden');
+  if (icon) icon.classList.add('rotate-90');
+  mostrarToastFeedback('Sidebar Ocultada');
+}
+
+function alternarMenuLateral() {
+  const sidebar = document.getElementById('sidebar');
+  if (!sidebar) return;
+  const estaFechada = sidebar.classList.contains('-translate-x-full');
+  if (estaFechada) {
+    abrirMenuLateral();
+  } else {
+    fecharMenuLateral();
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar && !sidebar.classList.contains('-translate-x-full') && window.innerWidth < 1024) {
+      fecharMenuLateral();
+    }
+  }
+});
 
 function alternarDrawerChat(forcarEstado) {
   const drawer = document.getElementById('drawerChatIA');
@@ -498,7 +523,11 @@ function alternarDrawerChat(forcarEstado) {
 
   if (drawerChatAberto) {
     drawer.classList.remove('hidden');
-    drawer.style.width = '24rem';
+    if (window.innerWidth < 1024) {
+      drawer.style.width = '100vw';
+    } else {
+      drawer.style.width = '24rem';
+    }
     if (btnBottomRight) btnBottomRight.classList.add('hidden');
     mostrarToastFeedback('Assistente IA Aberto');
   } else {

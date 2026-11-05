@@ -228,11 +228,11 @@ function renderizarCardHTML(t) {
         </div>
       ` : ''}
 
-      <div class="mt-2.5 pt-2 border-t border-[#26262b] flex items-center justify-end gap-1.5 text-[9px] font-mono">
+      <div class="mt-2.5 pt-2 border-t border-[#26262b] flex items-center justify-end gap-2 text-[10px] font-mono">
         <span class="text-[#9d9da6] mr-auto">Mover:</span>
-        ${t.status !== 'pendente' ? `<button onclick="arrastarTarefa('${t.id}', 'pendente')" class="px-2 py-0.5 rounded bg-[#161619] text-[#fffff2] hover:bg-[#fffff2] hover:text-[#080808] transition">A Fazer</button>` : ''}
-        ${t.status !== 'em_andamento' ? `<button onclick="arrastarTarefa('${t.id}', 'em_andamento')" class="px-2 py-0.5 rounded bg-[#161619] text-[#fffff2] hover:bg-[#fffff2] hover:text-[#080808] transition">Andamento</button>` : ''}
-        ${t.status !== 'concluido' ? `<button onclick="arrastarTarefa('${t.id}', 'concluido')" class="px-2 py-0.5 rounded bg-[#161619] text-[#fffff2] hover:bg-[#fffff2] hover:text-[#080808] transition">Concluir</button>` : ''}
+        ${t.status !== 'pendente' ? `<button onclick="arrastarTarefa('${t.id}', 'pendente')" class="px-2.5 py-1 rounded bg-[#161619] text-[#fffff2] hover:bg-[#fffff2] hover:text-[#080808] transition cursor-pointer">A Fazer</button>` : ''}
+        ${t.status !== 'em_andamento' ? `<button onclick="arrastarTarefa('${t.id}', 'em_andamento')" class="px-2.5 py-1 rounded bg-[#161619] text-[#fffff2] hover:bg-[#fffff2] hover:text-[#080808] transition cursor-pointer">Andamento</button>` : ''}
+        ${t.status !== 'concluido' ? `<button onclick="arrastarTarefa('${t.id}', 'concluido')" class="px-2.5 py-1 rounded bg-[#161619] text-[#fffff2] hover:bg-[#fffff2] hover:text-[#080808] transition cursor-pointer">Concluir</button>` : ''}
       </div>
     </div>
   `;
@@ -345,6 +345,40 @@ function fecharModalDeletarTarefa() {
     if (typeof atualizarVisibilidadeBotaoAssistente === 'function') {
       atualizarVisibilidadeBotaoAssistente();
     }
+  }
+}
+
+function mudarColunaMobile(status) {
+  const colPendente = document.getElementById('kanbanColPendente');
+  const colEmAndamento = document.getElementById('kanbanColEmAndamento');
+  const colConcluido = document.getElementById('kanbanColConcluido');
+
+  const tabPendente = document.getElementById('kanbanTabPendente');
+  const tabEmAndamento = document.getElementById('kanbanTabEmAndamento');
+  const tabConcluido = document.getElementById('kanbanTabConcluido');
+
+  [colPendente, colEmAndamento, colConcluido].forEach(col => {
+    if (col) col.classList.add('hidden', 'md:flex');
+  });
+
+  [tabPendente, tabEmAndamento, tabConcluido].forEach(tab => {
+    if (tab) {
+      tab.className = "flex-1 py-2 px-2 text-xs font-medium rounded-lg text-[#9d9da6] hover:text-[#fffff2] transition text-center cursor-pointer";
+    }
+  });
+
+  if (status === 'pendente') {
+    if (colPendente) colPendente.classList.remove('hidden', 'md:flex');
+    if (colPendente) colPendente.classList.add('flex');
+    if (tabPendente) tabPendente.className = "flex-1 py-2 px-2 text-xs font-bold rounded-lg bg-[#1f1f24] text-[#fffff2] border border-[#3a3a42] transition text-center cursor-pointer";
+  } else if (status === 'em_andamento') {
+    if (colEmAndamento) colEmAndamento.classList.remove('hidden', 'md:flex');
+    if (colEmAndamento) colEmAndamento.classList.add('flex');
+    if (tabEmAndamento) tabEmAndamento.className = "flex-1 py-2 px-2 text-xs font-bold rounded-lg bg-[#1f1f24] text-[#fffff2] border border-[#3a3a42] transition text-center cursor-pointer";
+  } else if (status === 'concluido') {
+    if (colConcluido) colConcluido.classList.remove('hidden', 'md:flex');
+    if (colConcluido) colConcluido.classList.add('flex');
+    if (tabConcluido) tabConcluido.className = "flex-1 py-2 px-2 text-xs font-bold rounded-lg bg-[#1f1f24] text-[#fffff2] border border-[#3a3a42] transition text-center cursor-pointer";
   }
 }
 
