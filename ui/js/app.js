@@ -502,6 +502,37 @@ function alternarMenuLateral() {
   }
 }
 
+let touchStartX = 0;
+let touchStartY = 0;
+
+document.addEventListener('touchstart', (e) => {
+  if (e.touches && e.touches.length === 1) {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }
+}, { passive: true });
+
+document.addEventListener('touchend', (e) => {
+  if (!e.changedTouches || e.changedTouches.length === 0) return;
+  const touchEndX = e.changedTouches[0].clientX;
+  const touchEndY = e.changedTouches[0].clientY;
+
+  const diffX = touchEndX - touchStartX;
+  const diffY = touchEndY - touchStartY;
+
+  if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 60) {
+    const sidebar = document.getElementById('sidebar');
+    if (!sidebar) return;
+    const estaFechada = sidebar.classList.contains('-translate-x-full');
+
+    if (estaFechada && touchStartX < 40 && diffX > 60) {
+      abrirMenuLateral();
+    } else if (!estaFechada && diffX < -60) {
+      fecharMenuLateral();
+    }
+  }
+}, { passive: true });
+
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     const sidebar = document.getElementById('sidebar');

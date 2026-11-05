@@ -215,6 +215,16 @@ const temasDB = {
     borderLight: '#475569',
     text: '#f8fafc',
     muted: '#94a3b8'
+  },
+  branco: {
+    bg: '#ffffff',
+    surface: '#f4f4f5',
+    card: '#ffffff',
+    cardHover: '#f1f1f3',
+    border: '#e4e4e7',
+    borderLight: '#d4d4d8',
+    text: '#09090b',
+    muted: '#71717a'
   }
 };
 
@@ -260,7 +270,7 @@ function mudarTema(nomeTema) {
   mostrarToastFeedback(`Tema alterado para: ${nomeTema.toUpperCase()}`);
 }
 
-// Initialize theme on load
+// Initialize theme and font size on load
 window.addEventListener('DOMContentLoaded', () => {
   const temaSalvo = localStorage.getItem('focus2k_tema') || 'obsidian';
   const select1 = document.getElementById('selectTema');
@@ -268,4 +278,29 @@ window.addEventListener('DOMContentLoaded', () => {
   if (select1) select1.value = temaSalvo;
   if (select2) select2.value = temaSalvo;
   mudarTema(temaSalvo);
+
+  const escalaSalva = localStorage.getItem('focus2k_tamanho_fonte') || '100';
+  const selectFonte = document.getElementById('selectTamanhoFonteModal');
+  if (selectFonte) selectFonte.value = escalaSalva;
+  if (escalaSalva !== '100') {
+    document.documentElement.style.fontSize = escalaSalva + '%';
+    document.body.style.fontSize = escalaSalva + '%';
+  }
 });
+
+/**
+ * Changes application font size for accessibility.
+ * @param {string} escala - Scale percentage ('100', '110', '125', '150', '175', '200').
+ */
+function mudarTamanhoFonte(escala) {
+  const root = document.documentElement;
+  const percentual = escala + '%';
+  root.style.fontSize = percentual;
+  document.body.style.fontSize = percentual;
+  localStorage.setItem('focus2k_tamanho_fonte', escala);
+
+  const selectEl = document.getElementById('selectTamanhoFonteModal');
+  if (selectEl) selectEl.value = escala;
+
+  mostrarToastFeedback(`Tamanho da fonte ajustado para ${percentual}`);
+}

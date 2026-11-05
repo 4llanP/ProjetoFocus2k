@@ -166,16 +166,16 @@ function renderizarCardHTML(t) {
   }
 
   return `
-    <div id="task_${t.id}" draggable="true" ondragstart="iniciarArrasto(event, '${t.id}')" class="bg-[#111113] border border-[#26262b] hover:border-[#3a3a42] rounded-xl p-4 transition-all shadow-sm relative group select-none">
+    <div id="task_${t.id}" draggable="true" ondragstart="iniciarArrasto(event, '${t.id}')" ontouchstart="iniciarToqueCard(event, '${t.id}')" ontouchend="finalizarToqueCard(event, '${t.id}', '${t.status}')" class="bg-[#111113] border border-[#26262b] hover:border-[#3a3a42] rounded-xl p-4 transition-all shadow-sm relative group select-none">
       <div class="flex items-start justify-between gap-2 mb-2">
         <span class="text-[10px] font-mono px-2 py-0.5 rounded border ${tipoClasses}">${tipoLabel}</span>
         <div class="flex items-center gap-1.5">
           <span class="text-[10px] font-mono px-2 py-0.5 rounded border ${prioridadeClasses}">${prioridadeLabel}</span>
-          <button onclick="abrirModalEditarTarefa('${t.id}')" title="Editar tarefa" class="text-[#75757d] hover:text-[#fffff2] p-0.5 transition cursor-pointer">
-            <span class="material-symbols-outlined text-[14px]">edit</span>
+          <button onclick="abrirModalEditarTarefa('${t.id}')" title="Editar tarefa" class="text-[#75757d] hover:text-[#fffff2] p-2 sm:p-0.5 transition cursor-pointer flex items-center justify-center">
+            <span class="material-symbols-outlined text-[16px] sm:text-[14px]">edit</span>
           </button>
-          <button onclick="deletarTarefaAPI('${t.id}')" title="Excluir tarefa" class="text-[#75757d] hover:text-rose-400 p-0.5 transition cursor-pointer">
-            <span class="material-symbols-outlined text-[14px]">delete</span>
+          <button onclick="deletarTarefaAPI('${t.id}')" title="Excluir tarefa" class="text-[#75757d] hover:text-rose-400 p-2 sm:p-0.5 transition cursor-pointer flex items-center justify-center">
+            <span class="material-symbols-outlined text-[16px] sm:text-[14px]">delete</span>
           </button>
         </div>
       </div>
@@ -230,9 +230,9 @@ function renderizarCardHTML(t) {
 
       <div class="mt-2.5 pt-2 border-t border-[#26262b] flex items-center justify-end gap-2 text-[10px] font-mono">
         <span class="text-[#9d9da6] mr-auto">Mover:</span>
-        ${t.status !== 'pendente' ? `<button onclick="arrastarTarefa('${t.id}', 'pendente')" class="px-2.5 py-1 rounded bg-[#161619] text-[#fffff2] hover:bg-[#fffff2] hover:text-[#080808] transition cursor-pointer">A Fazer</button>` : ''}
-        ${t.status !== 'em_andamento' ? `<button onclick="arrastarTarefa('${t.id}', 'em_andamento')" class="px-2.5 py-1 rounded bg-[#161619] text-[#fffff2] hover:bg-[#fffff2] hover:text-[#080808] transition cursor-pointer">Andamento</button>` : ''}
-        ${t.status !== 'concluido' ? `<button onclick="arrastarTarefa('${t.id}', 'concluido')" class="px-2.5 py-1 rounded bg-[#161619] text-[#fffff2] hover:bg-[#fffff2] hover:text-[#080808] transition cursor-pointer">Concluir</button>` : ''}
+        ${t.status !== 'pendente' ? `<button onclick="arrastarTarefa('${t.id}', 'pendente')" class="px-3 py-2 sm:px-2.5 sm:py-1 rounded bg-[#161619] text-[#fffff2] hover:bg-[#fffff2] hover:text-[#080808] transition cursor-pointer min-h-[38px] sm:min-h-0 flex items-center justify-center font-medium">A Fazer</button>` : ''}
+        ${t.status !== 'em_andamento' ? `<button onclick="arrastarTarefa('${t.id}', 'em_andamento')" class="px-3 py-2 sm:px-2.5 sm:py-1 rounded bg-[#161619] text-[#fffff2] hover:bg-[#fffff2] hover:text-[#080808] transition cursor-pointer min-h-[38px] sm:min-h-0 flex items-center justify-center font-medium">Andamento</button>` : ''}
+        ${t.status !== 'concluido' ? `<button onclick="arrastarTarefa('${t.id}', 'concluido')" class="px-3 py-2 sm:px-2.5 sm:py-1 rounded bg-[#161619] text-[#fffff2] hover:bg-[#fffff2] hover:text-[#080808] transition cursor-pointer min-h-[38px] sm:min-h-0 flex items-center justify-center font-medium">Concluir</button>` : ''}
       </div>
     </div>
   `;
@@ -671,4 +671,39 @@ function inicializarTimerState() {
   }
 
   atualizarDisplayTimerModal();
+}
+
+let cardTouchStartX = 0;
+let cardTouchStartY = 0;
+
+function iniciarToqueCard(event, taskId) {
+  if (event.touches && event.touches.length === 1) {
+    cardTouchStartX = event.touches[0].clientX;
+    cardTouchStartY = event.touches[0].clientY;
+  }
+}
+
+function finalizarToqueCard(event, taskId, statusAtual) {
+  if (!event.changedTouches || event.changedTouches.length === 0) return;
+  const endX = event.changedTouches[0].clientX;
+  const endY = event.changedTouches[0].clientY;
+
+  const diffX = endX - cardTouchStartX;
+  const diffY = endY - cardTouchStartY;
+
+  if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 60) {
+    let novoStatus = null;
+    if (diffX < 0) {
+      if (statusAtual === 'pendente') novoStatus = 'em_andamento';
+      else if (statusAtual === 'em_andamento') novoStatus = 'concluido';
+    } else {
+      if (statusAtual === 'concluido') novoStatus = 'em_andamento';
+      else if (statusAtual === 'em_andamento') novoStatus = 'pendente';
+    }
+
+    if (novoStatus && typeof arrastarTarefa === 'function') {
+      arrastarTarefa(taskId, novoStatus);
+      mostrarToastFeedback(`Status alterado via gesto para: ${novoStatus.replace('_', ' ').toUpperCase()}`);
+    }
+  }
 }
