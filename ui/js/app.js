@@ -473,9 +473,25 @@ function abrirMenuLateral() {
   const sidebar = document.getElementById('sidebar');
   const backdrop = document.getElementById('sidebarBackdrop');
   const icon = document.getElementById('hamburgerIcon');
+  const btnAssistente = document.getElementById('btnAssistenteBottomRight');
   if (!sidebar) return;
+
+  const isMobile = window.innerWidth < 768;
   sidebar.classList.remove('-translate-x-full');
-  if (backdrop) backdrop.classList.remove('hidden');
+  sidebar.classList.remove('sidebar-collapsed');
+
+  if (isMobile) {
+    if (backdrop) backdrop.classList.remove('hidden');
+    if (btnAssistente) {
+      btnAssistente.style.setProperty('display', 'none', 'important');
+    }
+  } else {
+    if (backdrop) backdrop.classList.add('hidden');
+    if (btnAssistente) {
+      btnAssistente.style.setProperty('display', 'flex', 'important');
+    }
+  }
+
   if (icon) icon.classList.remove('rotate-90');
   mostrarToastFeedback('Sidebar Aberta');
 }
@@ -484,9 +500,21 @@ function fecharMenuLateral() {
   const sidebar = document.getElementById('sidebar');
   const backdrop = document.getElementById('sidebarBackdrop');
   const icon = document.getElementById('hamburgerIcon');
+  const btnAssistente = document.getElementById('btnAssistenteBottomRight');
   if (!sidebar) return;
-  sidebar.classList.add('-translate-x-full');
+
+  const isMobile = window.innerWidth < 768;
+  if (isMobile) {
+    sidebar.classList.add('-translate-x-full');
+  } else {
+    sidebar.classList.add('sidebar-collapsed');
+  }
+
   if (backdrop) backdrop.classList.add('hidden');
+  if (btnAssistente) {
+    btnAssistente.style.setProperty('display', 'flex', 'important');
+  }
+
   if (icon) icon.classList.add('rotate-90');
   mostrarToastFeedback('Sidebar Ocultada');
 }
@@ -494,7 +522,11 @@ function fecharMenuLateral() {
 function alternarMenuLateral() {
   const sidebar = document.getElementById('sidebar');
   if (!sidebar) return;
-  const estaFechada = sidebar.classList.contains('-translate-x-full');
+  const isMobile = window.innerWidth < 768;
+  const estaFechada = isMobile
+    ? sidebar.classList.contains('-translate-x-full')
+    : sidebar.classList.contains('sidebar-collapsed');
+
   if (estaFechada) {
     abrirMenuLateral();
   } else {

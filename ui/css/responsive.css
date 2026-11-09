@@ -32,3 +32,13 @@ textarea:focus-visible {
   outline: 2px solid var(--app-text, #fffff2) !important;
   outline-offset: 2px !important;
 }
+
+/* Sidebar collapse support for web/desktop and mobile */
+#sidebar.sidebar-collapsed {
+  transform: translateX(-100%) !important;
+}
+@media (min-width: 768px) {
+  #sidebar.sidebar-collapsed {
+    margin-left: -16rem !important;
+  }
+}

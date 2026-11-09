@@ -182,7 +182,7 @@
 </button>
 </div>
 <!-- Container das Tarefas em A Fazer -->
-<div class="p-3 flex-1 overflow-y-auto space-y-3 custom-scroll" id="col-pendente">
+<div class="p-3 flex-1 overflow-y-auto space-y-3 custom-scroll" id="col-pendente" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'pendente')">
 		</div>
 </div>
 <!-- COLUNA 2: Em Andamento -->
@@ -195,7 +195,7 @@
 </div>
 </div>
 <!-- Container das Tarefas em Andamento -->
-<div class="p-3 flex-1 overflow-y-auto space-y-3 custom-scroll" id="col-em_andamento">
+<div class="p-3 flex-1 overflow-y-auto space-y-3 custom-scroll" id="col-em_andamento" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'em_andamento')">
 		</div>
 </div>
 <!-- COLUNA 3: Concluído -->
@@ -208,7 +208,7 @@
 </div>
 </div>
 <!-- Container das Tarefas Concluídas -->
-<div class="p-3 flex-1 overflow-y-auto space-y-3 custom-scroll" id="col-concluido">
+<div class="p-3 flex-1 overflow-y-auto space-y-3 custom-scroll" id="col-concluido" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'concluido')">
 		</div>
 </div>
 </div>
@@ -418,9 +418,7 @@
           <option value="100">100% — Padrão</option>
           <option value="110">110%</option>
           <option value="125">125%</option>
-          <option value="150">150%</option>
-          <option value="175">175%</option>
-          <option value="200">200% (Máximo)</option>
+          <option value="150">150% (Máximo)</option>
         </select>
       </div>
     </div>

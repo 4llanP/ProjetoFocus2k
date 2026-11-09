@@ -288,6 +288,43 @@ async function alternarSubtarefa(event, taskId, subId) {
   }
 }
 
+let touchCardStartX = 0;
+let touchCardStartY = 0;
+
+function iniciarToqueCard(event, taskId) {
+  if (event.touches && event.touches.length === 1) {
+    touchCardStartX = event.touches[0].clientX;
+    touchCardStartY = event.touches[0].clientY;
+  }
+}
+
+function finalizarToqueCard(event, taskId, statusAtual) {
+  if (!event.changedTouches || event.changedTouches.length === 0) return;
+  const touchEndX = event.changedTouches[0].clientX;
+  const touchEndY = event.changedTouches[0].clientY;
+
+  const diffX = touchEndX - touchCardStartX;
+  const diffY = touchEndY - touchCardStartY;
+
+  if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
+    let novoStatus = statusAtual;
+
+    if (diffX < -50) {
+      // Swipe para a esquerda: avançar estado
+      if (statusAtual === 'pendente') novoStatus = 'em_andamento';
+      else if (statusAtual === 'em_andamento') novoStatus = 'concluido';
+    } else if (diffX > 50) {
+      // Swipe para a direita: retornar estado anterior
+      if (statusAtual === 'concluido') novoStatus = 'em_andamento';
+      else if (statusAtual === 'em_andamento') novoStatus = 'pendente';
+    }
+
+    if (novoStatus !== statusAtual) {
+      arrastarTarefa(taskId, novoStatus);
+    }
+  }
+}
+
 async function arrastarTarefa(taskId, novoStatus) {
   const tarefa = tarefasDB.find(t => t.id === taskId);
   if (!tarefa) return;

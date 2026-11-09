@@ -279,7 +279,11 @@ window.addEventListener('DOMContentLoaded', () => {
   if (select2) select2.value = temaSalvo;
   mudarTema(temaSalvo);
 
-  const escalaSalva = localStorage.getItem('focus2k_tamanho_fonte') || '100';
+  let escalaSalva = localStorage.getItem('focus2k_tamanho_fonte') || '100';
+  if (escalaSalva === 'auto' || parseInt(escalaSalva) > 150) {
+    escalaSalva = '100';
+    localStorage.setItem('focus2k_tamanho_fonte', '100');
+  }
   const selectFonte = document.getElementById('selectTamanhoFonteModal');
   if (selectFonte) selectFonte.value = escalaSalva;
   if (escalaSalva !== '100') {
@@ -290,9 +294,12 @@ window.addEventListener('DOMContentLoaded', () => {
 
 /**
  * Changes application font size for accessibility.
- * @param {string} escala - Scale percentage ('100', '110', '125', '150', '175', '200').
+ * @param {string} escala - Scale percentage ('100', '110', '125', '150').
  */
 function mudarTamanhoFonte(escala) {
+  if (parseInt(escala) > 150) {
+    escala = '150';
+  }
   const root = document.documentElement;
   const percentual = escala + '%';
   root.style.fontSize = percentual;
