@@ -3,18 +3,30 @@
  * @description Global application state and UI utility functions (toasts, text safety, user profile rendering).
  */
 
-let tarefasDB = [];
-let filtroCategoriaAtiva = 'todas';
-let termoBuscaAtivo = '';
-let usuarioAtual = {
+window.tarefasDB = [];
+window.filtroCategoriaAtiva = 'todas';
+window.termoBuscaAtivo = '';
+window.usuarioAtual = {
   nome: localStorage.getItem('userName') || 'Usuário',
   role: localStorage.getItem('role') || 'Estudante',
   estiloInstrucao: 'direto',
   autenticado: !!localStorage.getItem('token')
 };
-let drawerChatAberto = true;
-let cardSendoDesestruturado = null;
-let idSendoArrastado = null;
+window.drawerChatAberto = true;
+window.cardSendoDesestruturado = null;
+window.idSendoArrastado = null;
+
+function setTarefasDB(novaLista) {
+  window.tarefasDB = novaLista;
+}
+
+function setFiltroCategoriaAtiva(cat) {
+  window.filtroCategoriaAtiva = cat;
+}
+
+function setTermoBuscaAtivo(termo) {
+  window.termoBuscaAtivo = termo;
+}
 
 /**
  * Safely updates text content of a DOM element by ID.
@@ -42,8 +54,15 @@ function mostrarToastFeedback(mensagem) {
 function atualizarInterfaceUsuario() {
   const nameEl = document.getElementById('sidebarUserName');
   const roleEl = document.getElementById('sidebarUserRole');
-  const nomeVal = usuarioAtual.nome || localStorage.getItem('userName') || 'Usuário';
-  const roleVal = usuarioAtual.role || localStorage.getItem('role') || 'Estudante';
+  const nomeVal = window.usuarioAtual.nome || localStorage.getItem('userName') || 'Usuário';
+  const roleVal = window.usuarioAtual.role || localStorage.getItem('role') || 'Estudante';
   if (nameEl) nameEl.textContent = nomeVal;
   if (roleEl) roleEl.textContent = roleVal;
 }
+
+window.setTarefasDB = setTarefasDB;
+window.setFiltroCategoriaAtiva = setFiltroCategoriaAtiva;
+window.setTermoBuscaAtivo = setTermoBuscaAtivo;
+window.setSafeText = setSafeText;
+window.mostrarToastFeedback = mostrarToastFeedback;
+window.atualizarInterfaceUsuario = atualizarInterfaceUsuario;
