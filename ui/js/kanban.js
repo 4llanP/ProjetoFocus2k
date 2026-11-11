@@ -166,7 +166,7 @@ function renderizarCardHTML(t) {
   }
 
   return `
-    <div id="task_${t.id}" draggable="true" ondragstart="iniciarArrasto(event, '${t.id}')" ontouchstart="iniciarToqueCard(event, '${t.id}')" ontouchend="finalizarToqueCard(event, '${t.id}', '${t.status}')" class="bg-[#111113] border border-[#26262b] hover:border-[#3a3a42] rounded-xl p-4 transition-all shadow-sm relative group select-none">
+    <div id="task_${t.id}" draggable="true" ondragstart="iniciarArrasto(event, '${t.id}')" class="bg-[#111113] border border-[#26262b] hover:border-[#3a3a42] rounded-xl p-4 transition-all shadow-sm relative group select-none">
       <div class="flex items-start justify-between gap-2 mb-2">
         <span class="text-[10px] font-mono px-2 py-0.5 rounded border ${tipoClasses}">${tipoLabel}</span>
         <div class="flex items-center gap-1.5">
@@ -288,39 +288,39 @@ async function alternarSubtarefa(event, taskId, subId) {
   }
 }
 
-let touchCardStartX = 0;
-let touchCardStartY = 0;
+let colunaMobileAtual = 'pendente';
+let touchKanbanStartX = 0;
+let touchKanbanStartY = 0;
 
-function iniciarToqueCard(event, taskId) {
+function iniciarToqueKanban(event) {
   if (event.touches && event.touches.length === 1) {
-    touchCardStartX = event.touches[0].clientX;
-    touchCardStartY = event.touches[0].clientY;
+    touchKanbanStartX = event.touches[0].clientX;
+    touchKanbanStartY = event.touches[0].clientY;
   }
 }
 
-function finalizarToqueCard(event, taskId, statusAtual) {
+function finalizarToqueKanban(event) {
   if (!event.changedTouches || event.changedTouches.length === 0) return;
   const touchEndX = event.changedTouches[0].clientX;
   const touchEndY = event.changedTouches[0].clientY;
 
-  const diffX = touchEndX - touchCardStartX;
-  const diffY = touchEndY - touchCardStartY;
+  const diffX = touchEndX - touchKanbanStartX;
+  const diffY = touchEndY - touchKanbanStartY;
 
   if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 50) {
-    let novoStatus = statusAtual;
+    const colunas = ['pendente', 'em_andamento', 'concluido'];
+    const indexAtual = colunas.indexOf(colunaMobileAtual);
 
     if (diffX < -50) {
-      // Swipe para a esquerda: avançar estado
-      if (statusAtual === 'pendente') novoStatus = 'em_andamento';
-      else if (statusAtual === 'em_andamento') novoStatus = 'concluido';
+      // Swipe para a esquerda: próxima aba/coluna
+      if (indexAtual < colunas.length - 1) {
+        mudarColunaMobile(colunas[indexAtual + 1]);
+      }
     } else if (diffX > 50) {
-      // Swipe para a direita: retornar estado anterior
-      if (statusAtual === 'concluido') novoStatus = 'em_andamento';
-      else if (statusAtual === 'em_andamento') novoStatus = 'pendente';
-    }
-
-    if (novoStatus !== statusAtual) {
-      arrastarTarefa(taskId, novoStatus);
+      // Swipe para a direita: aba/coluna anterior
+      if (indexAtual > 0) {
+        mudarColunaMobile(colunas[indexAtual - 1]);
+      }
     }
   }
 }
@@ -386,6 +386,7 @@ function fecharModalDeletarTarefa() {
 }
 
 function mudarColunaMobile(status) {
+  colunaMobileAtual = status;
   const colPendente = document.getElementById('kanbanColPendente');
   const colEmAndamento = document.getElementById('kanbanColEmAndamento');
   const colConcluido = document.getElementById('kanbanColConcluido');

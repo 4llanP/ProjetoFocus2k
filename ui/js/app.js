@@ -492,7 +492,7 @@ function abrirMenuLateral() {
     }
   }
 
-  if (icon) icon.classList.remove('rotate-90');
+  if (icon) icon.classList.remove('rotate-180');
   mostrarToastFeedback('Sidebar Aberta');
 }
 
@@ -515,7 +515,7 @@ function fecharMenuLateral() {
     btnAssistente.style.setProperty('display', 'flex', 'important');
   }
 
-  if (icon) icon.classList.add('rotate-90');
+  if (icon) icon.classList.add('rotate-180');
   mostrarToastFeedback('Sidebar Ocultada');
 }
 

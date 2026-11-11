@@ -92,7 +92,7 @@ function renderizarCalendario() {
   for (let i = diaDaSemanaInicio - 1; i >= 0; i--) {
     const diaNum = ultimoDiaMesAnterior - i;
     htmlGrid += `
-      <div class="min-h-[65px] sm:min-h-[100px] p-1.5 sm:p-2 bg-[#080808]/50 opacity-40 text-[#9d9da6] font-mono text-xs flex flex-col">
+      <div class="min-h-[85px] sm:min-h-[130px] p-1.5 sm:p-2 bg-[#080808]/50 opacity-40 text-[#9d9da6] font-mono text-xs flex flex-col">
         <span class="font-bold">${diaNum}</span>
       </div>
     `;
@@ -120,9 +120,9 @@ function renderizarCalendario() {
 
       tarefasHtml += `
         <div onclick="event.stopPropagation(); abrirModalDetalhesTarefa('${t.id}')" class="p-1 rounded bg-[#161619] border border-[#26262b] hover:border-[#fffff2] transition cursor-pointer text-[10px] space-y-0.5 ${statusBadge}" title="${t.titulo}">
-          <div class="flex items-center gap-1 font-medium text-[#fffff2] truncate">
-            <span class="w-1.5 h-1.5 rounded-full ${corPrioridade} flex-shrink-0"></span>
-            <span class="truncate">${t.titulo}</span>
+          <div class="flex items-start gap-1 font-medium text-[#fffff2]">
+            <span class="w-1.5 h-1.5 rounded-full ${corPrioridade} flex-shrink-0 mt-1"></span>
+            <span class="line-clamp-2 break-words leading-tight flex-1">${t.titulo}</span>
           </div>
         </div>
       `;
@@ -132,7 +132,7 @@ function renderizarCalendario() {
     const hojeBadge = ehHoje ? '<span class="ml-auto text-[9px] bg-[#fffff2] text-[#080808] px-1 rounded font-bold">Hoje</span>' : '';
 
     htmlGrid += `
-      <div onclick="clicarDiaCalendario('${dataIsoStr}')" class="min-h-[70px] sm:min-h-[110px] p-1.5 sm:p-2.5 ${hojeClasses} flex flex-col transition hover:bg-[#161619]/40 group cursor-pointer relative hover:border hover:border-[#fffff2]/30" title="Clique para adicionar meta nesta data">
+      <div onclick="clicarDiaCalendario('${dataIsoStr}')" class="min-h-[85px] sm:min-h-[130px] p-1.5 sm:p-2.5 ${hojeClasses} flex flex-col transition hover:bg-[#161619]/40 group cursor-pointer relative hover:border hover:border-[#fffff2]/30" title="Clique para adicionar meta nesta data">
         <div class="flex items-center justify-between mb-1">
           <span class="font-bold text-xs font-mono ${ehHoje ? 'text-[#fffff2]' : 'text-[#9d9da6] group-hover:text-[#fffff2]'}">${dia}</span>
           <span class="opacity-0 group-hover:opacity-100 transition text-[10px] font-mono text-[#fffff2] bg-[#1f1f24] px-1 py-0.5 rounded border border-[#3a3a42] hidden sm:flex items-center gap-0.5">
@@ -140,7 +140,7 @@ function renderizarCalendario() {
           </span>
           ${hojeBadge}
         </div>
-        <div class="flex-1 space-y-1 overflow-y-auto custom-scroll max-h-[45px] sm:max-h-[80px]" onclick="event.stopPropagation()">
+        <div class="flex-1 space-y-1 overflow-y-auto custom-scroll max-h-[60px] sm:max-h-[95px]" onclick="event.stopPropagation()">
           ${tarefasHtml}
         </div>
       </div>
@@ -154,7 +154,7 @@ function renderizarCalendario() {
     const diasRestantes = 7 - resto;
     for (let diaProx = 1; diaProx <= diasRestantes; diaProx++) {
       htmlGrid += `
-        <div class="min-h-[65px] sm:min-h-[100px] p-1.5 sm:p-2 bg-[#080808]/50 opacity-40 text-[#9d9da6] font-mono text-xs flex flex-col">
+        <div class="min-h-[85px] sm:min-h-[130px] p-1.5 sm:p-2 bg-[#080808]/50 opacity-40 text-[#9d9da6] font-mono text-xs flex flex-col">
           <span class="font-bold">${diaProx}</span>
         </div>
       `;
