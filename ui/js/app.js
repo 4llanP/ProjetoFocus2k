@@ -1,3 +1,5 @@
+import { renderizarModals } from './components/modals.js';
+
 /**
  * @file app.js
  * @description Application initialization, modals, task creation modal logic, drag & drop handlers, and filtering logic.
@@ -601,6 +603,7 @@ function alternarDrawerChat(forcarEstado) {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
+  renderizarModals();
   if (typeof verificarSessaoECarregar === 'function') {
     await verificarSessaoECarregar();
   }
