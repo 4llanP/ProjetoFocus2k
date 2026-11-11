@@ -97,7 +97,7 @@ function listarTarefas() {
   colAndamento.innerHTML = '';
   colConcluido.innerHTML = '';
 
-  let countP = 0, countA = 0, countC = 0, countDia = 0, countEdu = 0;
+  let countDia = 0, countEdu = 0;
 
   // Calculate global counts for categories from all tasks in database
   tarefasDB.forEach(t => {
@@ -105,10 +105,6 @@ function listarTarefas() {
     if (cat === 'tarefas_diarias' || cat === 'diaria') countDia++;
     else if (cat === 'tarefas_educacionais' || cat === 'educacional') countEdu++;
     else countDia++; // default fallback for daily/other
-
-    if (t.status === 'pendente') countP++;
-    else if (t.status === 'em_andamento') countA++;
-    else if (t.status === 'concluido') countC++;
   });
 
   const filtradas = tarefasDB.filter(t => {
@@ -127,11 +123,19 @@ function listarTarefas() {
     return matchCat && matchBusca;
   });
 
+  let countP = 0, countA = 0, countC = 0;
   filtradas.forEach(t => {
     const htmlCard = renderizarCardHTML(t);
-    if (t.status === 'pendente') colPendente.insertAdjacentHTML('beforeend', htmlCard);
-    else if (t.status === 'em_andamento') colAndamento.insertAdjacentHTML('beforeend', htmlCard);
-    else if (t.status === 'concluido') colConcluido.insertAdjacentHTML('beforeend', htmlCard);
+    if (t.status === 'pendente') {
+      colPendente.insertAdjacentHTML('beforeend', htmlCard);
+      countP++;
+    } else if (t.status === 'em_andamento') {
+      colAndamento.insertAdjacentHTML('beforeend', htmlCard);
+      countA++;
+    } else if (t.status === 'concluido') {
+      colConcluido.insertAdjacentHTML('beforeend', htmlCard);
+      countC++;
+    }
   });
 
   setSafeText('count-pendente', countP);
