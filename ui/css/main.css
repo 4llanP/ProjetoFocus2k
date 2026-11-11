@@ -127,7 +127,8 @@ main, .bg-\[\#080808\], .bg-\[\#080808\]\/50, .bg-\[\#0c0c0e\], .bg-\[\#0d0d0f\]
   background: var(--app-border-light);
 }
 .kanban-col {
-  min-height: calc(100vh - 170px);
+  height: 100%;
+  max-height: 100%;
 }
 .sidebar-transition {
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), width 0.25s cubic-bezier(0.16, 1, 0.3, 1);

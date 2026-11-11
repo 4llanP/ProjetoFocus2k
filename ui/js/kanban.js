@@ -101,9 +101,10 @@ function listarTarefas() {
 
   // Calculate global counts for categories from all tasks in database
   tarefasDB.forEach(t => {
-    const cat = t.tipo || t.categoria;
+    const cat = (t.tipo || t.categoria || '').toLowerCase();
     if (cat === 'tarefas_diarias' || cat === 'diaria') countDia++;
-    if (cat === 'tarefas_educacionais' || cat === 'educacional') countEdu++;
+    else if (cat === 'tarefas_educacionais' || cat === 'educacional') countEdu++;
+    else countDia++; // default fallback for daily/other
 
     if (t.status === 'pendente') countP++;
     else if (t.status === 'em_andamento') countA++;
@@ -111,8 +112,17 @@ function listarTarefas() {
   });
 
   const filtradas = tarefasDB.filter(t => {
-    const cat = t.tipo || t.categoria || 'tarefas_diarias';
-    const matchCat = filtroCategoriaAtiva === 'todas' || cat === filtroCategoriaAtiva;
+    const cat = (t.tipo || t.categoria || 'tarefas_diarias').toLowerCase();
+    let matchCat = false;
+    if (filtroCategoriaAtiva === 'todas') {
+      matchCat = true;
+    } else if (filtroCategoriaAtiva === 'tarefas_educacionais') {
+      matchCat = cat === 'tarefas_educacionais' || cat === 'educacional';
+    } else if (filtroCategoriaAtiva === 'tarefas_diarias') {
+      matchCat = cat === 'tarefas_diarias' || cat === 'diaria' || (cat !== 'tarefas_educacionais' && cat !== 'educacional');
+    } else {
+      matchCat = cat === filtroCategoriaAtiva;
+    }
     const matchBusca = !termoBuscaAtivo || t.titulo.toLowerCase().includes(termoBuscaAtivo.toLowerCase()) || (t.descricao && t.descricao.toLowerCase().includes(termoBuscaAtivo.toLowerCase()));
     return matchCat && matchBusca;
   });

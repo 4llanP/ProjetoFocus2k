@@ -117,19 +117,25 @@ async function verificarSessaoECarregar() {
   }
 
   try {
-    usuarioAtual = {
+    const nomeUsuario = user.nome || (user.email ? user.email.split('@')[0] : 'Usuário');
+    window.usuarioAtual = {
       id: user.id,
-      nome: user.nome,
+      nome: nomeUsuario,
       email: user.email,
       role: user.role,
       estiloInstrucao: user.estilo_instrucao || 'direto',
       autenticado: true
     };
-    localStorage.setItem('userName', user.nome);
+    localStorage.setItem('userName', nomeUsuario);
+    if (user.email) localStorage.setItem('userEmail', user.email);
     localStorage.setItem('role', user.role);
-    atualizarInterfaceUsuario();
+    if (typeof atualizarInterfaceUsuario === 'function') {
+      atualizarInterfaceUsuario();
+    }
     if (typeof carregarTarefasDaAPI === 'function') {
       await carregarTarefasDaAPI();
     }
-  } catch (uiErr) {}
+  } catch (uiErr) {
+    console.error("Erro ao atualizar interface com dados do usuário:", uiErr);
+  }
 }

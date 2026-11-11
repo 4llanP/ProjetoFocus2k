@@ -122,6 +122,12 @@ async function executarLogin() {
       if (data.nome) {
         localStorage.setItem('userName', data.nome);
       }
+      if (email) {
+        localStorage.setItem('userEmail', email);
+        if (!data.nome) {
+          localStorage.setItem('userName', email.split('@')[0]);
+        }
+      }
       mostrarAlerta('Login realizado com sucesso! Redirecionando para o Dashboard...', 'sucesso');
       setTimeout(() => {
         window.location.href = 'dashboard.html?v=' + Date.now();

@@ -1,5 +1,3 @@
-import { renderizarModals } from './components/modals.js';
-
 /**
  * @file app.js
  * @description Application initialization, modals, task creation modal logic, drag & drop handlers, and filtering logic.
@@ -604,7 +602,34 @@ function alternarDrawerChat(forcarEstado) {
 
 window.addEventListener('DOMContentLoaded', async () => {
   renderizarModals();
+  if (typeof atualizarInterfaceUsuario === 'function') {
+    atualizarInterfaceUsuario();
+  }
   if (typeof verificarSessaoECarregar === 'function') {
     await verificarSessaoECarregar();
   }
 });
+
+window.formatarMascaraData = formatarMascaraData;
+window.iniciarArrasto = iniciarArrasto;
+window.permitirDrop = permitirDrop;
+window.permitirSoltar = permitirSoltar;
+window.dropTarefa = dropTarefa;
+window.soltarTarefa = soltarTarefa;
+window.selecionarPrioridadeModal = selecionarPrioridadeModal;
+window.selecionarTipoEstudo = selecionarTipoEstudo;
+window.atualizarVisibilidadeBotaoAssistente = atualizarVisibilidadeBotaoAssistente;
+window.abrirModalCriarTarefa = abrirModalCriarTarefa;
+window.abrirModalEditarTarefa = abrirModalEditarTarefa;
+window.fecharModalCriarTarefa = fecharModalCriarTarefa;
+window.confirmarCriarTarefaModal = confirmarCriarTarefaModal;
+window.ativarReconhecimentoVoz = ativarReconhecimentoVoz;
+window.ativarReconhecimentoVozDesc = ativarReconhecimentoVozDesc;
+window.restaurarBotaoVoz = restaurarBotaoVoz;
+window.restaurarBotaoVozDesc = restaurarBotaoVozDesc;
+window.filtrarCategoria = filtrarCategoria;
+window.filtrarTarefasInput = filtrarTarefasInput;
+window.abrirMenuLateral = abrirMenuLateral;
+window.fecharMenuLateral = fecharMenuLateral;
+window.alternarMenuLateral = alternarMenuLateral;
+window.alternarDrawerChat = alternarDrawerChat;
