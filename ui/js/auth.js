@@ -7,47 +7,50 @@
  * Clears local session tokens and redirects to the login screen.
  */
 function deslogar() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('userName');
-  localStorage.removeItem('role');
-  window.location.href = 'tela_login.html';
+  localStorage.removeItem("token");
+  localStorage.removeItem("userName");
+  localStorage.removeItem("role");
+  window.location.href = "tela_login.html";
 }
 
 /**
  * Opens the user profile modal and populates fields with current user data and active theme.
  */
 function abrirModalPerfil() {
-  const inputNome = document.getElementById('inputPerfilNome');
-  const selectEstilo = document.getElementById('selectPerfilEstilo');
-  const modalPerfil = document.getElementById('modalPerfil');
-  const selectTemaModal = document.getElementById('selectTemaModal');
+  const inputNome = document.getElementById("inputPerfilNome");
+  const selectEstilo = document.getElementById("selectPerfilEstilo");
+  const modalPerfil = document.getElementById("modalPerfil");
+  const selectTemaModal = document.getElementById("selectTemaModal");
 
   if (inputNome) {
-    inputNome.value = usuarioAtual.nome || localStorage.getItem('userName') || '';
+    inputNome.value =
+      usuarioAtual.nome || localStorage.getItem("userName") || "";
   }
-  if (selectEstilo) selectEstilo.value = usuarioAtual.estiloInstrucao || 'direto';
-  if (selectTemaModal) selectTemaModal.value = localStorage.getItem('focus2k_tema') || 'obsidian';
+  if (selectEstilo)
+    selectEstilo.value = usuarioAtual.estiloInstrucao || "direto";
+  if (selectTemaModal)
+    selectTemaModal.value = localStorage.getItem("focus2k_tema") || "obsidian";
 
-  if (modalPerfil) modalPerfil.classList.remove('hidden');
+  if (modalPerfil) modalPerfil.classList.remove("hidden");
 }
 
 /**
  * Closes the user profile modal.
  */
 function fecharModalPerfil() {
-  const modalPerfil = document.getElementById('modalPerfil');
-  if (modalPerfil) modalPerfil.classList.add('hidden');
+  const modalPerfil = document.getElementById("modalPerfil");
+  if (modalPerfil) modalPerfil.classList.add("hidden");
 }
 
 /**
  * Saves updated profile details to the backend database.
  */
 async function salvarPerfil() {
-  const inputNome = document.getElementById('inputPerfilNome');
-  const selectEstilo = document.getElementById('selectPerfilEstilo');
+  const inputNome = document.getElementById("inputPerfilNome");
+  const selectEstilo = document.getElementById("selectPerfilEstilo");
   if (!inputNome || !selectEstilo) return;
 
-  const nomeAtual = usuarioAtual.nome || localStorage.getItem('userName') || '';
+  const nomeAtual = usuarioAtual.nome || localStorage.getItem("userName") || "";
   const novoNome = inputNome.value.trim() || nomeAtual;
   const novoEstilo = selectEstilo.value;
 
@@ -63,36 +66,38 @@ async function salvarPerfil() {
 
   try {
     const res = await apiFetch(`${API_URL}/usuarios/${usuarioAtual.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         nome: novoNome,
         email: usuarioAtual.email || "usuario@focus2k.com",
-        estilo_instrucao: novoEstilo
-      })
+        estilo_instrucao: novoEstilo,
+      }),
     });
 
     const data = await res.json();
     if (res.ok) {
       usuarioAtual.nome = novoNome;
       usuarioAtual.estiloInstrucao = novoEstilo;
-      localStorage.setItem('userName', novoNome);
-      if (typeof atualizarInterfaceUsuario === 'function') {
+      localStorage.setItem("userName", novoNome);
+      if (typeof atualizarInterfaceUsuario === "function") {
         atualizarInterfaceUsuario();
       }
       fecharModalPerfil();
-      if (typeof mostrarToastFeedback === 'function') {
+      if (typeof mostrarToastFeedback === "function") {
         mostrarToastFeedback("Perfil e preferências atualizados com sucesso!");
       }
     } else {
-      if (typeof mostrarToastFeedback === 'function') {
-        mostrarToastFeedback(`Erro: ${data.detail || 'Não foi possível atualizar o perfil'}`);
+      if (typeof mostrarToastFeedback === "function") {
+        mostrarToastFeedback(
+          `Erro: ${data.detail || "Não foi possível atualizar o perfil"}`,
+        );
       }
     }
   } catch (err) {
     console.error("Erro ao salvar perfil:", err);
-    if (typeof mostrarToastFeedback === 'function') {
-      mostrarToastFeedback('Erro de conexão ao atualizar perfil.');
+    if (typeof mostrarToastFeedback === "function") {
+      mostrarToastFeedback("Erro de conexão ao atualizar perfil.");
     }
   }
 }
@@ -105,34 +110,35 @@ async function verificarSessaoECarregar() {
   try {
     const resUser = await apiFetch(`${API_URL}/usuarios/me`);
     if (!resUser.ok) {
-      localStorage.removeItem('token');
-      window.location.href = 'tela_login.html';
+      localStorage.removeItem("token");
+      window.location.href = "tela_login.html";
       return;
     }
     user = await resUser.json();
   } catch (err) {
-    localStorage.removeItem('token');
-    window.location.href = 'tela_login.html';
+    localStorage.removeItem("token");
+    window.location.href = "tela_login.html";
     return;
   }
 
   try {
-    const nomeUsuario = user.nome || (user.email ? user.email.split('@')[0] : 'Usuário');
+    const nomeUsuario =
+      user.nome || (user.email ? user.email.split("@")[0] : "Usuário");
     window.usuarioAtual = {
       id: user.id,
       nome: nomeUsuario,
       email: user.email,
       role: user.role,
-      estiloInstrucao: user.estilo_instrucao || 'direto',
-      autenticado: true
+      estiloInstrucao: user.estilo_instrucao || "direto",
+      autenticado: true,
     };
-    localStorage.setItem('userName', nomeUsuario);
-    if (user.email) localStorage.setItem('userEmail', user.email);
-    localStorage.setItem('role', user.role);
-    if (typeof atualizarInterfaceUsuario === 'function') {
+    localStorage.setItem("userName", nomeUsuario);
+    if (user.email) localStorage.setItem("userEmail", user.email);
+    localStorage.setItem("role", user.role);
+    if (typeof atualizarInterfaceUsuario === "function") {
       atualizarInterfaceUsuario();
     }
-    if (typeof carregarTarefasDaAPI === 'function') {
+    if (typeof carregarTarefasDaAPI === "function") {
       await carregarTarefasDaAPI();
     }
   } catch (uiErr) {

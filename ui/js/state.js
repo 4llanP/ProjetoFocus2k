@@ -4,13 +4,13 @@
  */
 
 window.tarefasDB = [];
-window.filtroCategoriaAtiva = 'todas';
-window.termoBuscaAtivo = '';
+window.filtroCategoriaAtiva = "todas";
+window.termoBuscaAtivo = "";
 window.usuarioAtual = {
-  nome: localStorage.getItem('userName') || 'Usuário',
-  role: localStorage.getItem('role') || 'Estudante',
-  estiloInstrucao: 'direto',
-  autenticado: !!localStorage.getItem('token')
+  nome: localStorage.getItem("userName") || "Usuário",
+  role: localStorage.getItem("role") || "Estudante",
+  estiloInstrucao: "direto",
+  autenticado: !!localStorage.getItem("token"),
 };
 window.drawerChatAberto = true;
 window.cardSendoDesestruturado = null;
@@ -45,27 +45,51 @@ function setSafeText(id, text) {
  * @param {string} mensagem - Message text to display.
  */
 function mostrarToastFeedback(mensagem) {
-  // Notificações toast desativadas a pedido do usuário.
+  const container = document.getElementById("toastContainer");
+  if (!container) return;
+
+  const toast = document.createElement("div");
+  toast.className =
+    "pointer-events-auto bg-[#161619] border border-[#3a3a42] text-[#fffff2] px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 text-xs transition-all duration-300";
+  toast.innerHTML = `
+    <span class="material-symbols-outlined text-emerald-400 text-lg">notifications</span>
+    <span class="flex-1">${mensagem}</span>
+    <button onclick="this.parentElement.remove()" class="text-[#9d9da6] hover:text-[#fffff2] transition cursor-pointer">
+      <span class="material-symbols-outlined text-sm">close</span>
+    </button>
+  `;
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
 }
 
 /**
  * Updates sidebar user name and role display elements from global state or localStorage.
  */
 function atualizarInterfaceUsuario() {
-  const nameEl = document.getElementById('sidebarUserName');
-  const roleEl = document.getElementById('sidebarUserRole');
-  let nomeVal = (window.usuarioAtual && window.usuarioAtual.nome) || localStorage.getItem('userName') || '';
-  if (!nomeVal || nomeVal === 'Usuário') {
-    const email = localStorage.getItem('userEmail') || '';
+  const nameEl = document.getElementById("sidebarUserName");
+  const roleEl = document.getElementById("sidebarUserRole");
+  let nomeVal =
+    (window.usuarioAtual && window.usuarioAtual.nome) ||
+    localStorage.getItem("userName") ||
+    "";
+  if (!nomeVal || nomeVal === "Usuário") {
+    const email = localStorage.getItem("userEmail") || "";
     if (email) {
-      nomeVal = email.split('@')[0];
+      nomeVal = email.split("@")[0];
       // Capitalize first letter
       nomeVal = nomeVal.charAt(0).toUpperCase() + nomeVal.slice(1);
     } else {
-      nomeVal = 'Usuário';
+      nomeVal = "Usuário";
     }
   }
-  const roleVal = (window.usuarioAtual && window.usuarioAtual.role) || localStorage.getItem('role') || 'Estudante';
+  const roleVal =
+    (window.usuarioAtual && window.usuarioAtual.role) ||
+    localStorage.getItem("role") ||
+    "Estudante";
   if (nameEl) nameEl.textContent = nomeVal;
   if (roleEl) roleEl.textContent = roleVal;
 }
@@ -78,24 +102,24 @@ window.mostrarToastFeedback = mostrarToastFeedback;
 window.atualizarInterfaceUsuario = atualizarInterfaceUsuario;
 
 function mudarTema(tema) {
-  localStorage.setItem('focus2k_tema', tema);
-  document.body.className = document.body.className.replace(/theme-\S+/g, '');
-  if (tema && tema !== 'obsidian') {
+  localStorage.setItem("focus2k_tema", tema);
+  document.body.className = document.body.className.replace(/theme-\S+/g, "");
+  if (tema && tema !== "obsidian") {
     document.body.classList.add(`theme-${tema}`);
   }
 }
 
 function mudarTamanhoFonte(tamanho) {
-  localStorage.setItem('focus2k_tamanho_fonte', tamanho);
+  localStorage.setItem("focus2k_tamanho_fonte", tamanho);
   document.documentElement.style.fontSize = `${tamanho}%`;
 }
 
 // Initialize theme and font size on load
-const savedTema = localStorage.getItem('focus2k_tema');
-if (savedTema && savedTema !== 'obsidian') {
+const savedTema = localStorage.getItem("focus2k_tema");
+if (savedTema && savedTema !== "obsidian") {
   document.body.classList.add(`theme-${savedTema}`);
 }
-const savedFonte = localStorage.getItem('focus2k_tamanho_fonte');
+const savedFonte = localStorage.getItem("focus2k_tamanho_fonte");
 if (savedFonte) {
   document.documentElement.style.fontSize = `${savedFonte}%`;
 }

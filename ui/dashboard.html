@@ -1,331 +1,714 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>Focus 2k - Gestão de Estudos Inteligente</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            app: {
-              bg: '#080808',
-              surface: '#111113',
-              card: '#161619',
-              cardHover: '#1c1c21',
-              border: '#26262b',
-              borderLight: '#3a3a42',
-              primaryText: '#fffff2',
-              mutedText: '#9d9da6',
-              accentLight: '#fffff2',
-              tagBg: '#1f1f24'
-            }
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Focus 2k</title>
+    <link rel="icon" type="image/png" href="iconFocus2k.png" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              app: {
+                bg: "#080808",
+                surface: "#111113",
+                card: "#161619",
+                cardHover: "#1c1c21",
+                border: "#26262b",
+                borderLight: "#3a3a42",
+                primaryText: "#fffff2",
+                mutedText: "#9d9da6",
+                accentLight: "#fffff2",
+                tagBg: "#1f1f24",
+              },
+            },
+            fontFamily: {
+              sans: ['"Space Grotesk"', '"Plus Jakarta Sans"', "sans-serif"],
+              mono: ['"Space Mono"', '"JetBrains Mono"', "monospace"],
+            },
           },
-          fontFamily: {
-            sans: ['"Space Grotesk"', '"Plus Jakarta Sans"', 'sans-serif'],
-            mono: ['"Space Mono"', '"JetBrains Mono"', 'monospace']
-          }
-        }
-      }
-    }
-  </script>
-<link href="https://fonts.googleapis.com" rel="preconnect">
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/main.css">
-<link rel="stylesheet" href="css/responsive.css">
-</head>
-<body class="h-[100dvh] w-screen flex flex-col md:flex-row overflow-hidden select-none antialiased">
+        },
+      };
+    </script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/responsive.css" />
+  </head>
+  <body
+    class="h-[100dvh] w-screen flex flex-col md:flex-row overflow-hidden select-none antialiased"
+  >
+    <!-- ================= SIDEBAR LATERAL ESQUERDA ================= -->
+    <div
+      id="sidebarBackdrop"
+      class="fixed inset-0 bg-black/60 z-40 hidden transition-opacity"
+      onclick="fecharMenuLateral()"
+    ></div>
+    <aside
+      class="sidebar-transition w-64 flex-shrink-0 bg-[#111113] border-r border-[#26262b] flex flex-col z-50 h-[100dvh] fixed md:relative inset-y-0 left-0 -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none"
+      id="sidebar"
+    >
+      <div class="flex flex-col h-full justify-between">
+        <!-- Brand & Workspace -->
+        <div
+          class="p-4 border-b border-[#26262b] flex items-center justify-between"
+        >
+          <div class="flex items-center gap-3">
+            <img
+              src="iconFocus2k.png"
+              alt="Focus 2k"
+              class="w-8 h-8 rounded-lg object-cover shadow-sm"
+            />
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-base tracking-tight text-[#fffff2]"
+                  >Focus <span class="text-[#9d9da6]">2k</span></span
+                >
+              </div>
+            </div>
+          </div>
+          <button
+            onclick="fecharMenuLateral()"
+            class="md:hidden p-1.5 rounded-lg text-[#9d9da6] hover:text-[#fffff2] hover:bg-[#161619] transition cursor-pointer"
+            aria-label="Fechar menu"
+          >
+            <span class="material-symbols-outlined text-lg">close</span>
+          </button>
+        </div>
+        <!-- Quick Search Bar -->
+        <div class="px-3 pt-3.5 pb-2">
+          <div class="relative">
+            <svg
+              class="w-3.5 h-3.5 absolute left-3 top-3 text-[#9d9da6]"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              ></path>
+            </svg>
+            <input
+              aria-label="Buscar tarefas"
+              class="w-full bg-[#080808] border border-[#26262b] rounded-lg pl-8 pr-3 py-1.5 text-xs text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none focus:border-[#fffff2] focus:ring-1 focus:ring-[#fffff2] transition"
+              id="searchInput"
+              oninput="filtrarTarefasInput(this.value)"
+              placeholder="Busca em tarefas..."
+              type="text"
+            />
+          </div>
+        </div>
+        <!-- Navigation Links -->
+        <nav class="px-2.5 py-2 space-y-1">
+          <a
+            id="navKanbanBtn"
+            aria-current="page"
+            class="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-[#1f1f24] text-[#fffff2] font-medium text-xs border border-[#3a3a42] cursor-pointer"
+            onclick="mudarVisao('kanban')"
+          >
+            <svg
+              class="w-4 h-4 text-[#fffff2]"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              ></path>
+            </svg>
+            <span>Página Inicial</span>
+          </a>
+          <a
+            id="navCalendarBtn"
+            class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] transition font-medium text-xs border border-transparent cursor-pointer"
+            onclick="mudarVisao('calendario')"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              ></path>
+            </svg>
+            <span>Calendário de Metas</span>
+          </a>
+        </nav>
+        <!-- Category Filter Shortcuts -->
+        <div class="px-3 pt-3">
+          <h4
+            class="text-[10px] uppercase tracking-wider font-semibold text-[#9d9da6] mb-2 px-1"
+          >
+            Filtros de Tarefas
+          </h4>
+          <div class="space-y-1">
+            <button
+              class="filter-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs text-left bg-[#1f1f24] text-[#fffff2] font-medium border border-[#3a3a42] transition"
+              data-filter="todas"
+              onclick="filtrarCategoria('todas')"
+            >
+              <span class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#fffff2]"></span>
+                Todas as Tarefas
+              </span>
+              <span
+                class="text-[10px] bg-[#080808] text-[#fffff2] px-1.5 py-0.5 rounded font-mono border border-[#26262b]"
+                id="count-todas"
+                >0</span
+              >
+            </button>
+            <button
+              class="filter-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs text-left text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] border border-transparent transition"
+              data-filter="tarefas_educacionais"
+              onclick="filtrarCategoria('tarefas_educacionais')"
+            >
+              <span class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#9d9da6]"></span>
+                Tarefas Únicas
+              </span>
+              <span
+                class="text-[10px] bg-[#080808] text-[#9d9da6] px-1.5 py-0.5 rounded font-mono border border-[#26262b]"
+                id="count-edu"
+                >0</span
+              >
+            </button>
+            <button
+              class="filter-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs text-left text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] border border-transparent transition"
+              data-filter="tarefas_diarias"
+              onclick="filtrarCategoria('tarefas_diarias')"
+            >
+              <span class="flex items-center gap-2">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#9d9da6]"></span>
+                Tarefas Diárias
+              </span>
+              <span
+                class="text-[10px] bg-[#080808] text-[#9d9da6] px-1.5 py-0.5 rounded font-mono border border-[#26262b]"
+                id="count-dia"
+                >0</span
+              >
+            </button>
+          </div>
+        </div>
 
-<!-- ================= SIDEBAR LATERAL ESQUERDA ================= -->
-<div id="sidebarBackdrop" class="fixed inset-0 bg-black/60 z-40 hidden transition-opacity" onclick="fecharMenuLateral()"></div>
-<aside class="sidebar-transition w-64 flex-shrink-0 bg-[#111113] border-r border-[#26262b] flex flex-col z-50 h-[100dvh] fixed md:relative inset-y-0 left-0 -translate-x-full md:translate-x-0 shadow-2xl md:shadow-none" id="sidebar">
-<div class="flex flex-col h-full justify-between">
-<!-- Brand & Workspace -->
-<div class="p-4 border-b border-[#26262b] flex items-center justify-between">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-lg bg-[#fffff2] text-[#080808] flex items-center justify-center font-bold text-base shadow-sm"></div>
-<div>
-<div class="flex items-center gap-2">
-<span class="font-bold text-base tracking-tight text-[#fffff2]">Focus <span class="text-[#9d9da6]">2k</span></span>
-</div>
-</div>
-</div>
-<button onclick="fecharMenuLateral()" class="md:hidden p-1.5 rounded-lg text-[#9d9da6] hover:text-[#fffff2] hover:bg-[#161619] transition cursor-pointer" aria-label="Fechar menu">
-<span class="material-symbols-outlined text-lg">close</span>
-</button>
-</div>
-<!-- Quick Search Bar -->
-<div class="px-3 pt-3.5 pb-2">
-<div class="relative">
-<svg class="w-3.5 h-3.5 absolute left-3 top-3 text-[#9d9da6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-</svg>
-<input aria-label="Buscar tarefas" class="w-full bg-[#080808] border border-[#26262b] rounded-lg pl-8 pr-3 py-1.5 text-xs text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none focus:border-[#fffff2] focus:ring-1 focus:ring-[#fffff2] transition" id="searchInput" oninput="filtrarTarefasInput(this.value)" placeholder="Busca em tarefas..." type="text">
-</div>
-</div>
-<!-- Navigation Links -->
-<nav class="px-2.5 py-2 space-y-1">
-<a id="navKanbanBtn" aria-current="page" class="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-[#1f1f24] text-[#fffff2] font-medium text-xs border border-[#3a3a42] cursor-pointer" onclick="mudarVisao('kanban')">
-<svg class="w-4 h-4 text-[#fffff2]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-<span>Página Inicial</span>
-</a>
-<a id="navCalendarBtn" class="flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] transition font-medium text-xs border border-transparent cursor-pointer" onclick="mudarVisao('calendario')">
-<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
-<span>Calendário de Metas</span>
-</a>
-</nav>
-<!-- Category Filter Shortcuts -->
-<div class="px-3 pt-3">
-<h4 class="text-[10px] uppercase tracking-wider font-semibold text-[#9d9da6] mb-2 px-1">Filtros de Tarefas</h4>
-<div class="space-y-1">
-<button class="filter-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs text-left bg-[#1f1f24] text-[#fffff2] font-medium border border-[#3a3a42] transition" data-filter="todas" onclick="filtrarCategoria('todas')">
-<span class="flex items-center gap-2">
-<span class="w-1.5 h-1.5 rounded-full bg-[#fffff2]"></span>
-Todas as Tarefas
-</span>
-<span class="text-[10px] bg-[#080808] text-[#fffff2] px-1.5 py-0.5 rounded font-mono border border-[#26262b]" id="count-todas">0</span>
-</button>
-<button class="filter-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs text-left text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] border border-transparent transition" data-filter="tarefas_educacionais" onclick="filtrarCategoria('tarefas_educacionais')">
-<span class="flex items-center gap-2">
-<span class="w-1.5 h-1.5 rounded-full bg-[#9d9da6]"></span>
-Tarefas Únicas
-</span>
-<span class="text-[10px] bg-[#080808] text-[#9d9da6] px-1.5 py-0.5 rounded font-mono border border-[#26262b]" id="count-edu">0</span>
-</button>
-<button class="filter-btn w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-xs text-left text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] border border-transparent transition" data-filter="tarefas_diarias" onclick="filtrarCategoria('tarefas_diarias')">
-<span class="flex items-center gap-2">
-<span class="w-1.5 h-1.5 rounded-full bg-[#9d9da6]"></span>
-Tarefas Diárias
-</span>
-<span class="text-[10px] bg-[#080808] text-[#9d9da6] px-1.5 py-0.5 rounded font-mono border border-[#26262b]" id="count-dia">0</span>
-</button>
-</div>
-</div>
-<!-- Perfil & Configurações Footer -->
-<div class="mt-auto p-3 m-3 rounded-lg border border-[#26262b] bg-[#080808] flex flex-col gap-2">
-<div class="flex items-center justify-between">
-<div class="flex items-center gap-2 min-w-0">
-<div class="w-7 h-7 rounded-full bg-[#1f1f24] text-[#fffff2] border border-[#26262b] flex items-center justify-center font-bold text-xs">
-<span class="material-symbols-outlined text-[14px]">account_circle</span>
-</div>
-<div class="min-w-0">
-<p class="text-xs font-semibold text-[#fffff2] truncate" id="sidebarUserName"><script>document.write(localStorage.getItem('userName') || localStorage.getItem('userEmail')?.split('@')[0] || 'Usuário');</script></p>
-</div>
-</div>
-</div>
-<div class="grid grid-cols-2 gap-1.5 pt-1 border-t border-[#26262b]">
-<button onclick="abrirModalPerfil()" class="px-2 py-1 bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] text-[11px] font-medium rounded border border-[#26262b] hover:border-[#3a3a42] transition flex items-center justify-center gap-1 cursor-pointer">
-<span class="material-symbols-outlined text-[13px]">settings</span>
-<span>Config</span>
-</button>
-<button onclick="deslogar()" class="px-2 py-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-[11px] font-medium rounded border border-rose-500/35 transition flex items-center justify-center gap-1 cursor-pointer">
-<span class="material-symbols-outlined text-[13px]">logout</span>
-<span>Sair</span>
-</button>
-</div>
-</div>
-</div>
-</aside>
-
-<!-- ================= PAINEL CENTRAL & QUADRO KANBAN ================= -->
-<main class="flex-1 flex flex-col h-[100dvh] md:h-full overflow-hidden bg-[#080808] relative min-w-0 min-h-0">
-<!-- Topbar -->
-<header class="h-14 px-5 border-b border-[#26262b] flex items-center justify-between bg-[#111113] flex-shrink-0 z-20">
-<div class="flex items-center gap-3">
-<button aria-label="Alternar menu lateral" class="p-1.5 rounded-lg bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] border border-[#26262b] transition flex items-center justify-center focus-ring" id="btnHamburger" onclick="alternarMenuLateral()" title="Expandir/Ocultar Menu Lateral">
-<svg class="w-4 h-4 transition-transform duration-300 ease-in-out" fill="none" id="hamburgerIcon" stroke="currentColor" viewBox="0 0 24 24">
-<path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-</svg>
-</button>
-<div class="flex items-center gap-2.5">
-<h1 class="text-base font-bold text-[#fffff2] tracking-tight flex items-center gap-2">
-<span>Quadro Principal</span>
-</h1>
-</div>
-</div>
-</header>
-
-<!-- ================= QUADRO KANBAN (3 COLUNAS) ================= -->
-<div id="kanbanViewContainer" class="flex-1 p-4 md:p-5 overflow-x-auto custom-scroll flex flex-col min-h-0 h-full" ontouchstart="iniciarToqueKanban(event)" ontouchend="finalizarToqueKanban(event)">
-<div class="flex md:hidden gap-1 mb-3 bg-[#111113] p-1.5 rounded-xl border border-[#26262b] flex-shrink-0">
-  <button id="kanbanTabPendente" onclick="mudarColunaMobile('pendente')" class="flex-1 py-2 px-2 text-xs font-bold rounded-lg bg-[#1f1f24] text-[#fffff2] border border-[#3a3a42] transition text-center cursor-pointer">
-    A Fazer
-  </button>
-  <button id="kanbanTabEmAndamento" onclick="mudarColunaMobile('em_andamento')" class="flex-1 py-2 px-2 text-xs font-medium rounded-lg text-[#9d9da6] hover:text-[#fffff2] transition text-center cursor-pointer">
-    Em Andamento
-  </button>
-  <button id="kanbanTabConcluido" onclick="mudarColunaMobile('concluido')" class="flex-1 py-2 px-2 text-xs font-medium rounded-lg text-[#9d9da6] hover:text-[#fffff2] transition text-center cursor-pointer">
-    Concluído
-  </button>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1 w-full max-w-full min-w-0 min-h-0 h-full">
-  <!-- COLUNA 1: A Fazer -->
-  <div id="kanbanColPendente" class="flex flex-col rounded-xl bg-[#111113] border border-[#26262b] shadow-sm overflow-hidden kanban-col h-full max-h-full" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'pendente')">
-    <div class="p-3 border-b border-[#26262b] bg-[#161619] flex items-center justify-between flex-shrink-0 gap-2">
-      <div class="flex items-center gap-2">
-        <span class="w-2 h-2 rounded-none bg-amber-400"></span>
-        <h3 class="font-bold text-xs uppercase tracking-wider text-[#fffff2]">A Fazer</h3>
-        <span class="text-[10px] px-2 py-0.2 rounded bg-[#080808] text-[#fffff2] font-mono border border-[#26262b]" id="badge-count-pendente">1</span>
+        <!-- Perfil & Configurações Footer -->
+        <div
+          class="mt-auto p-3 m-3 rounded-lg border border-[#26262b] bg-[#080808] flex flex-col gap-2"
+        >
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2 min-w-0">
+              <div
+                class="w-7 h-7 rounded-full bg-[#1f1f24] text-[#fffff2] border border-[#26262b] flex items-center justify-center font-bold text-xs"
+              >
+                <span class="material-symbols-outlined text-[14px]"
+                  >account_circle</span
+                >
+              </div>
+              <div class="min-w-0">
+                <p
+                  class="text-xs font-semibold text-[#fffff2] truncate"
+                  id="sidebarUserName"
+                >
+                  <script>
+                    document.write(
+                      localStorage.getItem("userName") ||
+                        localStorage.getItem("userEmail")?.split("@")[0] ||
+                        "Usuário",
+                    );
+                  </script>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-1.5 pt-1 border-t border-[#26262b]">
+            <button
+              onclick="abrirModalPerfil()"
+              class="px-2 py-1 bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] text-[11px] font-medium rounded border border-[#26262b] hover:border-[#3a3a42] transition flex items-center justify-center gap-1 cursor-pointer"
+            >
+              <span class="material-symbols-outlined text-[13px]"
+                >settings</span
+              >
+              <span>Config</span>
+            </button>
+            <button
+              onclick="deslogar()"
+              class="px-2 py-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-[11px] font-medium rounded border border-rose-500/35 transition flex items-center justify-center gap-1 cursor-pointer"
+            >
+              <span class="material-symbols-outlined text-[13px]">logout</span>
+              <span>Sair</span>
+            </button>
+          </div>
+        </div>
       </div>
-      <button class="px-2.5 py-1 bg-[#fffff2] hover:bg-white active:scale-95 text-[#080808] font-bold rounded-lg text-xs flex items-center gap-1.5 shadow transition focus-ring cursor-pointer" onclick="abrirModalCriarTarefa()" title="Criar nova tarefa">
-        <span class="material-symbols-outlined text-[16px] font-bold">add</span>
-        <span>Adicionar Tarefa</span>
-      </button>
-    </div>
-    <div class="p-3 flex-1 overflow-y-auto space-y-3 custom-scroll" id="col-pendente" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'pendente')"></div>
-  </div>
+    </aside>
 
-  <!-- COLUNA 2: Em Andamento -->
-  <div id="kanbanColEmAndamento" class="hidden md:flex flex-col rounded-xl bg-[#111113] border border-[#26262b] shadow-sm overflow-hidden kanban-col h-full max-h-full" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'em_andamento')">
-    <div class="p-3 border-b border-[#26262b] bg-[#161619] flex items-center justify-between flex-shrink-0">
-      <div class="flex items-center gap-2">
-        <span class="w-2 h-2 rounded-sm bg-sky-400"></span>
-        <h3 class="font-bold text-xs uppercase tracking-wider text-[#fffff2]">Em Andamento</h3>
-        <span class="text-[10px] px-2 py-0.2 rounded bg-[#080808] text-[#fffff2] font-mono border border-[#26262b]" id="badge-count-em_andamento">2</span>
+    <!-- ================= PAINEL CENTRAL & QUADRO KANBAN ================= -->
+    <main
+      class="flex-1 flex flex-col h-[100dvh] md:h-full overflow-hidden bg-[#080808] relative min-w-0 min-h-0"
+    >
+      <!-- Topbar -->
+      <header
+        class="h-14 px-5 border-b border-[#26262b] flex items-center justify-between bg-[#111113] flex-shrink-0 z-20"
+      >
+        <div class="flex items-center gap-3">
+          <button
+            aria-label="Alternar menu lateral"
+            class="p-1.5 rounded-lg bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] border border-[#26262b] transition flex items-center justify-center focus-ring"
+            id="btnHamburger"
+            onclick="alternarMenuLateral()"
+            title="Expandir/Ocultar Menu Lateral"
+          >
+            <svg
+              class="w-4 h-4 transition-transform duration-300 ease-in-out"
+              fill="none"
+              id="hamburgerIcon"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M4 6h16M4 12h16M4 18h16"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              ></path>
+            </svg>
+          </button>
+          <div class="flex items-center gap-2.5">
+            <h1
+              class="text-base font-bold text-[#fffff2] tracking-tight flex items-center gap-2"
+            >
+              <span>Quadro Principal</span>
+            </h1>
+          </div>
+        </div>
+      </header>
+
+      <!-- ================= QUADRO KANBAN (3 COLUNAS) ================= -->
+      <div
+        id="kanbanViewContainer"
+        class="flex-1 p-4 md:p-5 overflow-x-auto custom-scroll flex flex-col min-h-0 h-full"
+        ontouchstart="iniciarToqueKanban(event)"
+        ontouchend="finalizarToqueKanban(event)"
+      >
+        <div
+          class="flex md:hidden gap-1 mb-3 bg-[#111113] p-1.5 rounded-xl border border-[#26262b] flex-shrink-0"
+        >
+          <button
+            id="kanbanTabPendente"
+            onclick="mudarColunaMobile('pendente')"
+            class="flex-1 py-2 px-2 text-xs font-bold rounded-lg bg-[#1f1f24] text-[#fffff2] border border-[#3a3a42] transition text-center cursor-pointer"
+          >
+            A Fazer
+          </button>
+          <button
+            id="kanbanTabEmAndamento"
+            onclick="mudarColunaMobile('em_andamento')"
+            class="flex-1 py-2 px-2 text-xs font-medium rounded-lg text-[#9d9da6] hover:text-[#fffff2] transition text-center cursor-pointer"
+          >
+            Em Andamento
+          </button>
+          <button
+            id="kanbanTabConcluido"
+            onclick="mudarColunaMobile('concluido')"
+            class="flex-1 py-2 px-2 text-xs font-medium rounded-lg text-[#9d9da6] hover:text-[#fffff2] transition text-center cursor-pointer"
+          >
+            Concluído
+          </button>
+        </div>
+        <div
+          class="grid grid-cols-1 md:grid-cols-3 gap-4 flex-1 w-full max-w-full min-w-0 min-h-0 h-full"
+        >
+          <!-- COLUNA 1: A Fazer -->
+          <div
+            id="kanbanColPendente"
+            class="flex flex-col rounded-xl bg-[#111113] border border-[#26262b] shadow-sm overflow-hidden kanban-col h-full max-h-full"
+            ondragover="permitirSoltar(event)"
+            ondrop="soltarTarefa(event, 'pendente')"
+          >
+            <div
+              class="p-3 border-b border-[#26262b] bg-[#161619] flex items-center justify-between flex-shrink-0 gap-2"
+            >
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-none bg-amber-400"></span>
+                <h3
+                  class="font-bold text-xs uppercase tracking-wider text-[#fffff2]"
+                >
+                  A Fazer
+                </h3>
+                <span
+                  class="text-[10px] px-2 py-0.2 rounded bg-[#080808] text-[#fffff2] font-mono border border-[#26262b]"
+                  id="badge-count-pendente"
+                  >1</span
+                >
+              </div>
+              <button
+                class="px-2.5 py-1 bg-[#fffff2] hover:bg-white active:scale-95 text-[#080808] font-bold rounded-lg text-xs flex items-center gap-1.5 shadow transition focus-ring cursor-pointer"
+                onclick="abrirModalCriarTarefa()"
+                title="Criar nova tarefa"
+              >
+                <span class="material-symbols-outlined text-[16px] font-bold"
+                  >add</span
+                >
+                <span>Adicionar Tarefa</span>
+              </button>
+            </div>
+            <div
+              class="p-3 flex-1 overflow-y-auto space-y-3 custom-scroll"
+              id="col-pendente"
+              ondragover="permitirSoltar(event)"
+              ondrop="soltarTarefa(event, 'pendente')"
+            ></div>
+          </div>
+
+          <!-- COLUNA 2: Em Andamento -->
+          <div
+            id="kanbanColEmAndamento"
+            class="hidden md:flex flex-col rounded-xl bg-[#111113] border border-[#26262b] shadow-sm overflow-hidden kanban-col h-full max-h-full"
+            ondragover="permitirSoltar(event)"
+            ondrop="soltarTarefa(event, 'em_andamento')"
+          >
+            <div
+              class="p-3 border-b border-[#26262b] bg-[#161619] flex items-center justify-between flex-shrink-0"
+            >
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-sm bg-sky-400"></span>
+                <h3
+                  class="font-bold text-xs uppercase tracking-wider text-[#fffff2]"
+                >
+                  Em Andamento
+                </h3>
+                <span
+                  class="text-[10px] px-2 py-0.2 rounded bg-[#080808] text-[#fffff2] font-mono border border-[#26262b]"
+                  id="badge-count-em_andamento"
+                  >2</span
+                >
+              </div>
+            </div>
+            <div
+              class="p-3 flex-1 overflow-y-auto space-y-3 custom-scroll"
+              id="col-em_andamento"
+              ondragover="permitirSoltar(event)"
+              ondrop="soltarTarefa(event, 'em_andamento')"
+            ></div>
+          </div>
+
+          <!-- COLUNA 3: Concluído -->
+          <div
+            id="kanbanColConcluido"
+            class="hidden md:flex flex-col rounded-xl bg-[#111113] border border-[#26262b] shadow-sm overflow-hidden kanban-col h-full max-h-full"
+            ondragover="permitirSoltar(event)"
+            ondrop="soltarTarefa(event, 'concluido')"
+          >
+            <div
+              class="p-3 border-b border-[#26262b] bg-[#161619] flex items-center justify-between flex-shrink-0"
+            >
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <h3
+                  class="font-bold text-xs uppercase tracking-wider text-[#fffff2]"
+                >
+                  Concluído
+                </h3>
+                <span
+                  class="text-[10px] px-2 py-0.2 rounded bg-[#080808] text-[#fffff2] font-mono border border-[#26262b]"
+                  id="badge-count-concluido"
+                  >2</span
+                >
+              </div>
+            </div>
+            <div
+              class="p-3 flex-1 overflow-y-auto space-y-3 custom-scroll"
+              id="col-concluido"
+              ondragover="permitirSoltar(event)"
+              ondrop="soltarTarefa(event, 'concluido')"
+            ></div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="p-3 flex-1 overflow-y-auto space-y-3 custom-scroll" id="col-em_andamento" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'em_andamento')"></div>
-  </div>
 
-  <!-- COLUNA 3: Concluído -->
-  <div id="kanbanColConcluido" class="hidden md:flex flex-col rounded-xl bg-[#111113] border border-[#26262b] shadow-sm overflow-hidden kanban-col h-full max-h-full" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'concluido')">
-    <div class="p-3 border-b border-[#26262b] bg-[#161619] flex items-center justify-between flex-shrink-0">
-      <div class="flex items-center gap-2">
-        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-        <h3 class="font-bold text-xs uppercase tracking-wider text-[#fffff2]">Concluído</h3>
-        <span class="text-[10px] px-2 py-0.2 rounded bg-[#080808] text-[#fffff2] font-mono border border-[#26262b]" id="badge-count-concluido">2</span>
+      <!-- ================= CALENDÁRIO DE METAS ================= -->
+      <div
+        id="calendarViewContainer"
+        class="flex-1 flex flex-col h-auto sm:h-full overflow-y-auto custom-scroll p-4 sm:p-6 hidden bg-[#080808]"
+      >
+        <div
+          class="flex flex-wrap items-center justify-between gap-4 mb-6 bg-[#111113] border border-[#26262b] p-4 rounded-xl flex-shrink-0"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="w-9 h-9 rounded-lg bg-[#1f1f24] border border-[#3a3a42] flex items-center justify-center text-[#fffff2]"
+            >
+              <span class="material-symbols-outlined text-[20px]"
+                >calendar_month</span
+              >
+            </div>
+            <div>
+              <h2
+                id="calendarMonthTitle"
+                class="text-base font-bold text-[#fffff2] tracking-tight"
+              >
+                Outubro 2026
+              </h2>
+              <p class="text-[11px] text-[#9d9da6] font-mono">
+                Visão cronológica de metas e prazos acadêmicos
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              onclick="mudarMesCalendario(-1)"
+              class="px-3 py-1.5 rounded-lg bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] border border-[#26262b] text-xs font-semibold flex items-center gap-1 transition cursor-pointer"
+            >
+              <span class="material-symbols-outlined text-[16px]"
+                >chevron_left</span
+              >
+              Mês Anterior
+            </button>
+            <button
+              onclick="irParaMesAtual()"
+              class="px-3 py-1.5 rounded-lg bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] border border-[#26262b] text-xs font-semibold transition font-mono cursor-pointer"
+            >
+              Hoje
+            </button>
+            <button
+              onclick="mudarMesCalendario(1)"
+              class="px-3 py-1.5 rounded-lg bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] border border-[#26262b] text-xs font-semibold flex items-center gap-1 transition cursor-pointer"
+            >
+              Próximo Mês
+              <span class="material-symbols-outlined text-[16px]"
+                >chevron_right</span
+              >
+            </button>
+          </div>
+        </div>
+        <div
+          class="bg-[#111113] border border-[#26262b] rounded-xl overflow-hidden flex-1 flex flex-col shadow-sm"
+        >
+          <div
+            class="grid grid-cols-7 bg-[#161619] border-b border-[#26262b] text-center text-xs font-bold text-[#9d9da6] font-mono py-2.5 flex-shrink-0"
+          >
+            <div>Dom</div>
+            <div>Seg</div>
+            <div>Ter</div>
+            <div>Qua</div>
+            <div>Qui</div>
+            <div>Sex</div>
+            <div>Sáb</div>
+          </div>
+          <div
+            id="calendarGridDays"
+            class="grid grid-cols-7 flex-1 auto-rows-auto sm:auto-rows-fr divide-x divide-y divide-[#26262b] bg-[#080808]"
+          ></div>
+        </div>
       </div>
-    </div>
-    <div class="p-3 flex-1 overflow-y-auto space-y-3 custom-scroll" id="col-concluido" ondragover="permitirSoltar(event)" ondrop="soltarTarefa(event, 'concluido')"></div>
-  </div>
-</div>
-</div>
+    </main>
 
-<!-- ================= CALENDÁRIO DE METAS ================= -->
-<div id="calendarViewContainer" class="flex-1 flex flex-col h-auto sm:h-full overflow-y-auto custom-scroll p-4 sm:p-6 hidden bg-[#080808]">
-  <div class="flex flex-wrap items-center justify-between gap-4 mb-6 bg-[#111113] border border-[#26262b] p-4 rounded-xl flex-shrink-0">
-    <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-lg bg-[#1f1f24] border border-[#3a3a42] flex items-center justify-center text-[#fffff2]">
-        <span class="material-symbols-outlined text-[20px]">calendar_month</span>
+    <!-- ================= BARRA LATERAL DIREITA: CHAT & IA ================= -->
+    <aside
+      class="drawer-transition w-full sm:w-96 max-w-full sm:max-w-[90vw] flex-shrink-0 bg-[#111113] border-l border-[#26262b] flex flex-col z-50 h-[100dvh] md:h-full absolute md:relative right-0 top-0 hidden shadow-2xl"
+      id="drawerChatIA"
+      style="width: 0px"
+    >
+      <div
+        class="p-3.5 border-b border-[#26262b] bg-[#161619] flex items-center justify-between flex-shrink-0"
+      >
+        <div class="flex items-center gap-2.5">
+          <div
+            class="w-7 h-7 rounded-lg bg-[#1f1f24] border border-[#3a3a42] flex items-center justify-center text-[#fffff2]"
+          >
+            <span class="material-symbols-outlined text-[17px]"
+              >psychology</span
+            >
+          </div>
+          <div>
+            <div class="flex items-center gap-1.5">
+              <h3 class="font-bold text-xs text-[#fffff2] tracking-wide">
+                Assistente IA
+              </h3>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-1">
+          <button
+            class="p-1 rounded-md hover:bg-[#1f1f24] text-[#9d9da6] hover:text-[#fffff2] transition focus-ring"
+            onclick="limparHistoricoChat()"
+            title="Limpar conversa"
+          >
+            <span class="material-symbols-outlined text-[16px]"
+              >delete_sweep</span
+            >
+          </button>
+          <button
+            class="p-1 rounded-md hover:bg-[#1f1f24] text-[#9d9da6] hover:text-[#fffff2] transition focus-ring"
+            onclick="alternarDrawerChat(false)"
+            title="Fechar Chat"
+          >
+            <span class="material-symbols-outlined text-[17px]">close</span>
+          </button>
+        </div>
       </div>
-      <div>
-        <h2 id="calendarMonthTitle" class="text-base font-bold text-[#fffff2] tracking-tight">Outubro 2026</h2>
-        <p class="text-[11px] text-[#9d9da6] font-mono">Visão cronológica de metas e prazos acadêmicos</p>
+      <div
+        class="px-3 py-1.5 bg-[#080808] border-b border-[#26262b] text-[10px] text-[#9d9da6] flex items-center justify-between flex-shrink-0"
+      >
+        <span
+          class="font-mono px-1.5 py-0.2 rounded bg-[#161619] text-[#fffff2] border border-[#26262b]"
+          id="chatContextBadge"
+          >Modo: Geral</span
+        >
       </div>
-    </div>
-    <div class="flex items-center gap-2">
-      <button onclick="mudarMesCalendario(-1)" class="px-3 py-1.5 rounded-lg bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] border border-[#26262b] text-xs font-semibold flex items-center gap-1 transition cursor-pointer">
-        <span class="material-symbols-outlined text-[16px]">chevron_left</span> Mês Anterior
-      </button>
-      <button onclick="irParaMesAtual()" class="px-3 py-1.5 rounded-lg bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] border border-[#26262b] text-xs font-semibold transition font-mono cursor-pointer">
-        Hoje
-      </button>
-      <button onclick="mudarMesCalendario(1)" class="px-3 py-1.5 rounded-lg bg-[#161619] hover:bg-[#1f1f24] text-[#fffff2] border border-[#26262b] text-xs font-semibold flex items-center gap-1 transition cursor-pointer">
-        Próximo Mês <span class="material-symbols-outlined text-[16px]">chevron_right</span>
-      </button>
-    </div>
-  </div>
-  <div class="bg-[#111113] border border-[#26262b] rounded-xl overflow-hidden flex-1 flex flex-col shadow-sm">
-    <div class="grid grid-cols-7 bg-[#161619] border-b border-[#26262b] text-center text-xs font-bold text-[#9d9da6] font-mono py-2.5 flex-shrink-0">
-      <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
-    </div>
-    <div id="calendarGridDays" class="grid grid-cols-7 flex-1 auto-rows-auto sm:auto-rows-fr divide-x divide-y divide-[#26262b] bg-[#080808]"></div>
-  </div>
-</div>
-</main>
+      <div
+        class="flex-1 p-3.5 overflow-y-auto space-y-3.5 custom-scroll text-xs"
+        id="chatMessagesContainer"
+      >
+        <div class="flex items-start gap-2.5">
+          <div
+            class="w-6 h-6 rounded-md bg-[#1f1f24] border border-[#3a3a42] flex items-center justify-center flex-shrink-0 text-[#fffff2]"
+          >
+            <span class="material-symbols-outlined text-[14px]"
+              >auto_awesome</span
+            >
+          </div>
+          <div
+            class="bg-[#161619] border border-[#26262b] p-3 rounded-xl rounded-tl-none text-[#fffff2] max-w-[85%] space-y-1.5"
+          >
+            <p class="leading-relaxed">
+              Olá! Sou o seu <b>Assistente de Decomposição</b> inteligente.
+            </p>
+            <p class="text-[#9d9da6] text-[11px] leading-relaxed">
+              Clique no botão
+              <span
+                class="px-1 py-0.2 rounded bg-[#1f1f24] text-[#fffff2] border border-[#3a3a42] font-semibold font-mono"
+                >Desestruturar com IA</span
+              >
+              em qualquer card do Kanban ou digite sua dúvida abaixo!
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="hidden px-3.5 py-2 border-t border-[#26262b] bg-[#161619] flex items-center gap-2 text-xs text-[#9d9da6] flex-shrink-0"
+        id="chatTypingIndicator"
+      >
+        <div class="flex items-center gap-1">
+          <span
+            class="w-1.5 h-1.5 rounded-full bg-[#fffff2] animate-bounce"
+          ></span>
+          <span
+            class="w-1.5 h-1.5 rounded-full bg-[#fffff2] animate-bounce"
+            style="animation-delay: 0.15s"
+          ></span>
+          <span
+            class="w-1.5 h-1.5 rounded-full bg-[#fffff2] animate-bounce"
+            style="animation-delay: 0.3s"
+          ></span>
+        </div>
+        <span class="text-[10px] font-mono text-[#fffff2]" id="chatTypingText"
+          >Analisando complexidade cognitiva...</span
+        >
+      </div>
+      <div class="p-3 border-t border-[#26262b] bg-[#0d0d0f] flex-shrink-0">
+        <form
+          class="flex items-center gap-2"
+          id="chatForm"
+          onsubmit="
+            event.preventDefault();
+            enviarMensagemChat();
+          "
+        >
+          <input
+            autocomplete="off"
+            class="flex-1 bg-[#161619] border border-[#26262b] rounded-lg px-3 py-1.5 text-xs text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none focus:border-[#fffff2] focus:ring-1 focus:ring-[#fffff2] transition"
+            id="chatInputText"
+            placeholder="Pergunte ou peça para decompor uma prova..."
+            type="text"
+          />
+          <button
+            type="button"
+            id="btnVozChat"
+            onclick="alternarReconhecimentoVozChat()"
+            class="p-1.5 bg-[#161619] hover:bg-[#1f1f24] active:scale-95 text-[#9d9da6] hover:text-[#fffff2] rounded-lg border border-[#26262b] transition flex items-center justify-center flex-shrink-0 focus-ring"
+            title="Falar por áudio"
+          >
+            <span class="material-symbols-outlined text-[17px]">mic</span>
+          </button>
+          <button
+            class="p-1.5 bg-[#fffff2] hover:bg-white active:scale-95 text-[#080808] rounded-lg border border-[#fffff2] transition flex items-center justify-center flex-shrink-0 focus-ring"
+            title="Enviar mensagem"
+            type="submit"
+          >
+            <span class="material-symbols-outlined text-[17px]">send</span>
+          </button>
+        </form>
+        <div
+          class="mt-1.5 flex items-center justify-between text-[9px] text-[#9d9da6] px-1 font-mono"
+        >
+          <span>Enter para enviar</span>
+          <span>Focus Engine v2.1</span>
+        </div>
+      </div>
+    </aside>
 
-<!-- ================= BARRA LATERAL DIREITA: CHAT & IA ================= -->
-<aside class="drawer-transition w-full sm:w-96 max-w-full sm:max-w-[90vw] flex-shrink-0 bg-[#111113] border-l border-[#26262b] flex flex-col z-50 h-[100dvh] md:h-full absolute md:relative right-0 top-0 hidden shadow-2xl" id="drawerChatIA" style="width: 0px;">
-<div class="p-3.5 border-b border-[#26262b] bg-[#161619] flex items-center justify-between flex-shrink-0">
-<div class="flex items-center gap-2.5">
-<div class="w-7 h-7 rounded-lg bg-[#1f1f24] border border-[#3a3a42] flex items-center justify-center text-[#fffff2]">
-<span class="material-symbols-outlined text-[17px]">psychology</span>
-</div>
-<div>
-<div class="flex items-center gap-1.5">
-<h3 class="font-bold text-xs text-[#fffff2] tracking-wide">Assistente IA</h3>
-</div>
-</div>
-</div>
-<div class="flex items-center gap-1">
-<button class="p-1 rounded-md hover:bg-[#1f1f24] text-[#9d9da6] hover:text-[#fffff2] transition focus-ring" onclick="limparHistoricoChat()" title="Limpar conversa">
-<span class="material-symbols-outlined text-[16px]">delete_sweep</span>
-</button>
-<button class="p-1 rounded-md hover:bg-[#1f1f24] text-[#9d9da6] hover:text-[#fffff2] transition focus-ring" onclick="alternarDrawerChat(false)" title="Fechar Chat">
-<span class="material-symbols-outlined text-[17px]">close</span>
-</button>
-</div>
-</div>
-<div class="px-3 py-1.5 bg-[#080808] border-b border-[#26262b] text-[10px] text-[#9d9da6] flex items-center justify-between flex-shrink-0">
-<span class="font-mono px-1.5 py-0.2 rounded bg-[#161619] text-[#fffff2] border border-[#26262b]" id="chatContextBadge">Modo: Geral</span>
-</div>
-<div class="flex-1 p-3.5 overflow-y-auto space-y-3.5 custom-scroll text-xs" id="chatMessagesContainer">
-<div class="flex items-start gap-2.5">
-<div class="w-6 h-6 rounded-md bg-[#1f1f24] border border-[#3a3a42] flex items-center justify-center flex-shrink-0 text-[#fffff2]">
-<span class="material-symbols-outlined text-[14px]">auto_awesome</span>
-</div>
-<div class="bg-[#161619] border border-[#26262b] p-3 rounded-xl rounded-tl-none text-[#fffff2] max-w-[85%] space-y-1.5">
-<p class="leading-relaxed">Olá! Sou o seu <b>Assistente de Decomposição</b> inteligente.</p>
-<p class="text-[#9d9da6] text-[11px] leading-relaxed">Clique no botão <span class="px-1 py-0.2 rounded bg-[#1f1f24] text-[#fffff2] border border-[#3a3a42] font-semibold font-mono">Desestruturar com IA</span> em qualquer card do Kanban ou digite sua dúvida abaixo!</p>
-</div>
-</div>
-</div>
-<div class="hidden px-3.5 py-2 border-t border-[#26262b] bg-[#161619] flex items-center gap-2 text-xs text-[#9d9da6] flex-shrink-0" id="chatTypingIndicator">
-<div class="flex items-center gap-1">
-<span class="w-1.5 h-1.5 rounded-full bg-[#fffff2] animate-bounce"></span>
-<span class="w-1.5 h-1.5 rounded-full bg-[#fffff2] animate-bounce" style="animation-delay: 0.15s"></span>
-<span class="w-1.5 h-1.5 rounded-full bg-[#fffff2] animate-bounce" style="animation-delay: 0.3s"></span>
-</div>
-<span class="text-[10px] font-mono text-[#fffff2]" id="chatTypingText">Analisando complexidade cognitiva...</span>
-</div>
-<div class="p-3 border-t border-[#26262b] bg-[#0d0d0f] flex-shrink-0">
-<form class="flex items-center gap-2" id="chatForm" onsubmit="event.preventDefault(); enviarMensagemChat();">
-<input autocomplete="off" class="flex-1 bg-[#161619] border border-[#26262b] rounded-lg px-3 py-1.5 text-xs text-[#fffff2] placeholder-[#9d9da6]/60 focus:outline-none focus:border-[#fffff2] focus:ring-1 focus:ring-[#fffff2] transition" id="chatInputText" placeholder="Pergunte ou peça para decompor uma prova..." type="text">
-<button class="p-1.5 bg-[#fffff2] hover:bg-white active:scale-95 text-[#080808] rounded-lg border border-[#fffff2] transition flex items-center justify-center flex-shrink-0 focus-ring" title="Enviar mensagem" type="submit">
-<span class="material-symbols-outlined text-[17px]">send</span>
-</button>
-</form>
-<div class="mt-1.5 flex items-center justify-between text-[9px] text-[#9d9da6] px-1 font-mono">
-<span>Enter para enviar</span>
-<span>Focus Engine v2.1</span>
-</div>
-</div>
-</aside>
+    <!-- Botão Flutuante do Assistente IA -->
+    <button
+      id="btnAssistenteBottomRight"
+      onclick="alternarDrawerChat(true)"
+      class="fixed bottom-6 right-6 z-50 px-4 py-3 bg-[#111113] hover:bg-[#1c1c21] border border-[#3a3a42] text-[#fffff2] rounded-2xl shadow-2xl flex items-center gap-2.5 transition-all duration-200 cursor-pointer group hover:scale-105 active:scale-95"
+    >
+      <div
+        class="w-7 h-7 rounded-xl bg-[#fffff2] text-[#080808] flex items-center justify-center font-bold"
+      >
+        <span class="material-symbols-outlined text-[18px]">smart_toy</span>
+      </div>
+      <div class="text-left">
+        <div class="text-xs font-bold leading-tight flex items-center gap-1.5">
+          Assistente IA
+          <span
+            class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"
+          ></span>
+        </div>
+        <div class="text-[10px] text-[#9d9da6] font-mono">TDAH & Foco</div>
+      </div>
+    </button>
 
-<!-- Botão Flutuante do Assistente IA -->
-<button id="btnAssistenteBottomRight" onclick="alternarDrawerChat(true)" class="fixed bottom-6 right-6 z-50 px-4 py-3 bg-[#111113] hover:bg-[#1c1c21] border border-[#3a3a42] text-[#fffff2] rounded-2xl shadow-2xl flex items-center gap-2.5 transition-all duration-200 cursor-pointer group hover:scale-105 active:scale-95">
-<div class="w-7 h-7 rounded-xl bg-[#fffff2] text-[#080808] flex items-center justify-center font-bold">
-<span class="material-symbols-outlined text-[18px]">smart_toy</span>
-</div>
-<div class="text-left">
-<div class="text-xs font-bold leading-tight flex items-center gap-1.5">
-Assistente IA
-<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-</div>
-<div class="text-[10px] text-[#9d9da6] font-mono">TDAH & Foco</div>
-</div>
-</button>
+    <!-- ================= SCRIPTS JAVASCRIPT ================= -->
+    <script src="js/api.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/kanban.js"></script>
+    <script src="js/chat.js?v=2"></script>
+    <script src="js/calendar.js"></script>
+    <script src="js/components/modals.js"></script>
+    <script src="js/notifications.js?v=2"></script>
+    <script src="js/app.js?v=2"></script>
 
-<!-- ================= SCRIPTS JAVASCRIPT ================= -->
-<script src="js/api.js"></script>
-<script src="js/state.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/kanban.js"></script>
-<script src="js/chat.js"></script>
-<script src="js/calendar.js"></script>
-<script src="js/components/modals.js"></script>
-<script src="js/app.js"></script>
-
-<!-- Elementos de suporte de sessão ocultos -->
-<div id="userStatusBadge" class="hidden"></div>
-<div id="loggedUserName" class="hidden"></div>
-<div id="loggedUserStyle" class="hidden"></div>
-<div id="toastContainer" class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"></div>
-
-</body>
+    <!-- Elementos de suporte de sessão ocultos -->
+    <div id="userStatusBadge" class="hidden"></div>
+    <div id="loggedUserName" class="hidden"></div>
+    <div id="loggedUserStyle" class="hidden"></div>
+    <div
+      id="toastContainer"
+      class="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none"
+    ></div>
+  </body>
 </html>

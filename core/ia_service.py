@@ -191,7 +191,7 @@ def extrair_intent_criar_tarefa(pergunta: str) -> dict:
 
 def transcrever_audio_ia(audio_bytes: bytes, mime_type: str = "audio/webm") -> str:
     """Usa a IA do Gemini para transcrever áudio enviado pelo usuário de forma universal."""
-    if not client:
+    if not client or not audio_bytes or len(audio_bytes) < 300:
         return ""
     try:
         response = client.models.generate_content(
@@ -201,7 +201,10 @@ def transcrever_audio_ia(audio_bytes: bytes, mime_type: str = "audio/webm") -> s
                 "Transcreva o áudio acima exatamente para texto em português, retornando apenas o texto transcrito, sem introduções ou explicações."
             ]
         )
-        return response.text.strip() if response.text else ""
+        texto = response.text.strip() if response.text else ""
+        if "transcreva o áudio" in texto.lower() or "retornando apenas" in texto.lower():
+            return ""
+        return texto
     except Exception as e:
         print(f"Erro na transcrição de áudio via IA: {e}")
         return ""

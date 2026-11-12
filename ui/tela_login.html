@@ -1,187 +1,376 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR" style="">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Focus 2k - Login Acessível (Baixa Visão &amp; TDAH)</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['"Space Grotesk"', 'sans-serif'],
-            mono: ['"JetBrains Mono"', 'monospace'],
-          },
-          colors: {
-            surface: {
-              main: '#080808',
-              card: '#111113',
-              cardHover: '#161619',
-              input: '#0c0c0e',
-              border: '#242429',
-              borderFocus: '#fffff2'
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Focus 2k</title>
+    <link rel="icon" type="image/png" href="iconFocus2k.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Space Grotesk"', "sans-serif"],
+              mono: ['"JetBrains Mono"', "monospace"],
             },
-            ivory: {
-              DEFAULT: '#fffff2',
-              muted: '#b5b5ba',
-              dim: '#75757d'
-            }
-          }
-        }
-      }
-    }
-  </script>
-  <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/responsive.css">
-</head>
-<body class="min-h-screen flex flex-col justify-between selection:bg-[#fffff2] selection:text-[#080808]" style="font-size: 1rem;">
+            colors: {
+              surface: {
+                main: "#080808",
+                card: "#111113",
+                cardHover: "#161619",
+                input: "#0c0c0e",
+                border: "#242429",
+                borderFocus: "#fffff2",
+              },
+              ivory: {
+                DEFAULT: "#fffff2",
+                muted: "#b5b5ba",
+                dim: "#75757d",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/responsive.css" />
+  </head>
+  <body
+    class="min-h-screen flex flex-col justify-between selection:bg-[#fffff2] selection:text-[#080808]"
+    style="font-size: 1rem"
+  >
+    <!-- Container Central de Autenticação -->
+    <main class="flex-1 flex items-center justify-center px-4 py-8">
+      <div
+        id="authCardWrapper"
+        class="w-full transition-all duration-200 max-w-md"
+      >
+        <!-- Card Principal -->
+        <div
+          class="bg-[#111113] border border-[#222226] rounded-2xl p-6 sm:p-8 glow-card max-h-[90vh] overflow-y-auto custom-scroll"
+        >
+          <!-- Tabs Acessíveis com Alto Contraste -->
+          <div class="flex border-b border-[#222226] mb-6 gap-2">
+            <button
+              id="tabLogin"
+              onclick="mudarAba('login')"
+              class="flex-1 pb-3 text-sm sm:text-base font-bold text-[#fffff2] border-b-2 border-[#fffff2] text-center transition flex items-center justify-center gap-2"
+            >
+              <span class=""></span>
+              <span class="">Entrar na Conta</span>
+            </button>
+            <button
+              id="tabCadastro"
+              onclick="mudarAba('cadastro')"
+              class="flex-1 pb-3 text-sm sm:text-base font-medium text-[#75757d] hover:text-[#d6d6de] border-b-2 border-transparent text-center transition flex items-center justify-center gap-2"
+            >
+              <span class=""></span>
+              <span class="">Criar Acesso</span>
+            </button>
+          </div>
 
-  <!-- Container Central de Autenticação -->
-  <main class="flex-1 flex items-center justify-center px-4 py-8">
-    <div id="authCardWrapper" class="w-full transition-all duration-200 max-w-md">
+          <!-- Mensagens de Alerta Dinâmicas -->
+          <div
+            id="statusAlert"
+            class="mb-5 p-3.5 rounded-xl text-xs font-semibold border flex items-center gap-2.5 bg-[#18181c] border-[#333338] text-[#fffff2] hidden"
+          >
+            <span id="alertIcon" class="">ℹ</span>
+            <span id="alertMessage" class=""
+              >Instruções de recuperação foram enviadas para seu e-mail
+              cadastrado.</span
+            >
+          </div>
 
-      <!-- Card Principal -->
-      <div class="bg-[#111113] border border-[#222226] rounded-2xl p-6 sm:p-8 glow-card max-h-[90vh] overflow-y-auto custom-scroll">
+          <!-- FORMULÁRIO: LOGIN -->
+          <form
+            id="formLogin"
+            onsubmit="
+              event.preventDefault();
+              executarLogin();
+            "
+            class="space-y-4"
+          >
+            <!-- Campo E-mail -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between items-baseline">
+                <label
+                  for="loginUser"
+                  class="block text-xs sm:text-sm font-semibold text-[#fffff2]"
+                >
+                  E-mail de Acesso
+                </label>
+              </div>
+              <div
+                class="relative custom-focus rounded-xl border-2 border-[#26262c] bg-[#0a0a0c] transition"
+              >
+                <input
+                  type="email"
+                  id="loginUser"
+                  placeholder="Ex: aluno@focus2k.com"
+                  autocomplete="email"
+                  class="w-full bg-transparent px-3.5 py-3 text-sm sm:text-base text-[#fffff2] placeholder-[#5c5c64] outline-none font-medium"
+                />
+              </div>
+              <div class="flex justify-end pt-1">
+                <span
+                  class="text-[11px] text-[#b5b5ba] hover:text-[#fffff2] underline transition"
+                  >* Campo obrigatório</span
+                >
+              </div>
+            </div>
 
-        <!-- Tabs Acessíveis com Alto Contraste -->
-        <div class="flex border-b border-[#222226] mb-6 gap-2">
-          <button id="tabLogin" onclick="mudarAba('login')" class="flex-1 pb-3 text-sm sm:text-base font-bold text-[#fffff2] border-b-2 border-[#fffff2] text-center transition flex items-center justify-center gap-2">
-            <span class=""></span>
-            <span class="">Entrar na Conta</span>
-          </button>
-          <button id="tabCadastro" onclick="mudarAba('cadastro')" class="flex-1 pb-3 text-sm sm:text-base font-medium text-[#75757d] hover:text-[#d6d6de] border-b-2 border-transparent text-center transition flex items-center justify-center gap-2">
-            <span class=""></span>
-            <span class="">Criar Acesso</span>
-          </button>
+            <!-- Campo Senha -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between items-baseline">
+                <label
+                  for="loginPassword"
+                  class="block text-xs sm:text-sm font-semibold text-[#fffff2]"
+                  >Sua Senha</label
+                >
+              </div>
+              <div
+                class="relative custom-focus rounded-xl border-2 border-[#26262c] bg-[#0a0a0c] flex items-center pr-2 transition"
+              >
+                <input
+                  type="password"
+                  id="loginPassword"
+                  placeholder="••••••••••••"
+                  autocomplete="current-password"
+                  class="w-full bg-transparent px-3.5 py-3 text-sm sm:text-base text-[#fffff2] placeholder-[#5c5c64] outline-none font-medium"
+                />
+                <button
+                  type="button"
+                  onclick="
+                    alternarVisibilidadeSenha(
+                      'loginPassword',
+                      'iconToggleSenha',
+                    )
+                  "
+                  class="p-2 text-xs font-mono text-[#b5b5ba] hover:text-[#fffff2] border border-[#242429] rounded-lg bg-[#141417] transition flex items-center gap-1"
+                  aria-label="Mostrar ou ocultar senha"
+                >
+                  <svg
+                    id="iconToggleSenha"
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    ></path>
+                  </svg>
+                </button>
+              </div>
+              <div class="flex justify-end pt-1">
+                <button
+                  type="button"
+                  onclick="mostrarDicaSenha()"
+                  class="text-[11px] text-[#b5b5ba] hover:text-[#fffff2] underline transition"
+                >
+                  Esqueceu a senha?
+                </button>
+              </div>
+            </div>
+
+            <!-- Opções de Conforto: Lembrar Sessão -->
+            <div class="pt-1 flex items-center justify-between text-xs">
+              <label
+                class="flex items-center gap-2.5 cursor-pointer text-[#d6d6de]"
+              >
+                <input
+                  type="checkbox"
+                  id="chkLembrar"
+                  checked=""
+                  class="w-4 h-4 rounded border-2 border-[#3c3c44] bg-[#0a0a0c] accent-[#fffff2] text-[#080808] cursor-pointer"
+                />
+                <span class="select-none font-medium"
+                  >Manter conectado neste navegador</span
+                >
+              </label>
+            </div>
+
+            <!-- Botão Primário: Entrar no Focus 2k -->
+            <button
+              type="submit"
+              class="w-full mt-3 py-3.5 px-4 bg-[#fffff2] hover:bg-white text-[#080808] font-bold text-sm sm:text-base rounded-xl transition transform active:scale-[0.99] shadow-lg flex items-center justify-center gap-2"
+            >
+              <span class="">Entrar no Focus 2k</span>
+              <svg
+                class="w-4 h-4 stroke-[2.5]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M14 5l7 7m0 0l-7 7m7-7H3"
+                ></path>
+              </svg>
+            </button>
+          </form>
+
+          <!-- FORMULÁRIO: CADASTRO -->
+          <form
+            id="formCadastro"
+            onsubmit="
+              event.preventDefault();
+              executarCadastro();
+            "
+            class="space-y-4 hidden"
+          >
+            <!-- Nome -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between items-baseline">
+                <label
+                  for="cadNome"
+                  class="block text-xs sm:text-sm font-semibold text-[#fffff2]"
+                >
+                  Nome Completo
+                </label>
+                <span class="text-[10px] text-[#8e8e96] font-mono"
+                  >Mínimo 3 caracteres</span
+                >
+              </div>
+              <div
+                class="relative custom-focus rounded-xl border-2 border-[#26262c] bg-[#0a0a0c] transition"
+              >
+                <input
+                  type="text"
+                  id="cadNome"
+                  placeholder="Ex: Maria Estudante"
+                  class="w-full bg-transparent px-3.5 py-3 text-sm sm:text-base text-[#fffff2] placeholder-[#5c5c64] outline-none font-medium"
+                />
+              </div>
+            </div>
+
+            <!-- E-mail Cadastro -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between items-baseline">
+                <label
+                  for="cadEmail"
+                  class="block text-xs sm:text-sm font-semibold text-[#fffff2]"
+                >
+                  E-mail
+                </label>
+                <span class="text-[10px] text-[#8e8e96] font-mono"
+                  >Obrigatório para login</span
+                >
+              </div>
+              <div
+                class="relative custom-focus rounded-xl border-2 border-[#26262c] bg-[#0a0a0c] transition"
+              >
+                <input
+                  type="email"
+                  id="cadEmail"
+                  placeholder="Ex: aluno@focus2k.com"
+                  class="w-full bg-transparent px-3.5 py-3 text-sm sm:text-base text-[#fffff2] placeholder-[#5c5c64] outline-none font-medium"
+                />
+              </div>
+            </div>
+
+            <!-- Senha Cadastro -->
+            <div class="space-y-1.5">
+              <label
+                for="cadSenha"
+                class="block text-xs sm:text-sm font-semibold text-[#fffff2]"
+              >
+                Crie uma Senha
+              </label>
+              <div
+                class="relative custom-focus rounded-xl border-2 border-[#26262c] bg-[#0a0a0c] transition"
+              >
+                <input
+                  type="password"
+                  id="cadSenha"
+                  placeholder="Mínimo 4 caracteres"
+                  class="w-full bg-transparent px-3.5 py-3 text-sm sm:text-base text-[#fffff2] placeholder-[#5c5c64] outline-none font-medium"
+                />
+              </div>
+            </div>
+
+            <!-- Estilo de Instrução IA -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between items-baseline">
+                <label
+                  for="cadEstilo"
+                  class="block text-xs sm:text-sm font-semibold text-[#fffff2]"
+                >
+                  Perfil de Aprendizagem &amp; IA
+                </label>
+                <span class="text-[10px] text-[#8e8e96] font-mono"
+                  >Modo Foco</span
+                >
+              </div>
+              <div
+                class="relative custom-focus rounded-xl border-2 border-[#26262c] bg-[#0a0a0c] transition"
+              >
+                <select
+                  id="cadEstilo"
+                  class="w-full bg-[#0a0a0c] px-3.5 py-3 text-sm text-[#fffff2] outline-none font-medium cursor-pointer rounded-xl"
+                >
+                  <option value="detalhado">
+                    Detalhado (Passo a passo calmo e contextual)
+                  </option>
+                  <option value="direto">
+                    Direto (Sintético, objetivo e sem rodeios)
+                  </option>
+                </select>
+              </div>
+              <p class="text-[11px] text-[#8e8e96]">
+                Configura as respostas do assistente para seu ritmo cognitivo.
+              </p>
+            </div>
+
+            <!-- Botão Primário: Criar Conta -->
+            <button
+              type="submit"
+              class="w-full mt-3 py-3.5 px-4 bg-[#fffff2] hover:bg-white text-[#080808] font-bold text-sm sm:text-base rounded-xl transition transform active:scale-[0.99] shadow-lg flex items-center justify-center gap-2"
+            >
+              <span class="">Finalizar Cadastro e Entrar</span>
+              <svg
+                class="w-4 h-4 stroke-[2.5]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M5 13l4 4L19 7"
+                ></path>
+              </svg>
+            </button>
+          </form>
         </div>
-
-        <!-- Mensagens de Alerta Dinâmicas -->
-        <div id="statusAlert" class="mb-5 p-3.5 rounded-xl text-xs font-semibold border flex items-center gap-2.5 bg-[#18181c] border-[#333338] text-[#fffff2] hidden">
-          <span id="alertIcon" class="">ℹ</span>
-          <span id="alertMessage" class="">Instruções de recuperação foram enviadas para seu e-mail cadastrado.</span>
-        </div>
-
-        <!-- FORMULÁRIO: LOGIN -->
-        <form id="formLogin" onsubmit="event.preventDefault(); executarLogin();" class="space-y-4">
-          <!-- Campo E-mail -->
-          <div class="space-y-1.5">
-            <div class="flex justify-between items-baseline">
-              <label for="loginUser" class="block text-xs sm:text-sm font-semibold text-[#fffff2]">
-                E-mail de Acesso
-              </label>
-            </div>
-            <div class="relative custom-focus rounded-xl border-2 border-[#26262c] bg-[#0a0a0c] transition">
-              <input type="email" id="loginUser" placeholder="Ex: aluno@focus2k.com" autocomplete="email" class="w-full bg-transparent px-3.5 py-3 text-sm sm:text-base text-[#fffff2] placeholder-[#5c5c64] outline-none font-medium">
-            </div><div class="flex justify-end pt-1"><span class="text-[11px] text-[#b5b5ba] hover:text-[#fffff2] underline transition">* Campo obrigatório</span></div>
-          </div>
-
-          <!-- Campo Senha -->
-          <div class="space-y-1.5">
-            <div class="flex justify-between items-baseline"><label for="loginPassword" class="block text-xs sm:text-sm font-semibold text-[#fffff2]">Sua Senha</label></div>
-            <div class="relative custom-focus rounded-xl border-2 border-[#26262c] bg-[#0a0a0c] flex items-center pr-2 transition">
-              <input type="password" id="loginPassword" placeholder="••••••••••••" autocomplete="current-password" class="w-full bg-transparent px-3.5 py-3 text-sm sm:text-base text-[#fffff2] placeholder-[#5c5c64] outline-none font-medium">
-              <button type="button" onclick="alternarVisibilidadeSenha('loginPassword', 'iconToggleSenha')" class="p-2 text-xs font-mono text-[#b5b5ba] hover:text-[#fffff2] border border-[#242429] rounded-lg bg-[#141417] transition flex items-center gap-1" aria-label="Mostrar ou ocultar senha"><svg id="iconToggleSenha" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></button>
-            </div><div class="flex justify-end pt-1"><button type="button" onclick="mostrarDicaSenha()" class="text-[11px] text-[#b5b5ba] hover:text-[#fffff2] underline transition">Esqueceu a senha?</button></div>
-          </div>
-
-          <!-- Opções de Conforto: Lembrar Sessão -->
-          <div class="pt-1 flex items-center justify-between text-xs">
-            <label class="flex items-center gap-2.5 cursor-pointer text-[#d6d6de]">
-              <input type="checkbox" id="chkLembrar" checked="" class="w-4 h-4 rounded border-2 border-[#3c3c44] bg-[#0a0a0c] accent-[#fffff2] text-[#080808] cursor-pointer">
-              <span class="select-none font-medium">Manter conectado neste navegador</span>
-            </label>
-          </div>
-
-          <!-- Botão Primário: Entrar no Focus 2k -->
-          <button type="submit" class="w-full mt-3 py-3.5 px-4 bg-[#fffff2] hover:bg-white text-[#080808] font-bold text-sm sm:text-base rounded-xl transition transform active:scale-[0.99] shadow-lg flex items-center justify-center gap-2">
-            <span class="">Entrar no Focus 2k</span>
-            <svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-            </svg>
-          </button>
-        </form>
-
-        <!-- FORMULÁRIO: CADASTRO -->
-        <form id="formCadastro" onsubmit="event.preventDefault(); executarCadastro();" class="space-y-4 hidden">
-          <!-- Nome -->
-          <div class="space-y-1.5">
-            <div class="flex justify-between items-baseline">
-              <label for="cadNome" class="block text-xs sm:text-sm font-semibold text-[#fffff2]">
-                Nome Completo
-              </label>
-              <span class="text-[10px] text-[#8e8e96] font-mono">Mínimo 3 caracteres</span>
-            </div>
-            <div class="relative custom-focus rounded-xl border-2 border-[#26262c] bg-[#0a0a0c] transition">
-              <input type="text" id="cadNome" placeholder="Ex: Maria Estudante" class="w-full bg-transparent px-3.5 py-3 text-sm sm:text-base text-[#fffff2] placeholder-[#5c5c64] outline-none font-medium">
-            </div>
-          </div>
-
-          <!-- E-mail Cadastro -->
-          <div class="space-y-1.5">
-            <div class="flex justify-between items-baseline">
-              <label for="cadEmail" class="block text-xs sm:text-sm font-semibold text-[#fffff2]">
-                E-mail
-              </label>
-              <span class="text-[10px] text-[#8e8e96] font-mono">Obrigatório para login</span>
-            </div>
-            <div class="relative custom-focus rounded-xl border-2 border-[#26262c] bg-[#0a0a0c] transition">
-              <input type="email" id="cadEmail" placeholder="Ex: aluno@focus2k.com" class="w-full bg-transparent px-3.5 py-3 text-sm sm:text-base text-[#fffff2] placeholder-[#5c5c64] outline-none font-medium">
-            </div>
-          </div>
-
-          <!-- Senha Cadastro -->
-          <div class="space-y-1.5">
-            <label for="cadSenha" class="block text-xs sm:text-sm font-semibold text-[#fffff2]">
-              Crie uma Senha
-            </label>
-            <div class="relative custom-focus rounded-xl border-2 border-[#26262c] bg-[#0a0a0c] transition">
-              <input type="password" id="cadSenha" placeholder="Mínimo 4 caracteres" class="w-full bg-transparent px-3.5 py-3 text-sm sm:text-base text-[#fffff2] placeholder-[#5c5c64] outline-none font-medium">
-            </div>
-          </div>
-
-          <!-- Estilo de Instrução IA -->
-          <div class="space-y-1.5">
-            <div class="flex justify-between items-baseline">
-              <label for="cadEstilo" class="block text-xs sm:text-sm font-semibold text-[#fffff2]">
-                Perfil de Aprendizagem &amp; IA
-              </label>
-              <span class="text-[10px] text-[#8e8e96] font-mono">Modo Foco</span>
-            </div>
-            <div class="relative custom-focus rounded-xl border-2 border-[#26262c] bg-[#0a0a0c] transition">
-              <select id="cadEstilo" class="w-full bg-[#0a0a0c] px-3.5 py-3 text-sm text-[#fffff2] outline-none font-medium cursor-pointer rounded-xl">
-                <option value="detalhado">Detalhado (Passo a passo calmo e contextual)</option>
-                <option value="direto">Direto (Sintético, objetivo e sem rodeios)</option>
-              </select>
-            </div>
-            <p class="text-[11px] text-[#8e8e96]">Configura as respostas do assistente para seu ritmo cognitivo.</p>
-          </div>
-
-          <!-- Botão Primário: Criar Conta -->
-          <button type="submit" class="w-full mt-3 py-3.5 px-4 bg-[#fffff2] hover:bg-white text-[#080808] font-bold text-sm sm:text-base rounded-xl transition transform active:scale-[0.99] shadow-lg flex items-center justify-center gap-2">
-            <span class="">Finalizar Cadastro e Entrar</span>
-            <svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
-            </svg>
-          </button>
-        </form>
-
       </div>
+    </main>
 
-    </div>
-  </main>
+    <!-- Rodapé Global -->
+    <footer
+      class="w-full border-t border-[#1a1a1d] px-6 py-3 flex flex-wrap items-center justify-between text-xs text-[#75757d] font-mono"
+    >
+      <div class="flex items-center gap-4"></div>
+    </footer>
 
-  <!-- Rodapé Global -->
-  <footer class="w-full border-t border-[#1a1a1d] px-6 py-3 flex flex-wrap items-center justify-between text-xs text-[#75757d] font-mono">
-    <div class="flex items-center gap-4">
-    </div>
-  </footer>
-
-  <!-- Interações de Autenticação Modularizadas -->
-  <script src="js/login.js"></script>
-
-</body>
+    <!-- Interações de Autenticação Modularizadas -->
+    <script src="js/login.js"></script>
+  </body>
 </html>

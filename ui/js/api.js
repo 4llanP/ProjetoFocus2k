@@ -12,21 +12,21 @@ const API_URL = "";
  * @returns {Promise<Response>} Fetch API Response promise.
  */
 function apiFetch(url, options = {}) {
-  options.credentials = 'include';
+  options.credentials = "include";
   options.headers = options.headers || {};
 
-  let token = localStorage.getItem('token');
+  let token = localStorage.getItem("token");
   if (token) {
-    token = token.replace(/['"]+/g, '').trim();
-    if (token && token !== 'null' && token !== 'undefined' && token !== '""') {
+    token = token.replace(/['"]+/g, "").trim();
+    if (token && token !== "null" && token !== "undefined" && token !== '""') {
       if (options.headers instanceof Headers) {
-        if (!options.headers.has('Authorization')) {
-          options.headers.set('Authorization', `Bearer ${token}`);
+        if (!options.headers.has("Authorization")) {
+          options.headers.set("Authorization", `Bearer ${token}`);
         }
       } else {
         options.headers = {
-          'Authorization': `Bearer ${token}`,
-          ...options.headers
+          Authorization: `Bearer ${token}`,
+          ...options.headers,
         };
       }
     }

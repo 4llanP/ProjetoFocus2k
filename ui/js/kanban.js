@@ -79,6 +79,9 @@ async function carregarTarefasDaAPI() {
       inicializarTimerState();
       try {
         localStorage.setItem('focus_tarefas_cache', JSON.stringify(tarefasDB));
+        if (typeof verificarPrazosTarefas === 'function') {
+          verificarPrazosTarefas(tarefasDB);
+        }
       } catch (e) {}
     }
   } catch (err) {
@@ -631,7 +634,11 @@ function iniciarTimer() {
       atualizarDisplayTimerModal();
     } else {
       pararTimer();
-      mostrarToastFeedback("Tempo de foco concluído! Bom trabalho!");
+      if (typeof enviarNotificacao === 'function') {
+        enviarNotificacao("Pomodoro Concluído! 🍅", "Tempo de foco concluído! Bom trabalho, hora de fazer uma pausa.");
+      } else {
+        mostrarToastFeedback("Tempo de foco concluído! Bom trabalho!");
+      }
       fecharTimerModal();
     }
   }, 1000);

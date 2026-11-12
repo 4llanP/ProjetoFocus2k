@@ -4,8 +4,8 @@
  */
 
 function renderizarModals() {
-  const container = document.getElementById('modalsContainer') || document.body;
-  if (document.getElementById('modalPerfil')) return;
+  const container = document.getElementById("modalsContainer") || document.body;
+  if (document.getElementById("modalPerfil")) return;
 
   const modalsHTML = `
     <!-- ================= MODAL DE PERFIL & CONFIGURAÇÕES ================= -->

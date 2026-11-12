@@ -4,13 +4,13 @@
  */
 
 export let tarefasDB = [];
-export let filtroCategoriaAtiva = 'todas';
-export let termoBuscaAtivo = '';
+export let filtroCategoriaAtiva = "todas";
+export let termoBuscaAtivo = "";
 export let usuarioAtual = {
-  nome: localStorage.getItem('userName') || 'Usuário',
-  role: localStorage.getItem('role') || 'Estudante',
-  estiloInstrucao: 'direto',
-  autenticado: !!localStorage.getItem('token')
+  nome: localStorage.getItem("userName") || "Usuário",
+  role: localStorage.getItem("role") || "Estudante",
+  estiloInstrucao: "direto",
+  autenticado: !!localStorage.getItem("token"),
 };
 export let drawerChatAberto = true;
 export let cardSendoDesestruturado = null;
@@ -40,10 +40,12 @@ export function mostrarToastFeedback(mensagem) {
 }
 
 export function atualizarInterfaceUsuario() {
-  const nameEl = document.getElementById('sidebarUserName');
-  const roleEl = document.getElementById('sidebarUserRole');
-  const nomeVal = usuarioAtual.nome || localStorage.getItem('userName') || 'Usuário';
-  const roleVal = usuarioAtual.role || localStorage.getItem('role') || 'Estudante';
+  const nameEl = document.getElementById("sidebarUserName");
+  const roleEl = document.getElementById("sidebarUserRole");
+  const nomeVal =
+    usuarioAtual.nome || localStorage.getItem("userName") || "Usuário";
+  const roleVal =
+    usuarioAtual.role || localStorage.getItem("role") || "Estudante";
   if (nameEl) nameEl.textContent = nomeVal;
   if (roleEl) roleEl.textContent = roleVal;
 }

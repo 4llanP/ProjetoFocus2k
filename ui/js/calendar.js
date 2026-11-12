@@ -11,27 +11,35 @@ let calendarMesAtual = new Date().getMonth();
  * @param {string} visao - 'kanban' or 'calendario'.
  */
 function mudarVisao(visao) {
-  const kanbanContainer = document.getElementById('kanbanViewContainer');
-  const calendarContainer = document.getElementById('calendarViewContainer');
-  const navKanban = document.getElementById('navKanbanBtn');
-  const navCalendar = document.getElementById('navCalendarBtn');
+  const kanbanContainer = document.getElementById("kanbanViewContainer");
+  const calendarContainer = document.getElementById("calendarViewContainer");
+  const navKanban = document.getElementById("navKanbanBtn");
+  const navCalendar = document.getElementById("navCalendarBtn");
 
-  if (visao === 'calendario') {
-    if (kanbanContainer) kanbanContainer.classList.add('hidden');
-    if (calendarContainer) calendarContainer.classList.remove('hidden');
-    if (navCalendar) navCalendar.className = "flex items-center gap-2.5 px-3 py-2 rounded-lg bg-[#1f1f24] text-[#fffff2] font-medium text-xs border border-[#3a3a42] transition cursor-pointer";
-    if (navKanban) navKanban.className = "flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] transition font-medium text-xs border border-transparent cursor-pointer";
+  if (visao === "calendario") {
+    if (kanbanContainer) kanbanContainer.classList.add("hidden");
+    if (calendarContainer) calendarContainer.classList.remove("hidden");
+    if (navCalendar)
+      navCalendar.className =
+        "flex items-center gap-2.5 px-3 py-2 rounded-lg bg-[#1f1f24] text-[#fffff2] font-medium text-xs border border-[#3a3a42] transition cursor-pointer";
+    if (navKanban)
+      navKanban.className =
+        "flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] transition font-medium text-xs border border-transparent cursor-pointer";
     renderizarCalendario();
     mostrarToastFeedback("Visão: Calendário de Metas");
   } else {
-    if (calendarContainer) calendarContainer.classList.add('hidden');
-    if (kanbanContainer) kanbanContainer.classList.remove('hidden');
-    if (navKanban) navKanban.className = "flex items-center gap-2.5 px-3 py-2 rounded-lg bg-[#1f1f24] text-[#fffff2] font-medium text-xs border border-[#3a3a42] transition cursor-pointer";
-    if (navCalendar) navCalendar.className = "flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] transition font-medium text-xs border border-transparent cursor-pointer";
+    if (calendarContainer) calendarContainer.classList.add("hidden");
+    if (kanbanContainer) kanbanContainer.classList.remove("hidden");
+    if (navKanban)
+      navKanban.className =
+        "flex items-center gap-2.5 px-3 py-2 rounded-lg bg-[#1f1f24] text-[#fffff2] font-medium text-xs border border-[#3a3a42] transition cursor-pointer";
+    if (navCalendar)
+      navCalendar.className =
+        "flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] transition font-medium text-xs border border-transparent cursor-pointer";
     mostrarToastFeedback("Visão: Quadro Principal (Kanban)");
   }
 
-  if (window.innerWidth < 1024 && typeof fecharMenuLateral === 'function') {
+  if (window.innerWidth < 1024 && typeof fecharMenuLateral === "function") {
     fecharMenuLateral();
   }
 }
@@ -66,13 +74,23 @@ function irParaMesAtual() {
  * Renders the interactive calendar grid and tasks matching deadlines.
  */
 function renderizarCalendario() {
-  const titleEl = document.getElementById('calendarMonthTitle');
-  const gridEl = document.getElementById('calendarGridDays');
+  const titleEl = document.getElementById("calendarMonthTitle");
+  const gridEl = document.getElementById("calendarGridDays");
   if (!titleEl || !gridEl) return;
 
   const nomesMeses = [
-    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    "Janeiro",
+    "Fevereiro",
+    "Março",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro",
   ];
 
   titleEl.textContent = `${nomesMeses[calendarMesAtual]} ${calendarAnoAtual}`;
@@ -82,11 +100,15 @@ function renderizarCalendario() {
   const diasNoMes = ultimoDiaDoMes.getDate();
   const diaDaSemanaInicio = primeiroDiaDoMes.getDay();
 
-  const ultimoDiaMesAnterior = new Date(calendarAnoAtual, calendarMesAtual, 0).getDate();
+  const ultimoDiaMesAnterior = new Date(
+    calendarAnoAtual,
+    calendarMesAtual,
+    0,
+  ).getDate();
 
-  let htmlGrid = '';
+  let htmlGrid = "";
   const agora = new Date();
-  const hojeStr = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, '0')}-${String(agora.getDate()).padStart(2, '0')}`;
+  const hojeStr = `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, "0")}-${String(agora.getDate()).padStart(2, "0")}`;
 
   // Previous month trailing days
   for (let i = diaDaSemanaInicio - 1; i >= 0; i--) {
@@ -100,23 +122,26 @@ function renderizarCalendario() {
 
   // Current month days
   for (let dia = 1; dia <= diasNoMes; dia++) {
-    const mesStr = String(calendarMesAtual + 1).padStart(2, '0');
-    const diaStr = String(dia).padStart(2, '0');
+    const mesStr = String(calendarMesAtual + 1).padStart(2, "0");
+    const diaStr = String(dia).padStart(2, "0");
     const dataIsoStr = `${calendarAnoAtual}-${mesStr}-${diaStr}`;
-    const ehHoje = (dataIsoStr === hojeStr);
+    const ehHoje = dataIsoStr === hojeStr;
 
-    const tarefasDoDia = (typeof tarefasDB !== 'undefined' ? tarefasDB : []).filter(t => {
+    const tarefasDoDia = (
+      typeof tarefasDB !== "undefined" ? tarefasDB : []
+    ).filter((t) => {
       if (!t.prazo) return false;
       return String(t.prazo).substring(0, 10) === dataIsoStr;
     });
 
-    let tarefasHtml = '';
-    tarefasDoDia.forEach(t => {
-      let corPrioridade = 'bg-emerald-400';
-      if (t.prioridade === 'alta') corPrioridade = 'bg-rose-500';
-      else if (t.prioridade === 'media') corPrioridade = 'bg-amber-400';
+    let tarefasHtml = "";
+    tarefasDoDia.forEach((t) => {
+      let corPrioridade = "bg-emerald-400";
+      if (t.prioridade === "alta") corPrioridade = "bg-rose-500";
+      else if (t.prioridade === "media") corPrioridade = "bg-amber-400";
 
-      const statusBadge = t.status === 'concluido' ? 'line-through opacity-60' : '';
+      const statusBadge =
+        t.status === "concluido" ? "line-through opacity-60" : "";
 
       tarefasHtml += `
         <div onclick="event.stopPropagation(); abrirModalDetalhesTarefa('${t.id}')" class="p-1 rounded bg-[#161619] border border-[#26262b] hover:border-[#fffff2] transition cursor-pointer text-[10px] space-y-0.5 ${statusBadge}" title="${t.titulo}">
@@ -128,13 +153,17 @@ function renderizarCalendario() {
       `;
     });
 
-    const hojeClasses = ehHoje ? 'bg-[#1f1f24] border-2 border-[#fffff2]' : 'bg-[#111113]';
-    const hojeBadge = ehHoje ? '<span class="ml-auto text-[9px] bg-[#fffff2] text-[#080808] px-1 rounded font-bold">Hoje</span>' : '';
+    const hojeClasses = ehHoje
+      ? "bg-[#1f1f24] border-2 border-[#fffff2]"
+      : "bg-[#111113]";
+    const hojeBadge = ehHoje
+      ? '<span class="ml-auto text-[9px] bg-[#fffff2] text-[#080808] px-1 rounded font-bold">Hoje</span>'
+      : "";
 
     htmlGrid += `
       <div onclick="clicarDiaCalendario('${dataIsoStr}')" class="min-h-[85px] sm:min-h-[130px] p-1.5 sm:p-2.5 ${hojeClasses} flex flex-col transition hover:bg-[#161619]/40 group cursor-pointer relative hover:border hover:border-[#fffff2]/30" title="Clique para adicionar meta nesta data">
         <div class="flex items-center justify-between mb-1">
-          <span class="font-bold text-xs font-mono ${ehHoje ? 'text-[#fffff2]' : 'text-[#9d9da6] group-hover:text-[#fffff2]'}">${dia}</span>
+          <span class="font-bold text-xs font-mono ${ehHoje ? "text-[#fffff2]" : "text-[#9d9da6] group-hover:text-[#fffff2]"}">${dia}</span>
           <span class="opacity-0 group-hover:opacity-100 transition text-[10px] font-mono text-[#fffff2] bg-[#1f1f24] px-1 py-0.5 rounded border border-[#3a3a42] hidden sm:flex items-center gap-0.5">
             <span class="material-symbols-outlined text-[12px]">add</span> Adicionar
           </span>
@@ -169,9 +198,11 @@ function renderizarCalendario() {
  * @param {string} taskId - Task ID.
  */
 function abrirModalDetalhesTarefa(taskId) {
-  const tarefa = tarefasDB.find(t => t.id === taskId);
+  const tarefa = tarefasDB.find((t) => t.id === taskId);
   if (!tarefa) return;
-  mostrarToastFeedback(`Meta: "${tarefa.titulo.slice(0, 30)}..." [${tarefa.status.toUpperCase()}]`);
+  mostrarToastFeedback(
+    `Meta: "${tarefa.titulo.slice(0, 30)}..." [${tarefa.status.toUpperCase()}]`,
+  );
 }
 
 /**
@@ -179,7 +210,7 @@ function abrirModalDetalhesTarefa(taskId) {
  * @param {string} dataIsoStr - ISO date string (YYYY-MM-DD).
  */
 function clicarDiaCalendario(dataIsoStr) {
-  if (typeof abrirModalCriarTarefa === 'function') {
+  if (typeof abrirModalCriarTarefa === "function") {
     abrirModalCriarTarefa(dataIsoStr);
   }
   mostrarToastFeedback(`Nova meta agendada para ${dataIsoStr}`);
@@ -187,45 +218,45 @@ function clicarDiaCalendario(dataIsoStr) {
 
 const temasDB = {
   obsidian: {
-    bg: '#080808',
-    surface: '#111113',
-    card: '#161619',
-    cardHover: '#1c1c21',
-    border: '#26262b',
-    borderLight: '#3a3a42',
-    text: '#fffff2',
-    muted: '#9d9da6'
+    bg: "#080808",
+    surface: "#111113",
+    card: "#161619",
+    cardHover: "#1c1c21",
+    border: "#26262b",
+    borderLight: "#3a3a42",
+    text: "#fffff2",
+    muted: "#9d9da6",
   },
   slate: {
-    bg: '#0d1117',
-    surface: '#161b22',
-    card: '#21262d',
-    cardHover: '#30363d',
-    border: '#30363d',
-    borderLight: '#484f58',
-    text: '#f0f6fc',
-    muted: '#8b949e'
+    bg: "#0d1117",
+    surface: "#161b22",
+    card: "#21262d",
+    cardHover: "#30363d",
+    border: "#30363d",
+    borderLight: "#484f58",
+    text: "#f0f6fc",
+    muted: "#8b949e",
   },
   indigo: {
-    bg: '#0b0f19',
-    surface: '#0f172a',
-    card: '#1e293b',
-    cardHover: '#334155',
-    border: '#334155',
-    borderLight: '#475569',
-    text: '#f8fafc',
-    muted: '#94a3b8'
+    bg: "#0b0f19",
+    surface: "#0f172a",
+    card: "#1e293b",
+    cardHover: "#334155",
+    border: "#334155",
+    borderLight: "#475569",
+    text: "#f8fafc",
+    muted: "#94a3b8",
   },
   branco: {
-    bg: '#ffffff',
-    surface: '#f4f4f5',
-    card: '#ffffff',
-    cardHover: '#f1f1f3',
-    border: '#e4e4e7',
-    borderLight: '#d4d4d8',
-    text: '#09090b',
-    muted: '#71717a'
-  }
+    bg: "#ffffff",
+    surface: "#f4f4f5",
+    card: "#ffffff",
+    cardHover: "#f1f1f3",
+    border: "#e4e4e7",
+    borderLight: "#d4d4d8",
+    text: "#09090b",
+    muted: "#71717a",
+  },
 };
 
 /**
@@ -236,33 +267,35 @@ function mudarTema(nomeTema) {
   const tema = temasDB[nomeTema] || temasDB.obsidian;
   const root = document.documentElement;
 
-  root.style.setProperty('--app-bg', tema.bg);
-  root.style.setProperty('--app-surface', tema.surface);
-  root.style.setProperty('--app-card', tema.card);
-  root.style.setProperty('--app-card-hover', tema.cardHover);
-  root.style.setProperty('--app-border', tema.border);
-  root.style.setProperty('--app-border-light', tema.borderLight);
-  root.style.setProperty('--app-text', tema.text);
-  root.style.setProperty('--app-muted', tema.muted);
+  root.style.setProperty("--app-bg", tema.bg);
+  root.style.setProperty("--app-surface", tema.surface);
+  root.style.setProperty("--app-card", tema.card);
+  root.style.setProperty("--app-card-hover", tema.cardHover);
+  root.style.setProperty("--app-border", tema.border);
+  root.style.setProperty("--app-border-light", tema.borderLight);
+  root.style.setProperty("--app-text", tema.text);
+  root.style.setProperty("--app-muted", tema.muted);
 
   document.body.style.backgroundColor = tema.bg;
-  document.body.style.setProperty('--app-bg', tema.bg);
-  document.body.style.setProperty('--app-surface', tema.surface);
-  document.body.style.setProperty('--app-card', tema.card);
-  document.body.style.setProperty('--app-card-hover', tema.cardHover);
-  document.body.style.setProperty('--app-border', tema.border);
-  document.body.style.setProperty('--app-border-light', tema.borderLight);
-  document.body.style.setProperty('--app-text', tema.text);
-  document.body.style.setProperty('--app-muted', tema.muted);
+  document.body.style.setProperty("--app-bg", tema.bg);
+  document.body.style.setProperty("--app-surface", tema.surface);
+  document.body.style.setProperty("--app-card", tema.card);
+  document.body.style.setProperty("--app-card-hover", tema.cardHover);
+  document.body.style.setProperty("--app-border", tema.border);
+  document.body.style.setProperty("--app-border-light", tema.borderLight);
+  document.body.style.setProperty("--app-text", tema.text);
+  document.body.style.setProperty("--app-muted", tema.muted);
 
-  document.body.className = document.body.className.replace(/theme-\S+/g, '').trim();
-  if (nomeTema !== 'obsidian') {
+  document.body.className = document.body.className
+    .replace(/theme-\S+/g, "")
+    .trim();
+  if (nomeTema !== "obsidian") {
     document.body.classList.add(`theme-${nomeTema}`);
   }
-  localStorage.setItem('focus2k_tema', nomeTema);
+  localStorage.setItem("focus2k_tema", nomeTema);
 
-  const select1 = document.getElementById('selectTema');
-  const select2 = document.getElementById('selectTemaModal');
+  const select1 = document.getElementById("selectTema");
+  const select2 = document.getElementById("selectTemaModal");
   if (select1) select1.value = temaSalvo; // wait, select1.value = nomeTema
   if (select1) select1.value = nomeTema;
   if (select2) select2.value = nomeTema;
@@ -271,24 +304,24 @@ function mudarTema(nomeTema) {
 }
 
 // Initialize theme and font size on load
-window.addEventListener('DOMContentLoaded', () => {
-  const temaSalvo = localStorage.getItem('focus2k_tema') || 'obsidian';
-  const select1 = document.getElementById('selectTema');
-  const select2 = document.getElementById('selectTemaModal');
+window.addEventListener("DOMContentLoaded", () => {
+  const temaSalvo = localStorage.getItem("focus2k_tema") || "obsidian";
+  const select1 = document.getElementById("selectTema");
+  const select2 = document.getElementById("selectTemaModal");
   if (select1) select1.value = temaSalvo;
   if (select2) select2.value = temaSalvo;
   mudarTema(temaSalvo);
 
-  let escalaSalva = localStorage.getItem('focus2k_tamanho_fonte') || '100';
-  if (escalaSalva === 'auto' || parseInt(escalaSalva) > 150) {
-    escalaSalva = '100';
-    localStorage.setItem('focus2k_tamanho_fonte', '100');
+  let escalaSalva = localStorage.getItem("focus2k_tamanho_fonte") || "100";
+  if (escalaSalva === "auto" || parseInt(escalaSalva) > 150) {
+    escalaSalva = "100";
+    localStorage.setItem("focus2k_tamanho_fonte", "100");
   }
-  const selectFonte = document.getElementById('selectTamanhoFonteModal');
+  const selectFonte = document.getElementById("selectTamanhoFonteModal");
   if (selectFonte) selectFonte.value = escalaSalva;
-  if (escalaSalva !== '100') {
-    document.documentElement.style.fontSize = escalaSalva + '%';
-    document.body.style.fontSize = escalaSalva + '%';
+  if (escalaSalva !== "100") {
+    document.documentElement.style.fontSize = escalaSalva + "%";
+    document.body.style.fontSize = escalaSalva + "%";
   }
 });
 
@@ -298,15 +331,15 @@ window.addEventListener('DOMContentLoaded', () => {
  */
 function mudarTamanhoFonte(escala) {
   if (parseInt(escala) > 150) {
-    escala = '150';
+    escala = "150";
   }
   const root = document.documentElement;
-  const percentual = escala + '%';
+  const percentual = escala + "%";
   root.style.fontSize = percentual;
   document.body.style.fontSize = percentual;
-  localStorage.setItem('focus2k_tamanho_fonte', escala);
+  localStorage.setItem("focus2k_tamanho_fonte", escala);
 
-  const selectEl = document.getElementById('selectTamanhoFonteModal');
+  const selectEl = document.getElementById("selectTamanhoFonteModal");
   if (selectEl) selectEl.value = escala;
 
   mostrarToastFeedback(`Tamanho da fonte ajustado para ${percentual}`);
