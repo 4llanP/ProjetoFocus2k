@@ -26,7 +26,6 @@ function mudarVisao(visao) {
       navKanban.className =
         "flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] transition font-medium text-xs border border-transparent cursor-pointer";
     renderizarCalendario();
-    mostrarToastFeedback("Visão: Calendário de Metas");
   } else {
     if (calendarContainer) calendarContainer.classList.add("hidden");
     if (kanbanContainer) kanbanContainer.classList.remove("hidden");
@@ -36,7 +35,6 @@ function mudarVisao(visao) {
     if (navCalendar)
       navCalendar.className =
         "flex items-center gap-2.5 px-3 py-2 rounded-lg text-[#9d9da6] hover:bg-[#161619] hover:text-[#fffff2] transition font-medium text-xs border border-transparent cursor-pointer";
-    mostrarToastFeedback("Visão: Quadro Principal (Kanban)");
   }
 
   if (window.innerWidth < 1024 && typeof fecharMenuLateral === "function") {
@@ -299,8 +297,6 @@ function mudarTema(nomeTema) {
   if (select1) select1.value = temaSalvo; // wait, select1.value = nomeTema
   if (select1) select1.value = nomeTema;
   if (select2) select2.value = nomeTema;
-
-  mostrarToastFeedback(`Tema alterado para: ${nomeTema.toUpperCase()}`);
 }
 
 // Initialize theme and font size on load
@@ -341,6 +337,4 @@ function mudarTamanhoFonte(escala) {
 
   const selectEl = document.getElementById("selectTamanhoFonteModal");
   if (selectEl) selectEl.value = escala;
-
-  mostrarToastFeedback(`Tamanho da fonte ajustado para ${percentual}`);
 }

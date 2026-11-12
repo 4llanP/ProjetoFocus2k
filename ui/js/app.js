@@ -584,7 +584,6 @@ function abrirMenuLateral() {
   }
 
   if (icon) icon.classList.remove("rotate-180");
-  mostrarToastFeedback("Sidebar Aberta");
 }
 
 function fecharMenuLateral() {
@@ -607,7 +606,6 @@ function fecharMenuLateral() {
   }
 
   if (icon) icon.classList.add("rotate-180");
-  mostrarToastFeedback("Sidebar Ocultada");
 }
 
 function alternarMenuLateral() {
@@ -695,7 +693,6 @@ function alternarDrawerChat(forcarEstado) {
       drawer.style.width = "24rem";
     }
     if (btnBottomRight) btnBottomRight.classList.add("hidden");
-    mostrarToastFeedback("Assistente IA Aberto");
   } else {
     drawer.classList.add("hidden");
     drawer.style.width = "0px";
